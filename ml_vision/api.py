@@ -1,38 +1,59 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import requests
 
 app = FastAPI(title="Vision ML Node (Rohit)")
 
-# --- CORS SETUP: This allows Tanmay's Frontend to read the data ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all IPs (Tailscale safe)
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allows GET, POST, etc.
+    allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# Your M4 Host IP
+TANMAY_URL = "http://100.69.253.89:8000/ingest"
+
 @app.get("/")
 async def health_check():
-    """Simple endpoint for Tanmay's frontend to ping"""
-    return {"status": "online", "node": "Rohit-RTX3050", "gpu": "Detected"}
+    return {
+        "status": "online", 
+        "node": "Rohit-RTX3050", 
+        "gpu": "Active",
+        "model": "CLIP-ViT-B/32"
+    }
 
 @app.post("/embed/visual")
 async def process_frame(image: UploadFile = File(...)):
-    # 1. Read the incoming image from Yogesh
+    # 1. Read the binary image data from Yogesh (M2)
     contents = await image.read()
+    print(f"📸 [Rohit-3050] Received image from M2 ({len(contents)} bytes)")
     
-    # --- ROHIT'S ML PIPELINE WILL GO HERE ---
-    # Dummy processing simulation
-    print(f"📸 Received frame for processing on RTX 3050")
+    # --- SIMULATED ML LOGIC ---
+    # This is where his YOLO and CLIP models will eventually sit
+    simulated_vector = [0.05] * 512
+    
+    # 2. BOUNCE BACK: Send the result to Tanmay (M4)
+    payload = {
+        "video_name": "simulated_video_01",
+        "timestamp": 10.5,
+        "visual_vector": simulated_vector,
+        "text_vector": [0.0] * 384 # Placeholder (Yug handles this)
+    }
+
+    try:
+        print(f"🚀 [Rohit-3050] Forwarding visual vector to Tanmay (M4)...")
+        requests.post(TANMAY_URL, json=payload)
+    except Exception as e:
+        print(f"🚨 [Rohit-3050] Failed to reach M4: {e}")
     
     return {
         "status": "success",
         "node": "Rohit-Vision",
-        "visual_vector": [0.0] * 512 
+        "sent_to_host": True
     }
 
 if __name__ == "__main__":
-    # 0.0.0.0 is required to listen over Tailscale
     uvicorn.run(app, host="0.0.0.0", port=8001)
