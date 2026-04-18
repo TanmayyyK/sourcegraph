@@ -1,0 +1,20 @@
+# --------------------------------------------------------
+# SourceGraph Code Owners
+# To ensure our microservices can talk to each other, 
+# every folder requires the Domain Owner and the Integration Lead.
+# --------------------------------------------------------
+
+# Infrastructure & Core API
+/orchestrator/      @TanmayyyK
+
+# Media Pipeline
+/extractor/         @YOGESH007-CODING @TanmayyyK
+
+# AI Vision Models
+/ml_vision/         @Rohit-hub-code @TanmayyyK
+
+# AI Context Models
+/ml_context/        @Yugbharti @TanmayyyK
+
+# Root project files (docker-compose, docs, etc)
+* @TanmayyyK
