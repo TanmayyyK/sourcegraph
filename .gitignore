@@ -1,0 +1,22 @@
+# Python & Node
+    __pycache__/
+    *.pyc
+    node_modules/
+    .env
+
+# Media Files (DO NOT COMMIT VIDEOS)
+    *.mp4
+    *.wav
+    *.jpg
+    *.png
+    /data/
+    /temp/
+    
+# Machine Learning Weights
+    *.pt
+    *.pth
+    *.onnx
+    /models/weights/
+
+# Database
+    /postgres-data/
