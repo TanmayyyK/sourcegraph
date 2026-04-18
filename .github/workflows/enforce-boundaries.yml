@@ -1,0 +1,58 @@
+name: Enforce Folder Boundaries
+
+# This script runs automatically every time a Pull Request is opened or updated
+on:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  check-boundaries:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Needed to compare changes
+
+      - name: Verify strict folder ownership
+        run: |
+          # 1. Figure out who is opening this Pull Request
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+          
+          # 2. Get a list of all files changed in this PR
+          CHANGED_FILES=$(git diff --name-only origin/main HEAD)
+          
+          echo "Author: $PR_AUTHOR"
+          echo "Files changed:"
+          echo "$CHANGED_FILES"
+          echo "-----------------------------------"
+          
+          # 3. Define the rules. (We use bash arrays for clean logic)
+          # If the PR author is TanmayyyK, let them pass instantly.
+          if [[ "$PR_AUTHOR" == "TanmayyyK" ]]; then
+            echo "✅ TanmayyyK has universal access. Passing."
+            exit 0
+          fi
+          
+          # 4. For everyone else, check every changed file against their allowed folders
+          for FILE in $CHANGED_FILES; do
+            ALLOWED=false
+            
+            if [[ "$PR_AUTHOR" == "YOGESH007-CODING" && "$FILE" == extractor/* ]]; then
+              ALLOWED=true
+            elif [[ "$PR_AUTHOR" == "Rohit-hub-code" && "$FILE" == ml_vision/* ]]; then
+              ALLOWED=true
+            elif [[ "$PR_AUTHOR" == "Yugbharti" && "$FILE" == ml_context/* ]]; then
+              ALLOWED=true
+            fi
+            
+            # 5. The Kill Switch: If a file isn't allowed, crash the entire script
+            if [ "$ALLOWED" = false ]; then
+              echo "🚨 ERROR: Access Denied."
+              echo "User '$PR_AUTHOR' is not permitted to modify: $FILE"
+              echo "Please revert changes to this file before merging."
+              exit 1 
+            fi
+          done
+          
+          echo "✅ All boundaries respected."

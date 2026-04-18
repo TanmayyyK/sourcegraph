@@ -1,30 +1,43 @@
 from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-# Yug will import his ML functions here later
-# from ocr.text_extractor import extract_text
-# from embedding.text_model import get_text_embedding
 
-app = FastAPI(title="Context ML Node")
+app = FastAPI(title="Context ML Node (Yug)")
+
+# --- CORS SETUP: Essential for Tanmay's Dashboard ---
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], 
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/")
+async def health_check():
+    """Endpoint for the M4 Dashboard to verify connectivity"""
+    return {
+        "status": "online", 
+        "node": "Yug-RTX2050", 
+        "task": "OCR & NLP",
+        "model": "MiniLM-L6-v2"
+    }
 
 @app.post("/embed/text")
 async def process_context(image: UploadFile = File(...)):
-    # 1. Read the incoming image from Yogesh
+    # 1. Read the incoming image
     contents = await image.read()
     
     # --- YUG'S ML PIPELINE WILL GO HERE ---
-    # extracted_text = extract_text(contents)
-    # if extracted_text:
-    #     vector_384 = get_text_embedding(extracted_text)
-    # else:
-    #     vector_384 = [0.0] * 384
+    print(f"📝 Received frame for OCR/Text embedding on RTX 2050")
     
-    # Dummy response for now to prove the API works
     return {
         "status": "success",
-        "extracted_text": "Dummy meme text",
-        "text_vector": [0.0] * 384  # MiniLM uses 384 dimensions
+        "node": "Yug-Context",
+        "extracted_text": "Sample text from frame",
+        "text_vector": [0.0] * 384
     }
 
 if __name__ == "__main__":
-    # 0.0.0.0 ensures it listens to the Tailscale network
+    # Listen on port 8002 for Tailscale traffic
     uvicorn.run(app, host="0.0.0.0", port=8002)

@@ -1,65 +1,97 @@
-import Image from "next/image";
+"use client";
+import React, { useState } from 'react';
 
-export default function Home() {
+const HOST_NODE = { name: "Tanmay (M4 Host)", ip: "localhost", port: "8000" };
+
+const WORKER_NODES = [
+  { name: "Yogesh (M2)", ip: "100.103.180.14", port: "8003" },
+  { name: "Rohit (3050)", ip: "100.119.250.125", port: "8001" },
+  { name: "Yug (2050)", ip: "100.115.89.72", port: "8002" },
+];
+
+export default function NetworkTest() {
+  const [statuses, setStatuses] = useState<any>({});
+
+  const checkPing = async (node: any) => {
+    setStatuses((prev: any) => ({ ...prev, [node.name]: "PENDING..." }));
+    try {
+      // Use a standard fetch. Worker nodes use no-cors if they don't have middleware yet.
+      const res = await fetch(`http://${node.ip}:${node.port}/`, { 
+        method: 'GET',
+        mode: node.ip === 'localhost' ? 'cors' : 'no-cors' 
+      });
+      setStatuses((prev: any) => ({ ...prev, [node.name]: "ONLINE" }));
+    } catch (err) {
+      setStatuses((prev: any) => ({ ...prev, [node.name]: "OFFLINE" }));
+    }
+  };
+
+  const checkAll = () => {
+    checkPing(HOST_NODE);
+    WORKER_NODES.forEach(checkPing);
+  };
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div className="p-10 bg-black min-h-screen text-white font-mono">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex justify-between items-end mb-8 border-b border-emerald-500/30 pb-4">
+          <div>
+            <h1 className="text-3xl font-bold text-emerald-400 italic">SOURCEGRAPH // COMMAND</h1>
+            <p className="text-slate-400 text-xs mt-1">Distributed Vector Ingestion Network</p>
+          </div>
+          <button 
+            onClick={checkAll}
+            className="bg-emerald-600 hover:bg-emerald-500 text-black font-bold py-2 px-6 rounded-sm transition-all"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            PING ALL SYSTEMS
+          </button>
         </div>
-      </main>
+
+        {/* HOST SECTION */}
+        <div className="mb-10">
+          <h2 className="text-sm text-slate-500 mb-3 uppercase tracking-widest">Central Orchestrator</h2>
+          <NodeRow node={HOST_NODE} status={statuses[HOST_NODE.name]} onPing={() => checkPing(HOST_NODE)} isHost />
+        </div>
+
+        {/* WORKERS SECTION */}
+        <div>
+          <h2 className="text-sm text-slate-500 mb-3 uppercase tracking-widest">Worker Nodes (Tailscale)</h2>
+          <div className="grid gap-3">
+            {WORKER_NODES.map(node => (
+              <NodeRow key={node.name} node={node} status={statuses[node.name]} onPing={() => checkPing(node)} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NodeRow({ node, status, onPing, isHost = false }: any) {
+  const isOnline = status === "ONLINE";
+  const isPending = status === "PENDING...";
+  
+  return (
+    <div className={`flex items-center justify-between p-4 rounded border ${
+      isHost ? 'bg-emerald-950/20 border-emerald-500/50' : 'bg-slate-900 border-slate-800'
+    }`}>
+      <div>
+        <p className={`font-bold ${isHost ? 'text-emerald-400' : 'text-slate-200'}`}>
+          {node.name} {isHost && <span className="text-[10px] ml-2 px-1 border border-emerald-400">MASTER</span>}
+        </p>
+        <p className="text-xs text-slate-500">{node.ip}:{node.port}</p>
+      </div>
+      
+      <div className="flex items-center gap-6">
+        <button onClick={onPing} className="text-[10px] text-slate-400 hover:text-white underline">RE-SCAN</button>
+        <div className="w-24 text-right">
+          <span className={`text-xs font-black ${
+            isOnline ? 'text-emerald-400' : isPending ? 'text-yellow-500' : status === "OFFLINE" ? 'text-red-500' : 'text-slate-700'
+          }`}>
+            {status || "READY"}
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
