@@ -1,12 +1,21 @@
-fastapi>=0.100.0
-uvicorn[standard]>=0.23.0
-pydantic>=2.0.0
-pydantic-settings>=2.0.0
-python-dotenv>=1.0.0
-httpx>=0.24.0
-websockets>=11.0.3
+# ── Core Framework ────────────────────────────────────────────
+fastapi==0.115.5
+uvicorn[standard]==0.32.1
+pydantic==2.10.3
+pydantic-settings==2.6.1
 
-# Added for Phase 2 Production Migration
-sqlalchemy>=2.0.0
-asyncpg>=0.28.0
-pgvector>=0.2.2
+# ── Database ──────────────────────────────────────────────────
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+pgvector==0.3.6
+alembic==1.14.0
+
+# ── HTTP Client (extractor forwarding + retries) ──────────────
+httpx==0.28.1
+tenacity==9.0.0
+
+# ── Observability ─────────────────────────────────────────────
+python-multipart==0.0.17
+
+# ── Type stubs ────────────────────────────────────────────────
+typing-extensions==4.12.2
