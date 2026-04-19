@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  # ──────────────────────────────────────────────
+  # PostgreSQL + pgvector  (ANN-ready vector DB)
+  # ──────────────────────────────────────────────
+  db:
+    image: pgvector/pgvector:pg17
+    container_name: sourcegraph-pgvector
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: sourcegraph
+      POSTGRES_PASSWORD: sg_vector_2024
+      POSTGRES_DB: sourcegraph_vectors
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sourcegraph -d sourcegraph_vectors"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  # ──────────────────────────────────────────────
+  # FastAPI Orchestrator Backend
+  # ──────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: sourcegraph-orchestrator
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: "postgresql+asyncpg://sourcegraph:sg_vector_2024@db:5432/sourcegraph_vectors"
+      TAILSCALE_IP: "100.69.253.89"
+      LOG_LEVEL: "DEBUG"
+      FUSION_WEIGHT_VISUAL: "0.60"
+      FUSION_WEIGHT_TEXT: "0.30"
+      FUSION_WEIGHT_TEMPORAL: "0.10"
+      CONFIDENCE_THRESHOLD: "0.85"
+      BUFFER_TTL_SECONDS: "60"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/opt/sourcegraph
+
+volumes:
+  pgdata:
+    driver: local
