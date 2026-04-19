@@ -276,12 +276,12 @@ def process_media_pipeline(file_path: str, video_name: str, job_id: str, packet_
         log(job_id, f"❌ Demux failed: {e}")
         return
 
-    # Temporarily skipping audio processing explicitly requested by user 
-    # to avoid Whisper VRAM crashes/timeouts downstream.
-    # audio_bytes = audio_path.read_bytes()
-    # log(job_id, f"🎵 Audio loaded into memory ({len(audio_bytes)} bytes)")
-    # audio_future = GPU_POOL.submit(broadcast_audio, audio_bytes, audio_path.name, video_name, packet_id, job_id)
-    # log(job_id, "📡 Audio submitted to thread pool → Yug")
+    audio_bytes = audio_path.read_bytes()
+    log(job_id, f"🎵 Audio loaded into memory ({len(audio_bytes)} bytes)")
+
+    # Pass the actual Orchestrator packet_id down to the audio broadcast
+    audio_future = GPU_POOL.submit(broadcast_audio, audio_bytes, audio_path.name, video_name, packet_id, job_id)
+    log(job_id, "📡 Audio submitted to thread pool → Yug")
 
     frames = sorted(frames_dir.glob("*.jpg"))
     total = len(frames)
@@ -294,11 +294,11 @@ def process_media_pipeline(file_path: str, video_name: str, job_id: str, packet_
         log(job_id, f"📸 Frame {frame_index}/{total}: {frame.name}")
         broadcast_frame(frame, frame.name, metadata, job_id)
 
-    # try:
-    #     audio_result = audio_future.result(timeout=60)
-    #     log(job_id, "✅ Audio broadcast confirmed")
-    # except Exception as e:
-    #     log(job_id, f"⚠️  Audio broadcast error: {e}")
+    try:
+        audio_result = audio_future.result(timeout=60)
+        log(job_id, "✅ Audio broadcast confirmed")
+    except Exception as e:
+        log(job_id, f"⚠️  Audio broadcast error: {e}")
 
     try:
         shutil.rmtree(SCRIPT_DIR / "_pipeline_output" / job_id)

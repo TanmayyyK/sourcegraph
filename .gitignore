@@ -11,6 +11,8 @@
     *.png
     /data/
     /temp/
+    extractor/_pipeline_output/
+    *.mp4
     
 # Machine Learning Weights
     *.pt
@@ -19,4 +21,6 @@
     /models/weights/
 
 # Database
-    /postgres-data/
+    /postgres-data/*.mp4
+*.wav
+extractor/_sandbox_output/
