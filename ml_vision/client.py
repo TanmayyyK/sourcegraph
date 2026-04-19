@@ -63,7 +63,9 @@ async def post_source_packet(payload: dict[str, Any]) -> None:
     async with httpx.AsyncClient(timeout=_TIMEOUT) as client:
         for attempt in range(1, _MAX_RETRIES + 1):
             try:
-                response = await client.post(_ORCHESTRATOR_URL, json=payload)
+                secret = os.environ.get("WEBHOOK_SECRET", "change-me-in-production")
+                headers = {"X-Webhook-Secret": secret}
+                response = await client.post(_ORCHESTRATOR_URL, json=payload, headers=headers)
 
                 # 4xx → caller-side fault, do not retry
                 if 400 <= response.status_code < 500:
