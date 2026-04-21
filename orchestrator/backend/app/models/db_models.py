@@ -6,6 +6,7 @@ Tables
 assets          — One row per ingested video (golden or suspect).
 frame_vectors   — Per-frame embeddings; the core search surface.
 similarity_results — Persisted inference outcomes for audit trail.
+users           — Passwordless user accounts and OTP handling.
 
 HNSW indexes are declared inside __table_args__ so they are created
 atomically with the table during `Base.metadata.create_all`.
@@ -40,6 +41,37 @@ def _utcnow() -> datetime:
     return datetime.now(timezone.utc)
 
 
+# ── users ─────────────────────────────────────────────────────────────────
+# Defined FIRST so the FK in Asset(users.id) resolves without issues.
+
+class User(Base):
+    """
+    Overwatch user accounts (Passwordless).
+
+    Roles: 'PRODUCER' | 'AUDITOR'
+    OTP flow uses login_code and login_code_expires.
+    """
+    __tablename__ = "users"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
+    email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+    name: Mapped[str] = mapped_column(String(255), nullable=False, default="Commander")
+    role: Mapped[str] = mapped_column(String(32), nullable=False, default="AUDITOR")
+
+    # Temporary fields for OTP / Magic Link login
+    login_code: Mapped[str | None] = mapped_column(String(6), nullable=True)
+    login_code_expires: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=_utcnow
+    )
+
+    # Assets uploaded by this user
+    assets: Mapped[list["Asset"]] = relationship("Asset", back_populates="uploader")
+
+
 # ── assets ───────────────────────────────────────────────────────────────
 
 class Asset(Base):
@@ -64,6 +96,11 @@ class Asset(Base):
     # 'processing' | 'completed' | 'failed'
     status: Mapped[str] = mapped_column(String(32), nullable=False, default="processing")
 
+    # Auth linkage (Nullable to protect legacy data)
+    uploader_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, default=_utcnow
     )
@@ -72,6 +109,7 @@ class Asset(Base):
     )
 
     # Relationships
+    uploader: Mapped["User | None"] = relationship("User", back_populates="assets")
     frames: Mapped[list["FrameVector"]] = relationship(
         "FrameVector", back_populates="asset", cascade="all, delete-orphan"
     )

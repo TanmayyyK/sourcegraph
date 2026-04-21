@@ -30,7 +30,6 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: sourcegraph-orchestrator
     restart: unless-stopped
     ports:
       - "8000:8000"

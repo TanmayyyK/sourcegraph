@@ -122,8 +122,7 @@ async def _flush_frame_to_db(
             text_vector=entry.text_vector,
         )
         .on_conflict_do_nothing(
-            index_elements=None,  # relies on uq_frame_asset_timestamp
-            constraint="uq_frame_asset_timestamp",
+            index_elements=["asset_id", "timestamp"],
         )
     )
 

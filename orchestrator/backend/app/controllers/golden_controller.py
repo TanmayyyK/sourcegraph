@@ -165,7 +165,7 @@ async def _forward_and_update(
 async def upload_golden_source(
     request: Request,
     file: UploadFile = File(..., description="Raw video file (.mp4, .mov, etc.)"),
-    role: str = Depends(require_producer),
+    user: dict = Depends(require_producer),
     db: AsyncSession = Depends(get_db),
 ) -> UploadResponse:
     """
@@ -176,6 +176,8 @@ async def upload_golden_source(
     3. Read file bytes and fire-and-forget to M2 Extractor.
     4. Return asset_id immediately — caller polls /status for progress.
     """
+    # Extract the uploader UUID from the JWT payload
+    uploader_id = user.get("sub")
     trace_id = get_trace_id(request)
 
     if not file.filename:
@@ -186,7 +188,7 @@ async def upload_golden_source(
 
     logger.info(
         f"[GOLDEN] 📥 Upload received: file={file.filename} "
-        f"role={role} trace={trace_id}"
+        f"uploader={uploader_id} trace={trace_id}"
     )
 
     # ── Persist asset record ─────────────────────────────────────────────

@@ -30,13 +30,27 @@ class Settings(BaseSettings):
     # ── Node Topology ───────────────────────────────────────────
     tailscale_ip: str = "100.69.253.89"
     # Full URL of the M2 FFmpeg Extractor (env: EXTRACTOR_URL)
-    extractor_url: str = "http://100.0.0.1:8100"
-    extractor_timeout_seconds: float = 30.0
+    extractor_url: str = "http://100.103.180.14:8003"
+    extractor_timeout_seconds: float = 300.0
     extractor_max_retries: int = 3
 
     # ── Security ────────────────────────────────────────────────
     # GPU nodes must include this in X-Webhook-Secret header
     webhook_secret: str = "change-me-in-production"
+    
+    # ── Authentication ──────────────────────────────────────────
+    jwt_secret_key: str = "super-secret-overwatch-key-change-in-prod"
+    jwt_algorithm: str = "HS256"
+    jwt_access_expire_minutes: int = 10080  # 60 * 24 * 7 (1 week session)
+    otp_expire_minutes: int = 15  # How long the 6-digit code is valid
+    otp_request_cooldown_seconds: int = 30
+    otp_max_verify_attempts: int = 5
+    google_oauth_client_id: str = ""
+    smtp_host: str = "smtp.gmail.com"
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from_email: str = "no-reply@overwatch.local"
 
     # ── Vector Dimensions (strict) ──────────────────────────────
     visual_dim: int = 512

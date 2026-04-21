@@ -138,7 +138,7 @@ async def _forward_and_update(
 async def upload_suspect_clip(
     request: Request,
     file: UploadFile = File(..., description="Suspect video file"),
-    role: str = Depends(require_auditor),
+    user: dict = Depends(require_auditor),
     db: AsyncSession = Depends(get_db),
 ) -> UploadResponse:
     """
@@ -150,6 +150,8 @@ async def upload_suspect_clip(
          GET /api/v1/assets/{id}/status  — track progress
          GET /api/v1/assets/{id}/result  — retrieve verdict once complete
     """
+    # Extract the uploader UUID from the JWT payload
+    uploader_id = user.get("sub")
     trace_id = get_trace_id(request)
 
     if not file.filename:
@@ -160,7 +162,7 @@ async def upload_suspect_clip(
 
     logger.info(
         f"[SEARCH] 📥 Suspect upload: file={file.filename} "
-        f"role={role} trace={trace_id}"
+        f"uploader={uploader_id} trace={trace_id}"
     )
 
     asset = Asset(

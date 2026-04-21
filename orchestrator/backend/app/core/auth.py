@@ -2,8 +2,7 @@
 Authentication and authorisation dependencies.
 
 Security model:
-  - PRODUCER / AUDITOR roles: enforced via X-User-Role header.
-    In production, replace with JWT validation (e.g. python-jose).
+  - PRODUCER / AUDITOR roles: enforced via JWT Bearer validation.
   - Webhook endpoints: enforced via X-Webhook-Secret header
     (shared secret known only to the GPU nodes and the Orchestrator).
   - Trace IDs: generated per-request and injected into request.state.
@@ -12,37 +11,64 @@ Security model:
 
 from __future__ import annotations
 
+import hmac
 import uuid
+from typing import Any, Dict
 
-from fastapi import Header, HTTPException, Request, status
+from fastapi import Depends, Header, HTTPException, Request, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from jose import JWTError, jwt
 
 from app.config import settings
 
+# Initializes the standard Bearer token scheme for FastAPI
+security = HTTPBearer()
+
+# ── JWT Token Extraction ─────────────────────────────────────────────────
+
+def get_token_payload(credentials: HTTPAuthorizationCredentials = Depends(security)) -> Dict[str, Any]:
+    """
+    Decodes the Bearer token, verifies its signature and expiration, 
+    and returns the payload dictionary.
+    """
+    token = credentials.credentials
+    try:
+        payload = jwt.decode(
+            token,
+            settings.jwt_secret_key,
+            algorithms=[settings.jwt_algorithm]
+        )
+        return payload
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired authentication token.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
 # ── Role guards ─────────────────────────────────────────────────────────
 
-def require_producer(
-    x_user_role: str = Header(..., description="Must be 'PRODUCER'"),
-) -> str:
+def require_producer(payload: Dict[str, Any] = Depends(get_token_payload)) -> Dict[str, Any]:
     """Allow only PRODUCER role to mutate the Golden Library."""
-    if x_user_role.strip().upper() != "PRODUCER":
+    role = payload.get("role", "").upper()
+    if role != "PRODUCER":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Forbidden: PRODUCER role required for golden-source operations.",
         )
-    return x_user_role.upper()
+    # Returning the payload allows the controller to extract user["sub"] for database inserts
+    return payload
 
 
-def require_auditor(
-    x_user_role: str = Header(..., description="Must be 'AUDITOR'"),
-) -> str:
+def require_auditor(payload: Dict[str, Any] = Depends(get_token_payload)) -> Dict[str, Any]:
     """Allow only AUDITOR role to submit suspect clips for inference."""
-    if x_user_role.strip().upper() != "AUDITOR":
+    role = payload.get("role", "").upper()
+    if role != "AUDITOR":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Forbidden: AUDITOR role required for search/inference operations.",
         )
-    return x_user_role.upper()
+    return payload
 
 
 # ── Webhook guard ────────────────────────────────────────────────────────
@@ -56,8 +82,6 @@ def require_webhook_secret(
     Uses a constant-time comparison to prevent timing attacks.
     In production, rotate this secret via your secrets manager.
     """
-    import hmac
-
     if not hmac.compare_digest(x_webhook_secret, settings.webhook_secret):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

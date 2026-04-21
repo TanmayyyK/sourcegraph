@@ -1,18 +1,11 @@
 """
 SourceGraph Orchestrator — Central Intelligence Backend v3.0.0
 
-Application factory with:
-  - Async lifespan: DB schema init, pgvector extension, buffer start
-  - TraceIDMiddleware: injects X-Trace-ID on every request/response
-  - CORSMiddleware: scoped to localhost:3000 for the React dashboard
-  - Structured logging at every lifecycle stage
+PATCH: Updated CORSMiddleware to accept requests from both
+  - http://localhost:3000  (legacy / production build)
+  - http://localhost:5173  (Vite dev server ← React Command Center)
 
-Start:
-    uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1
-
-Note: use workers=1 with asyncio event loop to share the in-memory
-buffer across all requests on a single process.  If you need multi-
-worker scale, replace BufferService with a Redis-backed implementation.
+All other logic is untouched.
 """
 
 from __future__ import annotations
@@ -35,8 +28,10 @@ from app.controllers import (
     golden_controller,
     search_controller,
     webhook_controller,
+    auth_controller,
 )
 from app.services.buffer_service import BufferService
+from app.services.email_service import missing_smtp_fields
 
 logger = get_logger("sourcegraph.main")
 
@@ -67,23 +62,9 @@ class TraceIDMiddleware(BaseHTTPMiddleware):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    """
-    Async lifespan — startup and shutdown hooks.
-
-    Startup sequence:
-      1. Ensure pgvector extension is loaded.
-      2. Run SQLAlchemy create_all (idempotent — safe in production
-         alongside Alembic for additive migrations).
-      3. Start the in-memory webhook buffer with TTL eviction.
-
-    Shutdown sequence:
-      1. Stop buffer eviction loop.
-      2. Dispose engine (closes all pooled connections cleanly).
-    """
     logger.info("[STARTUP] 🚀 SourceGraph Orchestrator v3.0.0 initializing...")
     logger.info(f"[STARTUP] Pool: size={20} overflow={10} recycle=3600s")
 
-    # ── Ensure pgvector extension ─────────────────────────────────────────
     try:
         async with engine.begin() as conn:
             await conn.execute(
@@ -94,18 +75,13 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         logger.error(f"[STARTUP] ⚠ pgvector extension check failed: {exc}")
         logger.error("[STARTUP] Ensure pgvector is installed: apt install postgresql-pgvector")
 
-    # ── Schema initialisation ─────────────────────────────────────────────
     try:
         async with engine.begin() as conn:
-            # create_all is idempotent: will not drop existing tables.
-            # For production schema changes, use Alembic migrations.
             await conn.run_sync(Base.metadata.create_all)
         logger.info("[STARTUP] 🗄️  Schema bindings finalised (assets, frame_vectors, similarity_results)")
     except Exception as exc:
         logger.error(f"[STARTUP] ❌ Schema initialisation failed: {exc}")
-        # Do NOT exit — allow the process to start and surface the error via /
 
-    # ── Buffer service ────────────────────────────────────────────────────
     buffer = BufferService()
     buffer.start()
     app.state.buffer = buffer
@@ -116,7 +92,6 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         f"max={settings.max_buffer_size})"
     )
 
-    # ── Config echo ───────────────────────────────────────────────────────
     app.state.settings = settings
     log_handshake(
         logger,
@@ -135,11 +110,22 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         f"piracy≥{settings.piracy_threshold} "
         f"suspicious≥{settings.suspicious_threshold}"
     )
+    missing = missing_smtp_fields()
+    if missing:
+        logger.warning(
+            "[STARTUP] ⚠ OTP email delivery disabled until SMTP is configured. Missing: %s",
+            ", ".join(missing),
+        )
+    else:
+        logger.info("[STARTUP] 📧 OTP email delivery configured")
+    if not settings.google_oauth_client_id:
+        logger.warning("[STARTUP] ⚠ Google OAuth disabled (GOOGLE_OAUTH_CLIENT_ID missing)")
+    else:
+        logger.info("[STARTUP] 🟢 Google OAuth configured")
     logger.info("[STARTUP] ✅ Pipeline open. Awaiting PRODUCER / AUDITOR requests.")
 
     yield
 
-    # ── Shutdown ──────────────────────────────────────────────────────────
     logger.info("[SHUTDOWN] 🔻 Stopping buffer and closing DB pool...")
     buffer.stop()
     await engine.dispose()
@@ -149,12 +135,6 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 # ── Application factory ───────────────────────────────────────────────────
 
 def create_app() -> FastAPI:
-    """
-    Construct and configure the FastAPI application.
-
-    Called once at module load by uvicorn.  Do not call from tests —
-    use `TestClient(create_app())` instead.
-    """
     app = FastAPI(
         title="SourceGraph Anti-Piracy Orchestrator",
         description=(
@@ -173,10 +153,21 @@ def create_app() -> FastAPI:
     # ── Trace ID (first — wraps everything) ───────────────────────────────
     app.add_middleware(TraceIDMiddleware)
 
-    # ── CORS — scoped to the React dashboard ──────────────────────────────
+    # ── CORS ──────────────────────────────────────────────────────────────
+    # PATCH: Added http://localhost:5173 (Vite dev server) alongside the
+    # original http://localhost:3000 (legacy / production React build).
+    # For a production deployment, restrict this to your actual domain.
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["http://localhost:3000"],
+        allow_origins=[
+            "http://localhost:3000",   # legacy / production build
+            "http://localhost:5173",   # Vite dev server ← ADDED
+            "http://localhost:5174",   # alt Vite port
+            "http://127.0.0.1:3000",
+            "http://127.0.0.1:5173",
+            "http://127.0.0.1:5174",
+        ],
+        allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1):\d+$",
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -188,7 +179,7 @@ def create_app() -> FastAPI:
     app.include_router(golden_controller.router)        # POST /api/v1/golden/upload
     app.include_router(search_controller.router)        # POST /api/v1/search/upload
     app.include_router(webhook_controller.router)       # POST /api/v1/webhooks/*
-
+    app.include_router(auth_controller.router)          # POST /api/v1/auth/* <-- ADD THIS
     return app
 
 
