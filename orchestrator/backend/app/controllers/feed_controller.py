@@ -28,12 +28,29 @@ from app.models.schemas import (
     FeedEntry,
     HealthResponse,
     SimilarityResultResponse,
+    AnalysisPayload,
 )
 
 logger = get_logger("sourcegraph.feed")
 
 router = APIRouter(tags=["Dashboard"])
 
+import time
+from pydantic import BaseModel
+from typing import Literal
+
+NODE_LAST_SEEN = { "vision_engine": 0.0, "text_processor": 0.0, "orchestrator": time.time() }
+
+class HeartbeatRequest(BaseModel):
+    node: Literal["vision_engine", "text_processor", "orchestrator"]
+
+@router.post(
+    "/api/v1/health/heartbeat",
+    summary="Update heartbeat for a node"
+)
+async def heartbeat(req: HeartbeatRequest):
+    NODE_LAST_SEEN[req.node] = time.time()
+    return {"status": "ok"}
 
 # ── Health ───────────────────────────────────────────────────────────────
 
@@ -48,6 +65,9 @@ async def health_check(
 ) -> HealthResponse:
     """Aggregate asset counts from PostgreSQL."""
     trace_id = get_trace_id(request)
+    
+    # Auto-update orchestrator heartbeat when polled
+    NODE_LAST_SEEN["orchestrator"] = time.time()
 
     try:
         total_result = await db.execute(select(func.count(Asset.id)))
@@ -62,6 +82,12 @@ async def health_check(
         logger.error(f"[FEED] Health check DB error: {exc} trace={trace_id}")
         total, golden = 0, 0
 
+    current_time = time.time()
+    nodes_health = {
+        node: "OK" if current_time - last_seen < 15.0 else "ERR"
+        for node, last_seen in NODE_LAST_SEEN.items()
+    }
+
     return HealthResponse(
         status="online",
         machine="Tanmay-M4",
@@ -71,6 +97,7 @@ async def health_check(
         golden_assets=golden,
         suspect_assets=total - golden,
         tailscale_ip=settings.tailscale_ip,
+        nodes=nodes_health,
     )
 
 
@@ -179,6 +206,102 @@ async def get_asset_status(
         frame_count=row.frame_count or 0,
         created_at=row.Asset.created_at.isoformat(),
         trace_id=trace_id,
+    )
+
+
+# ── Forensic Analysis ─────────────────────────────────────────────────────────
+
+@router.get(
+    "/api/v1/analysis/{asset_id}",
+    response_model=AnalysisPayload,
+    summary="Generate forensic graph data for an asset",
+)
+async def get_forensic_analysis(
+    asset_id: UUID,
+    request: Request,
+    db: AsyncSession = Depends(get_db),
+) -> AnalysisPayload:
+    """
+    Synthesizes a graph visualization for the NexusScreen.
+    """
+    trace_id = get_trace_id(request)
+
+    # 1. Fetch Asset
+    asset_result = await db.execute(select(Asset).where(Asset.id == asset_id))
+    asset = asset_result.scalar_one_or_none()
+    if not asset:
+        raise HTTPException(status_code=404, detail="Asset not found")
+
+    # 2. Fetch Result (if suspect)
+    sim_result = None
+    if not asset.is_golden and asset.status == "completed":
+        res = await db.execute(
+            select(SimilarityResult).where(SimilarityResult.suspect_asset_id == asset_id)
+        )
+        sim_result = res.scalar_one_or_none()
+
+    # 3. Construct Nodes
+    nodes = [
+        {
+            "id": "source",
+            "type": "asset",
+            "data": {"label": asset.filename, "status": asset.status},
+            "position": {"x": 250, "y": 25},
+        },
+        {
+            "id": "extractor",
+            "type": "engine",
+            "data": {"label": "M2 Extractor", "role": "Decompression"},
+            "position": {"x": 250, "y": 150},
+        },
+        {
+            "id": "text",
+            "type": "engine",
+            "data": {"label": "Yug-RTX2050", "role": "Text & OCR Engine", "engine_type": "ml_context"},
+            "position": {"x": 100, "y": 300},
+        },
+        {
+            "id": "vision",
+            "type": "engine",
+            "data": {"label": "Rohit-RTX3050", "role": "Visual Feature Map", "engine_type": "ml_vision"},
+            "position": {"x": 400, "y": 300},
+        },
+    ]
+
+    edges = [
+        {"id": "e1-2", "source": "source", "target": "extractor", "label": "bitstream"},
+        {"id": "e2-3", "source": "extractor", "target": "vision", "label": "frames"},
+        {"id": "e2-4", "source": "extractor", "target": "text", "label": "metadata"},
+    ]
+
+    if sim_result and sim_result.verdict != "CLEAN":
+        nodes.append({
+            "id": "threat",
+            "type": "piracy_cluster",
+            "data": {
+                "label": f"Cluster-{str(sim_result.golden_asset_id)[:8]}",
+                "verdict": sim_result.verdict,
+                "score": f"{sim_result.fused_score:.2f}"
+            },
+            "position": {"x": 250, "y": 450},
+        })
+        edges.append({"id": "e3-5", "source": "vision", "target": "threat", "label": "match"})
+        edges.append({"id": "e4-5", "source": "text", "target": "threat", "label": "match"})
+
+    # 4. Construct Logs
+    logs = [
+        f"[{asset.created_at.isoformat()}] Ingest initiated for {asset.filename}",
+        f"[{asset.created_at.isoformat()}] TraceID: {trace_id}",
+    ]
+    if asset.status == "completed":
+        logs.append(f"[{asset.created_at.isoformat()}] Analysis finalized. Status: 200 OK")
+    if sim_result:
+        logs.append(f"[{asset.created_at.isoformat()}] Verdict: {sim_result.verdict} (Score: {sim_result.fused_score:.4f})")
+
+    return AnalysisPayload(
+        nodes=nodes,
+        edges=edges,
+        ingest_logs=logs
     )
 
 

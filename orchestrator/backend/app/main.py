@@ -10,6 +10,7 @@ All other logic is untouched.
 
 from __future__ import annotations
 
+import asyncio
 import uuid
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
@@ -21,6 +22,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 from app.config import settings
 from app.core.database import engine, Base
 from app.core.logger import get_logger, log_handshake
+from sqlalchemy import text
 
 # Controllers
 from app.controllers import (
@@ -32,6 +34,9 @@ from app.controllers import (
 )
 from app.services.buffer_service import BufferService
 from app.services.email_service import missing_smtp_fields
+from app.controllers.feed_controller import NODE_LAST_SEEN
+import httpx
+import time
 
 logger = get_logger("sourcegraph.main")
 
@@ -74,6 +79,48 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     except Exception as exc:
         logger.error(f"[STARTUP] ⚠ pgvector extension check failed: {exc}")
         logger.error("[STARTUP] Ensure pgvector is installed: apt install postgresql-pgvector")
+
+    # ── Lightweight schema patching (no Alembic in this repo) ─────────────
+    # Base.metadata.create_all only creates missing tables; it does NOT add
+    # new columns to existing tables. We apply a safe, idempotent ALTER here
+    # so the feeder can persist OCR text without a manual migration step.
+    try:
+        async with engine.begin() as conn:
+            await conn.execute(
+                text(
+                    """
+                    ALTER TABLE IF EXISTS frame_vision_metadata
+                    ADD COLUMN IF NOT EXISTS ocr_text TEXT NOT NULL DEFAULT '';
+                    """
+                )
+            )
+        logger.info("[STARTUP] ✅ Schema patch applied (frame_vision_metadata.ocr_text)")
+    except Exception as exc:
+        logger.error(f"[STARTUP] ❌ Schema patch failed (ocr_text): {exc}")
+
+    # Allow asynchronous dual-vector upserts into frame_vectors where
+    # ml_vision and ml_context may arrive in any order.
+    try:
+        async with engine.begin() as conn:
+            await conn.execute(
+                text(
+                    """
+                    ALTER TABLE IF EXISTS frame_vectors
+                    ALTER COLUMN visual_vector DROP NOT NULL;
+                    """
+                )
+            )
+            await conn.execute(
+                text(
+                    """
+                    ALTER TABLE IF EXISTS frame_vectors
+                    ALTER COLUMN text_vector DROP NOT NULL;
+                    """
+                )
+            )
+        logger.info("[STARTUP] ✅ Schema patch applied (frame_vectors nullable vectors)")
+    except Exception as exc:
+        logger.error(f"[STARTUP] ❌ Schema patch failed (frame_vectors): {exc}")
 
     try:
         async with engine.begin() as conn:
@@ -124,9 +171,49 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         logger.info("[STARTUP] 🟢 Google OAuth configured")
     logger.info("[STARTUP] ✅ Pipeline open. Awaiting PRODUCER / AUDITOR requests.")
 
+    # ── Active Health Probe (CONTRACT: pull-based node liveness) ──────────
+    _probe_cancel = asyncio.Event()
+
+    async def _health_probe_loop():
+        """
+        Periodically ping each GPU node's health endpoint.
+        If reachable, update NODE_LAST_SEEN so the Command Centre
+        shows the node as ONLINE even when no video is being processed.
+        """
+        targets = [
+            ("vision_engine",  settings.vision_node_url),
+            ("text_processor", settings.context_node_url),
+        ]
+        while not _probe_cancel.is_set():
+            for key, base_url in targets:
+                try:
+                    async with httpx.AsyncClient(timeout=3.0) as client:
+                        resp = await client.get(f"{base_url}/")
+                        if resp.status_code < 500:
+                            NODE_LAST_SEEN[key] = time.time()
+                except Exception:
+                    pass  # node unreachable — leave last_seen stale → ERR
+            try:
+                await asyncio.wait_for(_probe_cancel.wait(), timeout=settings.health_probe_interval)
+                break  # event was set → shutting down
+            except asyncio.TimeoutError:
+                pass  # normal — loop again
+
+    probe_task = asyncio.create_task(_health_probe_loop(), name="health_probe")
+    logger.info(
+        f"[STARTUP] 🩺 Active health probe started "
+        f"(interval={settings.health_probe_interval}s)"
+    )
+
     yield
 
-    logger.info("[SHUTDOWN] 🔻 Stopping buffer and closing DB pool...")
+    logger.info("[SHUTDOWN] 🔻 Stopping health probe, buffer, and DB pool...")
+    _probe_cancel.set()
+    probe_task.cancel()
+    try:
+        await probe_task
+    except asyncio.CancelledError:
+        pass
     buffer.stop()
     await engine.dispose()
     logger.info("[SHUTDOWN] ✅ Graceful shutdown complete.")

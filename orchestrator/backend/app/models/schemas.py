@@ -1,212 +1,351 @@
-"""
-Pydantic v2 schema layer — wire contracts for every API surface.
-
-Validation guarantees
----------------------
-  - Vector dimensions are exact (512 / 384).
-  - NaN and ±Inf are rejected at the boundary.
-  - Vectors are L2-normalised before storage so cosine similarity
-    reduces to dot-product, which pgvector handles most efficiently.
-  - All UUID fields are strict UUIDs (no string coercion in v2).
-  - Verdict literals prevent invalid string states from persisting.
-"""
+# app/models/schemas.py
+# ══════════════════════════════════════════════════════════════════════════════
+#
+#  SourceGraph — Pydantic Schema Registry
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#
+#  This file is the single source of truth for every request/response shape
+#  in the orchestrator.  It is divided into four sections:
+#
+#  §1  Primitive type aliases
+#       └─ Verdict — shared by similarity_service and feed_controller
+#
+#  §2  Polymorphic Feeder Payload Block
+#       └─ Six Pydantic models + FeederPayload discriminated union
+#          These model every event emitted by simulate_ml_stream.py.
+#
+#  §3  Legacy GPU-node webhook schemas
+#       └─ WebhookVectorPayload, WebhookCompletePayload, WebhookAck
+#          Used by the /vector and /complete endpoints.
+#
+#  §4  REST API surface schemas
+#       └─ UploadResponse, HealthResponse, FeedEntry,
+#          AssetStatusResponse, SimilarityResultResponse
+#          Used by golden_controller, search_controller, feed_controller.
+#
+# ══════════════════════════════════════════════════════════════════════════════
 
 from __future__ import annotations
 
-import math
-import uuid
-from typing import Any, Literal, Optional
-from uuid import UUID, uuid4
+from typing import Annotated, Literal, Union
+from uuid import UUID
 
-from pydantic import BaseModel, Field, field_validator, model_validator
-
-from app.config import settings
+from pydantic import BaseModel, Field, field_validator
 
 
-# ── Shared vector validator ─────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════════════
+# §1  Primitive type aliases
+# ══════════════════════════════════════════════════════════════════════════════
 
-def _validate_vector(
-    v: list[float],
-    expected_dim: int,
-    field_name: str,
-) -> list[float]:
-    """Dimension check → NaN/Inf rejection → L2 normalisation."""
-    if len(v) != expected_dim:
-        raise ValueError(
-            f"{field_name} must be exactly {expected_dim}-D, got {len(v)}-D"
-        )
-    for i, val in enumerate(v):
-        if not math.isfinite(val):
-            kind = "NaN" if math.isnan(val) else "Inf"
-            raise ValueError(
-                f"{field_name}[{i}] is {kind} — all elements must be finite floats"
-            )
-    norm = math.sqrt(sum(x * x for x in v))
-    if norm < 1e-12:
-        raise ValueError(f"{field_name} is a zero-vector and cannot be normalised")
-    return [x / norm for x in v]
+# Verdict is a type alias, not a BaseModel.
+# Used as an annotation in SimilarityService and SimilarityResultResponse.
+Verdict = Literal["PIRACY_DETECTED", "SUSPICIOUS", "CLEAN"]
 
 
-# ── Upload endpoints ────────────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════════════
+# §2  Polymorphic Feeder Payload Block
+# ══════════════════════════════════════════════════════════════════════════════
+#
+# Every payload from simulate_ml_stream.py shares two root fields:
+#   packet_id : str   — opaque ingest token (maps to Asset.id after lookup)
+#   type      : Literal[...]  — the discriminator
+#
+# Pydantic's Annotated + Field(discriminator="type") union gives us:
+#   • Zero-cost parsing — only the matching model is instantiated
+#   • Clear 422 errors if a known type arrives with wrong fields
+#   • A clean extension point — add a new Literal + model, nothing else changes
 
-class UploadResponse(BaseModel):
-    """Immediate response from both upload endpoints."""
-    asset_id: UUID
-    filename: str
-    is_golden: bool
-    status: str = "processing"
-    message: str
-    trace_id: str
-
-
-# ── Webhook payloads ────────────────────────────────────────────────────
-
-class WebhookVectorPayload(BaseModel):
+class FeederPayloadBase(BaseModel):
     """
-    Payload sent by RTX 3050 (visual) or RTX 2050 (text) to the Orchestrator.
-
-    Rules
-    -----
-    - `packet_id` maps 1:1 to `Asset.id`.
-    - Exactly ONE of `visual_vector` or `text_vector` must be present per
-      delivery (a node sends only its own modality).
-    - Both may be present if a node is delivering a merged packet (unusual
-      but legal — the buffer will still reconcile correctly).
+    Common root for all feeder events.
+    Subclasses pin `type` to a Literal so Pydantic can discriminate.
     """
+    packet_id: str  # kept as str — simulator sends hex tokens, not UUIDs
+    type: str
 
-    packet_id: UUID = Field(..., description="Maps to Asset.id")
-    timestamp: float = Field(..., ge=0.0, description="Frame timestamp in seconds")
-    visual_vector: Optional[list[float]] = Field(
-        default=None, description="512-D CLIP embedding from Vision Node"
-    )
-    text_vector: Optional[list[float]] = Field(
-        default=None, description="384-D MiniLM embedding from Text Node"
-    )
-    source_node: Optional[str] = Field(
-        default=None, description="Tailscale hostname of the sending node"
-    )
 
-    @model_validator(mode="after")
-    def at_least_one_vector(self) -> "WebhookVectorPayload":
-        if self.visual_vector is None and self.text_vector is None:
-            raise ValueError(
-                "At least one of visual_vector or text_vector must be provided"
-            )
-        return self
+# ── 1. system_ping ────────────────────────────────────────────────────────────
+
+class ServiceHealthMap(BaseModel):
+    ingest_api: str
+    vision_engine: str
+    text_processor: str
+    orchestrator: str
+
+
+class SystemPingPayload(FeederPayloadBase):
+    type: Literal["system_ping"]
+    nodes_online: str              # e.g. "3/3"
+    services: ServiceHealthMap
+
+
+# ── 2. frame_vision  (ml_vision / RTX 3050) ──────────────────────────────────
+
+class FrameVisionPayload(FeederPayloadBase):
+    """Vision-node frame embedding.  visual_vector must be exactly 512-D."""
+    type: Literal["frame_vision"]
+    timestamp: float
+    source_node: str
+    visual_vector: list[float]
 
     @field_validator("visual_vector")
     @classmethod
-    def validate_visual(cls, v: list[float] | None) -> list[float] | None:
-        if v is None:
-            return None
-        return _validate_vector(v, settings.visual_dim, "visual_vector")
+    def validate_visual_vector_dim(cls, v: list[float]) -> list[float]:
+        if len(v) != 512:
+            raise ValueError(
+                f"Expected 512-dimensional visual_vector, received {len(v)} elements."
+            )
+        return v
+
+
+# ── 3. frame_text  (ml_context / RTX 2050) ───────────────────────────────────
+
+class FrameTextPayload(FeederPayloadBase):
+    type: Literal["frame_text"]
+    timestamp: float
+    source_node: str
+    chunks_extracted: int
+    boxes_mapped: int
+    ocr_text: str
+    text_vector: list[float]
 
     @field_validator("text_vector")
     @classmethod
-    def validate_text(cls, v: list[float] | None) -> list[float] | None:
-        if v is None:
-            return None
-        return _validate_vector(v, settings.text_dim, "text_vector")
+    def validate_text_vector_dim(cls, v: list[float]) -> list[float]:
+        if len(v) != 384:
+            raise ValueError(
+                f"Expected 384-dimensional text_vector, received {len(v)} elements."
+            )
+        return v
+
+
+# ── 4. vision_final_summary  (Rohit) ─────────────────────────────────────────
+
+class VisionSummaryMetrics(BaseModel):
+    vector_embeddings: int
+    dimensionality: str            # e.g. "512-D mapped"
+    index_status: str
+    node_time_s: float
+
+
+class VisionFinalSummaryPayload(FeederPayloadBase):
+    type: Literal["vision_final_summary"]
+    source_node: str
+    metrics: VisionSummaryMetrics
+
+
+# ── 5. text_final_summary  (Yug) ─────────────────────────────────────────────
+
+class TextSummaryMetrics(BaseModel):
+    ocr_text_chunks: int
+    bounding_boxes_mapped: int
+    node_time_s: float
+
+
+class TextFinalSummaryPayload(FeederPayloadBase):
+    type: Literal["text_final_summary"]
+    source_node: str
+    metrics: TextSummaryMetrics
+
+
+# ── 6. pipeline_final_summary  (Yogesh / M2 Extractor) ───────────────────────
+#
+#  This is the canonical "all frames dispatched" signal.
+#  It drives the asset → 'completed' transition and the Similarity Engine
+#  trigger, mirroring the old WebhookCompletePayload contract.
+
+class PipelineSummaryMetrics(BaseModel):
+    total_frames_extracted: int
+    successful_broadcasts: int
+    failed_broadcasts: int
+    total_pipeline_time_s: float
+
+
+class PipelineFinalSummaryPayload(FeederPayloadBase):
+    type: Literal["pipeline_final_summary"]
+    source_node: str
+    metrics: PipelineSummaryMetrics
+
+
+# ── 7. audio_final_summary  (Vision Node) ────────────────────────────────────
+
+class AudioSegmentItem(BaseModel):
+    start: float
+    end: float
+    text: str
+
+class AudioSummaryPacket(FeederPayloadBase):
+    type: Literal["audio_final_summary"]
+    source_node: str
+    transcript: list[AudioSegmentItem]
+    full_script: str
+
+
+
+# ── Discriminated union — the single type the /feeder endpoint accepts ────────
+#
+# Pydantic evaluates the `type` field first and instantiates only the
+# matching model.  Unknown `type` values produce a clean 422 with a message
+# listing every valid Literal — no ambiguous "union did not match" noise.
+
+FeederPayload = Annotated[
+    Union[
+        SystemPingPayload,
+        FrameVisionPayload,
+        FrameTextPayload,
+        VisionFinalSummaryPayload,
+        TextFinalSummaryPayload,
+        PipelineFinalSummaryPayload,
+        AudioSummaryPacket,
+    ],
+    Field(discriminator="type"),
+]
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# §3  Legacy GPU-node webhook schemas
+# ══════════════════════════════════════════════════════════════════════════════
+#
+#  Used by POST /api/v1/webhooks/vector and POST /api/v1/webhooks/complete.
+#  These endpoints remain active during the feeder migration window and will
+#  be deprecated once all GPU nodes are updated to the polymorphic protocol.
+
+class WebhookVectorPayload(BaseModel):
+    """
+    Dual-modality vector delivery from a GPU node.
+    Either visual_vector OR text_vector may be absent — the BufferService
+    holds the partial entry until both arrive.
+    """
+    packet_id: UUID
+    timestamp: float
+    visual_vector: list[float] | None = None
+    text_vector: list[float] | None = None
+    source_node: str | None = None
 
 
 class WebhookCompletePayload(BaseModel):
     """
-    Sent by the M2 Extractor once ALL frames for an asset have been
-    dispatched to the GPU nodes.  Triggers status → 'completed' and,
-    for non-golden assets, kicks off the Similarity Engine.
+    M2 Extractor → Orchestrator completion signal (legacy protocol).
+    Signals that ALL frame jobs for the asset have been dispatched.
     """
-
-    packet_id: UUID = Field(..., description="Asset ID to mark as complete")
-    total_frames: Optional[int] = Field(
-        default=None,
-        description="Expected frame count — used for completeness validation",
-    )
+    packet_id: UUID
+    total_frames: int
 
 
 class WebhookAck(BaseModel):
-    """Response echoed back to the calling GPU node."""
-    status: str = "accepted"
-    packet_id: UUID
-    timestamp: Optional[float] = None
+    """
+    Synchronous acknowledgement returned by /vector after ingestion.
+    `flushed_to_db=True` indicates the buffer paired both modalities and
+    persisted the FrameVector row in this request cycle.
+    """
+    status: str
+    packet_id: str | UUID
+    timestamp: float | None = None
     flushed_to_db: bool = False
     trace_id: str
 
 
-# ── Asset status ────────────────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════════════
+# §4  REST API surface schemas
+# ══════════════════════════════════════════════════════════════════════════════
+#
+#  These models are the public-facing contract for the dashboard and upload
+#  endpoints.  They are intentionally flat (no nested models) to keep the
+#  React Command Center's type generation simple.
 
-class AssetStatusResponse(BaseModel):
+# ── Upload ────────────────────────────────────────────────────────────────────
+
+class UploadResponse(BaseModel):
+    """
+    Returned by POST /api/v1/golden/upload and POST /api/v1/search/upload.
+    The caller should poll GET /api/v1/assets/{asset_id}/status for progress.
+    """
     asset_id: UUID
     filename: str
     is_golden: bool
-    status: str
-    frame_count: int
-    created_at: str
+    status: str                    # always 'processing' at upload time
+    message: str
     trace_id: str
 
 
-# ── Similarity result ───────────────────────────────────────────────────
+# ── Health ────────────────────────────────────────────────────────────────────
 
-Verdict = Literal["PIRACY_DETECTED", "SUSPICIOUS", "CLEAN"]
+class HealthResponse(BaseModel):
+    """
+    Returned by GET / — aggregate counts from PostgreSQL.
+    Used by the Command Center dashboard header.
+    """
+    status: str                    # 'online' | 'degraded'
+    machine: str                   # e.g. 'Tanmay-M4'
+    role: str                      # 'Orchestrator'
+    version: str
+    total_assets: int
+    golden_assets: int
+    suspect_assets: int
+    tailscale_ip: str
+    nodes: dict[str, str] | None = None
 
+
+# ── Asset feed ────────────────────────────────────────────────────────────────
+
+class FeedEntry(BaseModel):
+    """
+    Single row in the paginated asset list (GET /api/v1/assets).
+    asset_id is a str rather than UUID so JSON serialization is zero-cost.
+    """
+    asset_id: str
+    filename: str
+    is_golden: bool
+    status: str                    # 'processing' | 'completed' | 'failed'
+    frame_count: int
+    created_at: str                # ISO 8601 string — avoids TZ serialization issues
+
+
+# ── Asset status ──────────────────────────────────────────────────────────────
+
+class AssetStatusResponse(BaseModel):
+    """
+    Detailed status for a single asset (GET /api/v1/assets/{id}/status).
+    Polled by the caller after an upload to track extraction progress.
+    """
+    asset_id: UUID
+    filename: str
+    is_golden: bool
+    status: str                    # 'processing' | 'completed' | 'failed'
+    frame_count: int               # number of FrameVector rows written so far
+    created_at: str                # ISO 8601 string
+    trace_id: str
+
+
+# ── Similarity result ─────────────────────────────────────────────────────────
 
 class SimilarityResultResponse(BaseModel):
     """
-    Returned from GET /api/v1/assets/{id}/result after inference completes.
-    """
+    Persisted inference verdict for a suspect asset
+    (GET /api/v1/assets/{id}/result).
 
+    verdict values:
+      PIRACY_DETECTED — fused_score ≥ piracy_threshold
+      SUSPICIOUS      — fused_score ≥ suspicious_threshold
+      CLEAN           — below both thresholds
+    """
     suspect_asset_id: UUID
-    golden_asset_id: Optional[UUID] = None
-    matched_timestamp: Optional[float] = None
-    visual_score: float = Field(..., ge=0.0, le=1.0)
-    text_score: float = Field(..., ge=0.0, le=1.0)
-    fused_score: float = Field(..., ge=0.0, le=1.0)
+    golden_asset_id: UUID | None       # None when no golden library exists
+    matched_timestamp: float | None    # timestamp of the best-matching frame
+    visual_score: float                # cosine similarity, visual modality
+    text_score: float                  # cosine similarity, text modality
+    fused_score: float                 # weighted combination
     verdict: Verdict
     trace_id: str
 
 
-# ── Health / feed ───────────────────────────────────────────────────────
+# ── Forensic Analysis ─────────────────────────────────────────────────────────
 
-class HealthResponse(BaseModel):
-    status: str = "online"
-    machine: str = "Tanmay-M4"
-    role: str = "Orchestrator"
-    version: str = "3.0.0"
-    total_assets: int = 0
-    golden_assets: int = 0
-    suspect_assets: int = 0
-    tailscale_ip: str = ""
-
-
-class FeedEntry(BaseModel):
-    asset_id: str
-    filename: str
-    is_golden: bool
-    status: str
-    frame_count: int
-    created_at: str
-
-
-# ── Propagation graph (kept for frontend compatibility) ─────────────────
-
-NodeRole = Literal["PRIMARY_SOURCE", "PIRATE_NODE", "RELAY"]
-
-
-class PropagationNode(BaseModel):
-    node_id: UUID
-    label: str
-    role: NodeRole
-    confidence: float = Field(..., ge=0.0, le=1.0)
-
-
-class PropagationEdge(BaseModel):
-    from_node: UUID
-    to_node: UUID
-    weight: float = Field(..., ge=0.0, le=1.0)
-    relationship: str = "suspected_piracy"
-
-
-class PropagationGraph(BaseModel):
-    nodes: list[PropagationNode]
-    edges: list[PropagationEdge]
-    primary_source_id: UUID
-    pirate_node_ids: list[UUID]
+class AnalysisPayload(BaseModel):
+    """
+    Forensic graph data for the NexusScreen visualization.
+    Contains nodes and edges for ReactFlow, plus relevant ingest logs.
+    """
+    nodes: list[dict]
+    edges: list[dict]
+    ingest_logs: list[str]

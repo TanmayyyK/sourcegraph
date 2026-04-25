@@ -34,6 +34,11 @@ class Settings(BaseSettings):
     extractor_timeout_seconds: float = 300.0
     extractor_max_retries: int = 3
 
+    # GPU node health endpoints (used by active health probe)
+    vision_node_url: str = "http://100.119.250.125:8080"   # Rohit / RTX 3050
+    context_node_url: str = "http://100.115.89.72:8002"    # Yug / RTX 2050
+    health_probe_interval: float = 10.0                    # seconds between probes
+
     # ── Security ────────────────────────────────────────────────
     # GPU nodes must include this in X-Webhook-Secret header
     webhook_secret: str = "change-me-in-production"
@@ -65,7 +70,7 @@ class Settings(BaseSettings):
     suspicious_threshold: float = 0.60
 
     # ── Buffer ──────────────────────────────────────────────────
-    buffer_ttl_seconds: float = 60.0
+    buffer_ttl_seconds: float = 300.0
     buffer_cleanup_interval: float = 10.0
     max_buffer_size: int = 10_000
     temporal_slop_seconds: float = 1.0

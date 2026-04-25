@@ -52,10 +52,7 @@ async def _forward_suspect_to_extractor(
     sources (e.g. watermark detection).
     """
     callback_url = (
-        f"http://{settings.tailscale_ip}:8000/api/v1/webhooks/vector"
-    )
-    complete_url = (
-        f"http://{settings.tailscale_ip}:8000/api/v1/webhooks/complete"
+        f"http://{settings.tailscale_ip}:8000/api/v1/webhooks/feeder"
     )
 
     last_exc: Exception | None = None
@@ -65,13 +62,12 @@ async def _forward_suspect_to_extractor(
                 timeout=settings.extractor_timeout_seconds
             ) as client:
                 response = await client.post(
-                    f"{settings.extractor_url}/extract",
+                    f"{settings.extractor_url}/ingest",
                     files={"video": (filename, file_bytes, "video/mp4")},
                     data={
                         "packet_id": str(asset_id),
                         "is_golden": "false",
                         "callback_url": callback_url,
-                        "complete_url": complete_url,
                         "trace_id": trace_id,
                     },
                     headers={"X-Webhook-Secret": settings.webhook_secret},

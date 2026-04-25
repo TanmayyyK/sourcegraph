@@ -76,8 +76,7 @@ async def _forward_to_extractor(
     On permanent failure: caller updates asset status to 'failed'.
     """
 
-    callback_url = f"http://{settings.tailscale_ip}:{8000}/api/v1/webhooks/vector"
-    complete_url = f"http://{settings.tailscale_ip}:{8000}/api/v1/webhooks/complete"
+    callback_url = f"http://{settings.tailscale_ip}:8000/api/v1/webhooks/feeder"
 
     attempt = 0
     last_exc: Exception | None = None
@@ -86,17 +85,20 @@ async def _forward_to_extractor(
         try:
             async with httpx.AsyncClient(timeout=settings.extractor_timeout_seconds) as client:
                 response = await client.post(
-                    f"{settings.extractor_url}/extract",
+                    f"{settings.extractor_url}/ingest",
                     files={"video": (filename, file_bytes, "video/mp4")},
                     data={
                         "packet_id": str(asset_id),
                         "is_golden": "true",
                         "callback_url": callback_url,
-                        "complete_url": complete_url,
                         "trace_id": trace_id,
                     },
                     headers={"X-Webhook-Secret": settings.webhook_secret},
                 )
+                if response.status_code >= 400:
+                    logger.error(
+                        f"[GOLDEN] 422 body from extractor: {response.text}  asset={asset_id}"
+                    )
                 response.raise_for_status()
                 logger.info(
                     f"[GOLDEN] ✅ Forwarded to extractor "
