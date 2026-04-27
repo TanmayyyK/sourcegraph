@@ -148,6 +148,15 @@ class Asset(Base):
         String(32), nullable=False, default="processing"
     )
     full_transcript: Mapped[str | None] = mapped_column(Text, nullable=True)
+    audio_summary_completed: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false"
+    )
+    pipeline_summary_completed: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false"
+    )
+    auditor_dispatched: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false"
+    )
 
     # Auth linkage (nullable to protect legacy data)
     uploader_id: Mapped[uuid.UUID | None] = mapped_column(
@@ -231,6 +240,9 @@ class FrameVector(Base):
     timestamp: Mapped[float] = mapped_column(Float, nullable=False)
     visual_vector = mapped_column(Vector(512), nullable=True)
     text_vector = mapped_column(Vector(384), nullable=True)
+    is_temporary: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false"
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, default=_utcnow
     )
@@ -244,6 +256,11 @@ class FrameVector(Base):
             "asset_id",
             "timestamp",
             unique=True,
+        ),
+        Index(
+            "ix_frame_asset_temporary",
+            "asset_id",
+            "is_temporary",
         ),
         # HNSW cosine index on visual_vector — sub-50ms KNN at scale
         Index(

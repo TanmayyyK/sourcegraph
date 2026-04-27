@@ -52,11 +52,10 @@ export function useIngestion(role: string | null) {
       });
 
       // Attempt real upload; fall back to simulated success
-      const path =
-        role === "PRODUCER" ? "/api/v1/golden/upload" : "/api/v1/search/upload";
+      const path = "/api/v1/assets/upload";
 
       const finalise = setTimeout(async () => {
-        const res = await apiUpload(path, file, role ?? "AUDITOR");
+        const res = await apiUpload(path, file);
         if (res.ok) {
           addLog("success", "Pipeline complete · asset fingerprinted");
         } else {

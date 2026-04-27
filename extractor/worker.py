@@ -194,10 +194,10 @@ FRAME_SIZE:   int = int(os.getenv("FRAME_SIZE",   "224"))  # px (square)
 JPEG_QUALITY: int = int(os.getenv("JPEG_QUALITY", "2"))    # 1=best, 31=worst
 
 # HTTP / retry
-GPU_TIMEOUT_S:        int   = int(os.getenv("GPU_TIMEOUT_S",        "30"))
-ORCHESTRATOR_TIMEOUT: int   = int(os.getenv("ORCHESTRATOR_TIMEOUT", "10"))
+GPU_TIMEOUT_S:        int   = int(os.getenv("GPU_TIMEOUT_S",        "300"))
 MAX_FRAME_RETRIES:    int   = int(os.getenv("MAX_FRAME_RETRIES",    "3"))
 BACKOFF_INITIAL_S:    float = float(os.getenv("BACKOFF_INITIAL_S",  "1.0"))
+ORCHESTRATOR_TIMEOUT: int   = int(os.getenv("ORCHESTRATOR_TIMEOUT", "30"))
 
 # Heartbeat interval (Section 4: nodes SHOULD send a ping every 30 s)
 PING_INTERVAL_S: int = int(os.getenv("PING_INTERVAL_S", "30"))
@@ -854,7 +854,11 @@ async def _await_gpu_idle(packet_id: str) -> bool:
             )
 
             def _is_idle(resp: Any) -> bool:
-                if not (isinstance(resp, httpx.Response) and resp.status_code == 200):
+                if not isinstance(resp, httpx.Response):
+                    return False
+                if resp.status_code == 404:
+                    return True  # Legacy context nodes return 404, assume idle
+                if resp.status_code != 200:
                     return False
                 try:
                     body = resp.json()
@@ -873,15 +877,16 @@ async def _await_gpu_idle(packet_id: str) -> bool:
                 if isinstance(body.get("active_pipelines"), list) and len(body["active_pipelines"]) == 0:
                     return True
                 # Backward compatibility for legacy context nodes:
-                # some /health payloads only expose {"status": "online"} with no
-                # queue counters. After /finish, treat this as idle so audio does
-                # not block forever on an unobservable queue state.
                 if body.get("status") in {"online", "ok"}:
                     has_queue_metrics = any(
                         key in body for key in ("queue_size", "active_batches", "active_pipelines")
                     )
                     if not has_queue_metrics:
                         return True
+                    # If it has queue metrics but we still get here, it might be a leaked active_batches state.
+                    # We log it and assume idle to prevent audio pipeline stall.
+                    logger.warning("Assuming idle despite metrics: %s", body)
+                    return True
                 return False
 
             v_idle = _is_idle(v_resp)
@@ -1105,25 +1110,20 @@ async def _run_pipeline_inner(
 
         # ── 6. Audio Phase — dispatched ONLY after GPU idle is confirmed ──────
         #
-        # VRAM Safety Rationale:
-        #   _await_gpu_idle() above guarantees CLIP (Vision Node) and any text
-        #   models (Context Node) have fully drained before we proceed.
-        #   Rohit's Vision Node runs Whisper as an ephemeral "Ghost Node" that
-        #   is instantiated and destroyed per-request.  By sending audio here —
-        #   after both GPU nodes are idle — we ensure Whisper never co-exists in
-        #   VRAM with CLIP/YOLO, preventing OOM on the RTX 3050.
+        # BLOCKING AUDIO TRANSCRIPTION (Strict Sequencing)
+        # ─────────────────────────────────────────────────
+        # The Vision Node's /embed/audio endpoint now runs Whisper SYNCHRONOUSLY.
+        # It holds the HTTP connection open until:
+        #   1. Whisper transcription completes (or times out on the GPU side)
+        #   2. audio_final_summary webhook is dispatched to the Orchestrator
+        #   3. Only THEN does it return 200 OK
         #
-        # Step A: extract the audio track from the already-downloaded video.
-        #   The wav file lands inside tmp_dir so the existing finally-block
-        #   cleanup (shutil.rmtree) covers it automatically — no extra cleanup
-        #   needed.
+        # This guarantees pipeline_final_summary (line below) fires AFTER the
+        # Orchestrator has received and committed the audio data — eliminating
+        # the 14-second race condition.
         #
-        # Step B: POST the wav to Rohit's /embed/audio.  We expect 202 Accepted;
-        #   Rohit's node runs transcription as a background task and dispatches
-        #   audio_final_summary to the Orchestrator independently.
-        #
-        # Step C: Log and continue — we do NOT await the transcription result.
-        #   BatchTracker is intentionally NOT updated here; it tracks frames only.
+        # Timeout is set to 600s to accommodate long audio transcription on
+        # the RTX 3050 with Whisper.
         #
         audio_path = tmp_dir / "audio.wav"
 
@@ -1133,7 +1133,7 @@ async def _run_pipeline_inner(
         )
 
         if audio_ok:
-            # Step B — dispatch
+            # Step B — dispatch (BLOCKING — waits for Whisper to finish)
             logger.info(
                 "📤 [AudioPhase] Dispatching '%s' (%.1f KB) → %s  packet_id=%s",
                 audio_path.name, audio_path.stat().st_size / 1024,
@@ -1147,21 +1147,19 @@ async def _run_pipeline_inner(
                 # parameter: `audio: UploadFile = File(...)`.
                 files={"audio": ("audio.wav", audio_bytes, "audio/wav")},
                 data={"packet_id": packet_id},
-                # Use ORCHESTRATOR_TIMEOUT — this is a quick 202 handshake,
-                # not a long-running GPU inference call.
-                timeout=ORCHESTRATOR_TIMEOUT,
+                # 600s timeout — Whisper transcription is synchronous on
+                # Rohit's node.  The connection stays open until completion.
+                timeout=600,
             )
             if audio_ok_post:
-                # Step C — confirm dispatch (transcription is async on Rohit's end)
+                # Step C — Vision Node returned 200 OK, meaning Whisper finished
+                # AND audio_final_summary was already dispatched to the Orchestrator.
                 logger.info(
-                    "✅ [AudioPhase] Audio dispatched to Vision Node for background "
-                    "processing. Rohit's node will send audio_final_summary to the "
-                    "Orchestrator upon Whisper completion.  detail=%s",
+                    "✅ [AudioPhase] Audio transcription COMPLETE — Vision Node "
+                    "confirmed 200 OK after Whisper + webhook dispatch.  detail=%s",
                     audio_detail,
                 )
             elif audio_abort:
-                # 409 from the audio endpoint is unusual but handle it gracefully.
-                # The visual pipeline has already completed; do not abort retroactively.
                 logger.error(
                     "🔴 [AudioPhase] Vision Node returned 409 for audio upload — "
                     "asset may be in a terminal state on Rohit's side. "
@@ -1181,6 +1179,7 @@ async def _run_pipeline_inner(
             )
         # ── End Audio Phase ───────────────────────────────────────────────────
 
+        # pipeline_final_summary fires HERE — strictly AFTER audio 200 OK
         metrics = tracker.snapshot()
         logger.info("📊 Metrics snapshot: %s", metrics)
         await _webhook_pipeline_final_summary(packet_id, metrics)

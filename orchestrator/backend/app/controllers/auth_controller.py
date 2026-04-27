@@ -251,6 +251,9 @@ async def google_auth(payload: GoogleAuthRequest, db: AsyncSession = Depends(get
             role=payload.role.upper(),
         )
         db.add(user)
+    else:
+        user.role = payload.role.upper()
+        
     user_name = user.name
     user_role = user.role
     await db.commit()

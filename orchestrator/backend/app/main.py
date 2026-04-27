@@ -98,8 +98,42 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     except Exception as exc:
         logger.error(f"[STARTUP] ❌ Schema patch failed (ocr_text): {exc}")
 
+    # Role lifecycle columns. These are the durable synchronization lock:
+    # the Auditor can dispatch exactly once only after audio + pipeline
+    # summaries have both committed.
+    try:
+        async with engine.begin() as conn:
+            await conn.execute(
+                text(
+                    """
+                    ALTER TABLE IF EXISTS assets
+                    ADD COLUMN IF NOT EXISTS audio_summary_completed BOOLEAN NOT NULL DEFAULT false;
+                    """
+                )
+            )
+            await conn.execute(
+                text(
+                    """
+                    ALTER TABLE IF EXISTS assets
+                    ADD COLUMN IF NOT EXISTS pipeline_summary_completed BOOLEAN NOT NULL DEFAULT false;
+                    """
+                )
+            )
+            await conn.execute(
+                text(
+                    """
+                    ALTER TABLE IF EXISTS assets
+                    ADD COLUMN IF NOT EXISTS auditor_dispatched BOOLEAN NOT NULL DEFAULT false;
+                    """
+                )
+            )
+        logger.info("[STARTUP] ✅ Schema patch applied (assets lifecycle lock columns)")
+    except Exception as exc:
+        logger.error(f"[STARTUP] ❌ Schema patch failed (assets lifecycle): {exc}")
+
     # Allow asynchronous dual-vector upserts into frame_vectors where
-    # ml_vision and ml_context may arrive in any order.
+    # ml_vision and ml_context may arrive in any order, and segregate
+    # permanent golden rows from temporary suspect rows.
     try:
         async with engine.begin() as conn:
             await conn.execute(
@@ -115,6 +149,22 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
                     """
                     ALTER TABLE IF EXISTS frame_vectors
                     ALTER COLUMN text_vector DROP NOT NULL;
+                    """
+                )
+            )
+            await conn.execute(
+                text(
+                    """
+                    ALTER TABLE IF EXISTS frame_vectors
+                    ADD COLUMN IF NOT EXISTS is_temporary BOOLEAN NOT NULL DEFAULT false;
+                    """
+                )
+            )
+            await conn.execute(
+                text(
+                    """
+                    CREATE INDEX IF NOT EXISTS ix_frame_asset_temporary
+                    ON frame_vectors (asset_id, is_temporary);
                     """
                 )
             )
@@ -226,8 +276,8 @@ def create_app() -> FastAPI:
         title="SourceGraph Anti-Piracy Orchestrator",
         description=(
             "Multi-modal Anti-Piracy Intelligence Engine.\n\n"
-            "**Workflow A (PRODUCER):** `POST /api/v1/golden/upload`\n\n"
-            "**Workflow B (AUDITOR):** `POST /api/v1/search/upload`\n\n"
+            "**Unified Upload:** `POST /api/v1/assets/upload`\n\n"
+            "PRODUCER uploads are routed as golden assets; AUDITOR uploads are routed as suspect assets.\n\n"
             "**GPU Sink:** `POST /api/v1/webhooks/vector` + `/complete`\n\n"
             "All requests carry `X-Trace-ID` for end-to-end tracing."
         ),
@@ -241,21 +291,13 @@ def create_app() -> FastAPI:
     app.add_middleware(TraceIDMiddleware)
 
     # ── CORS ──────────────────────────────────────────────────────────────
-    # PATCH: Added http://localhost:5173 (Vite dev server) alongside the
-    # original http://localhost:3000 (legacy / production React build).
-    # For a production deployment, restrict this to your actual domain.
+    # TODO(DEPLOYMENT): CORS is intentionally open for live-fire testing.
+    # Lock down allow_origins to ["https://<your-vercel-app>.vercel.app"]
+    # and remove allow_origin_regex before promoting to production.
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[
-            "http://localhost:3000",   # legacy / production build
-            "http://localhost:5173",   # Vite dev server ← ADDED
-            "http://localhost:5174",   # alt Vite port
-            "http://127.0.0.1:3000",
-            "http://127.0.0.1:5173",
-            "http://127.0.0.1:5174",
-        ],
-        allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1):\d+$",
-        allow_credentials=True,
+        allow_origins=["*"],
+        allow_credentials=False,  # must be False when allow_origins=["*"]
         allow_methods=["*"],
         allow_headers=["*"],
         expose_headers=["X-Trace-ID"],
@@ -263,7 +305,7 @@ def create_app() -> FastAPI:
 
     # ── Routes ────────────────────────────────────────────────────────────
     app.include_router(feed_controller.router)          # GET /  /buffer/status  /api/v1/assets/*
-    app.include_router(golden_controller.router)        # POST /api/v1/golden/upload
+    app.include_router(golden_controller.router)        # POST /api/v1/assets/upload
     app.include_router(search_controller.router)        # POST /api/v1/search/upload
     app.include_router(webhook_controller.router)       # POST /api/v1/webhooks/*
     app.include_router(auth_controller.router)          # POST /api/v1/auth/* <-- ADD THIS

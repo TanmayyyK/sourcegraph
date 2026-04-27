@@ -59,6 +59,15 @@ v1.0.0 → v1.0.1  (gap-fixes — no ML logic changed)
 - [FIX 3] Empty WEBHOOK_SECRET warning: Added startup log.warning() when
   _WEBHOOK_SECRET is blank so misconfigured deployments are immediately visible
   in logs rather than silently sending unauthenticated requests.
+
+v1.0.1 → v1.0.2  (audio hang fix — no ML logic changed)
+- [FIX 4] Audio transcription hang: _run_audio_transcription_job() previously
+  had no timeout on engine.transcribe(). Empty or corrupt WAV files could cause
+  Whisper to block indefinitely. Wrapped the asyncio.to_thread() call with
+  asyncio.wait_for(timeout=AUDIO_TRANSCRIPTION_TIMEOUT_S). On timeout, a
+  degraded audio_final_summary (empty transcript + error="transcription_timeout")
+  is dispatched so the Orchestrator always receives a completion signal.
+  hard_unload() and temp-file cleanup in finally block are unaffected.
 """
 from __future__ import annotations
 
@@ -129,6 +138,11 @@ RETRY_BASE_DELAY_S = 1.0           # doubles each attempt: 1 s → 2 s → 4 s
 
 # Heartbeat interval (Contract §4: all nodes SHOULD ping every 30 s)
 HEARTBEAT_INTERVAL_S = 30
+
+# [FIX 4] Maximum seconds to wait for Whisper transcription before giving up.
+# Tune this to match your longest expected audio clip. At 120 s the node will
+# abandon a stuck transcription, dispatch a degraded summary, and release VRAM.
+AUDIO_TRANSCRIPTION_TIMEOUT_S = 120
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Application state — singleton ML engine
@@ -462,10 +476,17 @@ async def _run_audio_transcription_job(packet_id: str, wav_path: str) -> None:
     """
     Background Whisper pipeline for /embed/audio.
     Guarantees best-effort cleanup: hard_unload + temp file deletion.
+
+    [FIX 4] Wrapped engine.transcribe() with asyncio.wait_for() so that
+    empty or corrupt WAV files cannot cause an indefinite hang. On timeout,
+    a degraded audio_final_summary is dispatched and the job exits cleanly.
     """
     engine = AudioEngine()
     try:
-        result = await asyncio.to_thread(engine.transcribe, wav_path)
+        result = await asyncio.wait_for(
+            asyncio.to_thread(engine.transcribe, wav_path),
+            timeout=AUDIO_TRANSCRIPTION_TIMEOUT_S,
+        )
         payload = {
             "packet_id": packet_id,
             "type": "audio_final_summary",
@@ -474,6 +495,26 @@ async def _run_audio_transcription_job(packet_id: str, wav_path: str) -> None:
             "full_script": result.get("full_script", ""),
         }
         await _dispatch_webhook(payload, label="audio_final_summary")
+
+    except asyncio.TimeoutError:
+        # Whisper stalled — empty/corrupt audio or CUDA deadlock.
+        # Dispatch a degraded summary so the Orchestrator receives a completion
+        # signal and does not wait indefinitely for this packet_id.
+        logger.error(
+            "[audio_final_summary] Transcription timed out after %ds — "
+            "packet_id=%s. Dispatching degraded summary and aborting.",
+            AUDIO_TRANSCRIPTION_TIMEOUT_S, packet_id,
+        )
+        payload = {
+            "packet_id": packet_id,
+            "type": "audio_final_summary",
+            "source_node": SOURCE_NODE,
+            "transcript": [],
+            "full_script": "",
+            "error": "transcription_timeout",
+        }
+        await _dispatch_webhook(payload, label="audio_final_summary")
+
     except Exception as exc:
         logger.exception("[audio_final_summary] Dispatch pipeline failed: %s", exc)
     finally:
@@ -666,16 +707,24 @@ async def embed_vision(
 
 @app.post(
     "/embed/audio",
-    status_code  = 202,
+    status_code  = 200,
     tags         = ["inference"],
     dependencies = [Depends(verify_webhook_secret)],
-    summary      = "Accept WAV and run Whisper in background; ACK immediately",
+    summary      = "Accept WAV, run Whisper synchronously, return AFTER transcription + webhook",
 )
 async def embed_audio(
-    background_tasks: BackgroundTasks,
     audio: UploadFile = File(...),
     packet_id: str = Form(...),
 ) -> dict[str, Any]:
+    """
+    BLOCKING audio transcription endpoint.
+
+    The Extractor holds this HTTP connection open while Whisper runs.
+    Only after the audio_final_summary webhook has been dispatched to the
+    Orchestrator does this endpoint return 200 OK.  This guarantees the
+    Extractor fires pipeline_final_summary AFTER audio data is committed —
+    eliminating the 14-second race condition.
+    """
     raw_bytes = await audio.read()
     if not raw_bytes:
         raise HTTPException(status_code=422, detail="Uploaded audio file is empty.")
@@ -686,8 +735,9 @@ async def embed_audio(
         tmp.write(raw_bytes)
         wav_path = tmp.name
 
-    background_tasks.add_task(_run_audio_transcription_job, packet_id, wav_path)
-    return {"status": "accepted", "packet_id": packet_id}
+    # Run transcription SYNCHRONOUSLY — hold the connection open
+    await _run_audio_transcription_job(packet_id, wav_path)
+    return {"status": "completed", "packet_id": packet_id}
 
 
 @app.post(

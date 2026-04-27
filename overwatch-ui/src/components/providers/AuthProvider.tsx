@@ -1,10 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { auth, authApi } from "@/lib/api";
+import type { UserRole } from "@/types";
 
 type AuthUser = {
   email: string;
   name: string;
-  role: string;
+  role: UserRole;
   exp?: number;
 };
 
@@ -12,8 +13,10 @@ type AuthContextValue = {
   isAuthenticated: boolean;
   isLoading: boolean;
   userName: string;
-  userRole: string;
+  userRole: UserRole | "";
   userEmail: string;
+  isProducer: boolean;
+  isAuditor: boolean;
   refreshSession: () => Promise<boolean>;
   logout: () => void;
 };
@@ -34,7 +37,7 @@ function decodeJwt(token: string): AuthUser | null {
     const payload = JSON.parse(payloadJson) as {
       sub?: string;
       name?: string;
-      role?: string;
+      role?: UserRole;
       exp?: number;
     };
     if (!payload.sub || !payload.name || !payload.role) return null;
@@ -78,7 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser({
       email: me.data.sub,
       name: me.data.name,
-      role: me.data.role,
+      role: me.data.role as UserRole,
       exp: decoded.exp,
     });
     return true;
@@ -102,6 +105,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       userName: user?.name ?? "",
       userRole: user?.role ?? "",
       userEmail: user?.email ?? "",
+      isProducer: user?.role === "PRODUCER",
+      isAuditor: user?.role === "AUDITOR",
       refreshSession,
       logout: () => {
         auth.clearToken();

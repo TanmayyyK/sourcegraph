@@ -1,0 +1,19 @@
+INFO:     Will watch for changes in these directories: ['/Users/tanmaykumar/Desktop/sourcegraph/orchestrator/backend']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [6624] using WatchFiles
+INFO:     Started server process [6626]
+INFO:     Waiting for application startup.
+[2m13:51:46.607[0m [92mINFO    [0m [92m[1m[STARTUP][0m 🚀 SourceGraph Orchestrator v3.0.0 initializing...
+[2m13:51:46.607[0m [92mINFO    [0m [92m[1m[STARTUP][0m Pool: size=20 overflow=10 recycle=3600s
+[2m13:51:46.639[0m [92mINFO    [0m [92m[1m[STARTUP][0m ✅ pgvector extension ready
+[2m13:51:46.651[0m [92mINFO    [0m [92m[1m[STARTUP][0m 🗄️  Schema bindings finalised (assets, frame_vectors, similarity_results)
+[2m13:51:46.651[0m [92mINFO    [0m [93m[1m[BUFFER][0m 🧹 TTL eviction loop started (ttl=60.0s, interval=10.0s, max_size=10000)
+[2m13:51:46.651[0m [92mINFO    [0m [92m[1m[STARTUP][0m ⚡ Webhook buffer online (ttl=60.0s slop=±1.0s max=10000)
+[2m13:51:46.651[0m [92mINFO    [0m [95m[1m[HANDSHAKE][0m 🤝 [1mM4-Orchestrator[0m [2m(100.69.253.89)[0m [96m→[0m [1mM2-Extractor[0m [2m(http://100.103.180.14:8003)[0m
+[2m13:51:46.651[0m [92mINFO    [0m [92m[1m[STARTUP][0m 🔑 Fusion weights: visual=0.65 text=0.35
+[2m13:51:46.651[0m [92mINFO    [0m [92m[1m[STARTUP][0m 🎯 Thresholds: piracy≥0.85 suspicious≥0.6
+[2m13:51:46.651[0m [92mINFO    [0m [92m[1m[STARTUP][0m 📧 OTP email delivery configured
+[2m13:51:46.651[0m [92mINFO    [0m [92m[1m[STARTUP][0m 🟢 Google OAuth configured
+[2m13:51:46.651[0m [92mINFO    [0m [92m[1m[STARTUP][0m ✅ Pipeline open. Awaiting PRODUCER / AUDITOR requests.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:55014 - "GET / HTTP/1.1" 200 OK

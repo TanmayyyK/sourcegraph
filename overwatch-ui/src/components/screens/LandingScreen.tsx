@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
+import { Link } from "react-router-dom";
 
 // ─── Colour tokens ────────────────────────────────────────────────────────────
 const C = {
@@ -19,7 +20,24 @@ const C = {
 };
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
-const LOGOS = ["Boeing","ClickUp","Coinbase","Duolingo","Google","Gusto","Microsoft","PayPal","Stripe","Notion"];
+const LOGOS = [
+  { 
+    value: "Distributed Inference", 
+    label: "Innovation: Asynchronous multi-node processing utilizing independent Extractor, Vision, and Context GPU engines." 
+  },
+  { 
+    value: "Zero-Poison Guards", 
+    label: "Innovation: Ephemeral Ghost Nodes and strict VRAM governance prevent OOM crashes and corrupt vector ingestion." 
+  },
+  { 
+    value: "Forensic Tracking", 
+    label: "Impact: Cryptographically verifiable JSON-LD incident reports designed for enterprise legal teams." 
+  },
+  { 
+    value: "Sub-Second Detection", 
+    label: "Impact: Real-time dual-vector fusion (CLIP + MiniLM) instantly flags piracy and visual supply-chain anomalies." 
+  },
+];
 
 const FLOW_NODES = [
   { id: 1, label: "Upload Assets",   sub: "Drag & drop any file",     color: "#4C63F7", icon: "upload"  },
@@ -45,20 +63,39 @@ const TEAM = [
 
 
 const STATS = [
-  { value: "2.4M+",  label: "Assets Processed" },
-  { value: "99.97%", label: "Accuracy"          },
-  { value: "<800ms", label: "Ingest Time"       },
-  { value: "SOC 2",  label: "Certified"         },
+  { value: "96.2%",   label: "Detection Precision" }, 
+  { value: "<2min",   label: "Average Pipeline"    }, 
+  { value: "AES-256", label: "Data Encryption"     }, 
+  { value: "JSON-LD", label: "Structured Reports"  }, 
+];
+const NAV_LINKS = [
+  { name: "Home", type: "link", to: "/" },
+  { name: "Features", type: "scroll", to: "features-section" },
+  { name: "GitHub", type: "external", to: "https://github.com/TanmayyyK/sourcegraph" },
+  { name: "Docs", type: "link", to: "/docs" }
 ];
 
-const NAV_LINKS = ["Platform", "Features", "Security", "Pricing", "Docs"];
-
 const FOOTER_COLS = [
-  { heading: "Product",   links: ["Platform","Command Center","Ingestion","Insights","Security","Pricing"] },
-  { heading: "Features",  links: ["Fingerprinting","AI Analysis","Risk Scoring","Timeline","Export","Integrations"] },
-  { heading: "Company",   links: ["About","Team","Careers","Blog","Press","Brand"] },
-  { heading: "Resources", links: ["Documentation","API Reference","Status","Developers","Enterprise","Startups"] },
-  { heading: "Connect",   links: ["Contact us","Community","X (Twitter)","GitHub","LinkedIn","YouTube"] },
+  {
+    heading: "Company",
+    links: [
+      { name: "Team", href: "#team" },
+      { name: "About Us", href: "/docs/intro" }
+    ]
+  },
+  {
+    heading: "Resources",
+    links: [
+      { name: "Documentation", href: "/docs" },
+      { name: "API Reference", href: "https://github.com/TanmayyyK/sourcegraph#readme" }
+    ]
+  },
+  {
+    heading: "Connect",
+    links: [
+      { name: "GitHub", href: "https://github.com/TanmayyyK/sourcegraph" }
+    ]
+  },
 ];
 
 // ─── Font injection ───────────────────────────────────────────────────────────
@@ -151,12 +188,33 @@ function Navbar({ onLoginClick, onSignupClick }: { onLoginClick: () => void; onS
       {/* Centre nav */}
       <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
         {NAV_LINKS.map((l) => (
-          <button key={l} type="button" style={linkBase}
-            onMouseEnter={e => { const el = e.currentTarget; el.style.background = C.bgMuted; el.style.color = C.text; }}
-            onMouseLeave={e => { const el = e.currentTarget; el.style.background = "transparent"; el.style.color = C.muted; }}
-          >
-            {l}
-          </button>
+          l.type === "link" ? (
+            <Link key={l.name} to={l.to!} style={{ ...linkBase, textDecoration: "none" }}
+              onMouseEnter={e => { const el = e.currentTarget; el.style.background = C.bgMuted; el.style.color = C.text; }}
+              onMouseLeave={e => { const el = e.currentTarget; el.style.background = "transparent"; el.style.color = C.muted; }}
+            >
+              {l.name}
+            </Link>
+          ) : l.type === "external" ? (
+            <a key={l.name} href={l.to!} target="_blank" rel="noopener noreferrer" style={{ ...linkBase, textDecoration: "none", display: "inline-block" }}
+              onMouseEnter={e => { const el = e.currentTarget; el.style.background = C.bgMuted; el.style.color = C.text; }}
+              onMouseLeave={e => { const el = e.currentTarget; el.style.background = "transparent"; el.style.color = C.muted; }}
+            >
+              {l.name}
+            </a>
+          ) : (
+            <button key={l.name} type="button" style={linkBase}
+              onClick={() => {
+                if (l.type === "scroll" && l.to) {
+                  document.getElementById(l.to)?.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              onMouseEnter={e => { const el = e.currentTarget; el.style.background = C.bgMuted; el.style.color = C.text; }}
+              onMouseLeave={e => { const el = e.currentTarget; el.style.background = "transparent"; el.style.color = C.muted; }}
+            >
+              {l.name}
+            </button>
+          )
         ))}
       </div>
 
@@ -268,18 +326,23 @@ function Marquee() {
   return (
     <div style={{ overflow: "hidden", background: C.bgMuted, borderTop: `1px solid ${C.border}`, borderBottom: `1px solid ${C.border}`, padding: "20px 0", userSelect: "none" }}>
       <p style={{ textAlign: "center", fontSize: "10px", letterSpacing: "0.14em", color: C.muted, fontWeight: 600, textTransform: "uppercase", marginBottom: "14px", fontFamily: "DM Mono, monospace" }}>
-        Trusted by teams at
+        Impact & Innovation
       </p>
       <div style={{ overflow: "hidden" }}>
         <motion.div
-          animate={{ x: ["0%", "-50%"] }}
-          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-          style={{ display: "flex", gap: "72px", width: "max-content" }}
+          animate={{ x: ["100vw", "-100%"] }}
+          transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          style={{ display: "flex", gap: "72px", width: "max-content", alignItems: "center" }}
         >
-          {[...LOGOS, ...LOGOS].map((name, i) => (
-            <span key={i} style={{ fontSize: "15px", fontWeight: 700, color: C.muted, whiteSpace: "nowrap", fontFamily: "DM Sans, sans-serif" }}>
-              {name}
-            </span>
+          {LOGOS.map((item, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <span style={{ fontSize: "14px", fontWeight: 800, color: C.text, whiteSpace: "nowrap", fontFamily: "DM Sans, sans-serif" }}>
+                {item.value}
+              </span>
+              <span style={{ fontSize: "13px", fontWeight: 500, color: C.muted, whiteSpace: "nowrap", fontFamily: "DM Sans, sans-serif" }}>
+                {item.label}
+              </span>
+            </div>
           ))}
         </motion.div>
       </div>
@@ -427,7 +490,7 @@ function FeatureCard({ feature, index }: { feature: typeof FEATURES[0]; index: n
 
 function FeaturesSection() {
   return (
-    <section style={{ padding: "100px 24px 80px", background: C.bg, fontFamily: "DM Sans, sans-serif" }}>
+    <section id="features-section" style={{ padding: "100px 24px 80px", background: C.bg, fontFamily: "DM Sans, sans-serif" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <FadeUp>
           <p style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.14em", color: C.accent, textTransform: "uppercase", marginBottom: "12px", fontFamily: "DM Mono, monospace" }}>
@@ -453,7 +516,7 @@ function FeaturesSection() {
 // ─── Team ─────────────────────────────────────────────────────────────────────
 function TeamSection() {
   return (
-    <section style={{ padding: "100px 24px", background: C.bgMuted, fontFamily: "DM Sans, sans-serif" }}>
+    <section id="team" style={{ padding: "100px 24px", background: C.bgMuted, fontFamily: "DM Sans, sans-serif" }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "72px", alignItems: "start" }}>
           <FadeUp>
@@ -560,7 +623,7 @@ function Footer() {
       fontFamily: "DM Sans, sans-serif",
     }}>
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "190px repeat(5, 1fr)", gap: "32px", marginBottom: "56px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "190px repeat(3, 1fr)", gap: "32px", marginBottom: "56px" }}>
           {/* Brand */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
@@ -581,13 +644,17 @@ function Footer() {
                 {col.heading}
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: "9px" }}>
-                {col.links.map((l) => (
-                  <a key={l} href="#" onClick={(e) => e.preventDefault()}
+                {col.links.map((link) => (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    target={link.href.startsWith("http") ? "_blank" : "_self"}
+                    rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}
                     style={{ fontSize: "13px", color: "rgba(245,242,236,0.46)", textDecoration: "none", transition: "color 0.15s" }}
                     onMouseEnter={e => (e.target as HTMLAnchorElement).style.color = C.textInverted}
                     onMouseLeave={e => (e.target as HTMLAnchorElement).style.color = "rgba(245,242,236,0.46)"}
                   >
-                    {l}
+                    {link.name}
                   </a>
                 ))}
               </div>

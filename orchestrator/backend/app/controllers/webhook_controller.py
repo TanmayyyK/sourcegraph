@@ -67,7 +67,6 @@ from sqlalchemy import select, update
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import settings
 from app.core.auth import get_trace_id, require_webhook_secret
 from app.core.database import AsyncSessionLocal, get_db
 from app.core.logger import get_logger
@@ -93,7 +92,7 @@ from app.models.schemas import (
     VisionFinalSummaryPayload,
     AudioSummaryPacket,
 )
-from app.services.similarity_service import similarity_service
+from app.services.auditor_client import process_asset_with_auditor
 from app.controllers.feed_controller import NODE_LAST_SEEN
 import time
 
@@ -160,6 +159,9 @@ async def _flush_frame_to_db(
 
     Returns True on a fresh insert, False on a duplicate.
     """
+    asset = await _get_asset_or_raise(entry.asset_id, db, trace_id)
+    is_temporary = not asset.is_golden
+
     stmt = (
         pg_insert(FrameVector)
         .values(
@@ -168,6 +170,7 @@ async def _flush_frame_to_db(
             timestamp=entry.timestamp,
             visual_vector=entry.visual_vector,
             text_vector=entry.text_vector,
+            is_temporary=is_temporary,
         )
         .on_conflict_do_nothing(index_elements=["asset_id", "timestamp"])
     )
@@ -180,7 +183,7 @@ async def _flush_frame_to_db(
         if inserted:
             logger.info(
                 f"[WEBHOOK] 💾 Frame persisted: asset={entry.asset_id} "
-                f"ts={entry.timestamp:.3f}s trace={trace_id}"
+                f"ts={entry.timestamp:.3f}s temporary={is_temporary} trace={trace_id}"
             )
         else:
             logger.debug(
@@ -199,38 +202,81 @@ async def _flush_frame_to_db(
         raise
 
 
-async def _run_similarity_background(asset_id: UUID, trace_id: str) -> None:
+async def _run_auditor_background(asset_id: UUID, is_golden: bool, trace_id: str) -> None:
     """
     Background task: open a *fresh* DB session isolated from the request
-    session, then run the similarity engine.  Errors are caught and logged
-    so a failing similarity run never surfaces as an unhandled exception
-    in the event loop.
+    session, then run the ML auditor engine.
     """
     logger.info(
-        f"[WEBHOOK] 🚀 Similarity engine triggered "
-        f"asset={asset_id} trace={trace_id}"
+        f"[WEBHOOK] 🚀 Auditor engine triggered "
+        f"asset={asset_id} is_golden={is_golden} trace={trace_id}"
     )
     async with AsyncSessionLocal() as db:
         try:
-            result = await similarity_service.run_for_asset(
-                asset_id=asset_id, db=db, trace_id=trace_id
+            success = await process_asset_with_auditor(
+                asset_id=asset_id, is_golden=is_golden, db=db, trace_id=trace_id
             )
-            if result:
-                logger.warning(
-                    f"[WEBHOOK] 🎯 Verdict={result.verdict} "
-                    f"score={result.fused_score:.4f} "
+            if success:
+                logger.info(
+                    f"[WEBHOOK] ✅ Auditor engine processed successfully "
                     f"asset={asset_id} trace={trace_id}"
                 )
             else:
-                logger.info(
-                    f"[WEBHOOK] ℹ Similarity returned no result "
+                logger.warning(
+                    f"[WEBHOOK] ⚠ Auditor engine reported failure or no vectors "
                     f"asset={asset_id} trace={trace_id}"
                 )
         except Exception as exc:
             logger.error(
-                f"[WEBHOOK] Similarity engine error: {exc!r} "
+                f"[WEBHOOK] Auditor engine error: {exc!r} "
                 f"asset={asset_id} trace={trace_id}"
             )
+
+
+async def _maybe_dispatch_auditor(
+    asset_id: UUID,
+    db: AsyncSession,
+    trace_id: str,
+) -> bool:
+    """
+    Atomically dispatch the Auditor exactly once, and only after both
+    lifecycle barriers are closed for this asset.
+
+    The UPDATE predicate is the lock: if either summary is missing or another
+    request already dispatched the Auditor, rowcount is zero and no task starts.
+    """
+    stmt = (
+        update(Asset)
+        .where(
+            Asset.id == asset_id,
+            Asset.audio_summary_completed.is_(True),
+            Asset.pipeline_summary_completed.is_(True),
+            Asset.auditor_dispatched.is_(False),
+        )
+        .values(status="completed", auditor_dispatched=True)
+        .returning(Asset.is_golden)
+    )
+    result = await db.execute(stmt)
+    row = result.first()
+    await db.commit()
+
+    if row is None:
+        logger.info(
+            f"[WEBHOOK] Auditor dispatch blocked until both summaries complete "
+            f"or already dispatched: asset={asset_id} trace={trace_id}"
+        )
+        return False
+
+    is_golden = bool(row[0])
+    asyncio.create_task(
+        _run_auditor_background(asset_id, is_golden, trace_id),
+        name=f"auditor:{asset_id}",
+    )
+    logger.info(
+        f"[WEBHOOK] 🔍 Auditor task queued after lifecycle lock "
+        f"asset={asset_id} is_golden={is_golden} trace={trace_id}"
+    )
+    return True
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -278,9 +324,22 @@ async def _handle_frame_vision(
 
     async with AsyncSessionLocal() as db:
         try:
+            asset_is_golden: bool | None = None
+            if asset_id_val is not None:
+                asset_is_golden = await db.scalar(
+                    select(Asset.is_golden).where(Asset.id == asset_id_val)
+                )
+                if asset_is_golden is None:
+                    logger.warning(
+                        f"[{payload.source_node}] frame_vision ignored for frame_vectors — "
+                        f"Asset {asset_id_val} not found. trace={trace_id}"
+                    )
+                    asset_id_val = None
+
             # ── Dual-vector ingestion into frame_vectors (UPSERT merge) ──
             # Requires asset_id_val (frame_vectors.asset_id is NOT NULL).
             if asset_id_val is not None:
+                is_temporary = not bool(asset_is_golden)
                 insert_stmt = (
                     pg_insert(FrameVector)
                     .values(
@@ -288,12 +347,14 @@ async def _handle_frame_vision(
                         asset_id=asset_id_val,
                         timestamp=payload.timestamp,
                         visual_vector=payload.visual_vector,
+                        is_temporary=is_temporary,
                     )
                 )
                 upsert_stmt = insert_stmt.on_conflict_do_update(
                     index_elements=["asset_id", "timestamp"],
                     set_={
                         "visual_vector": insert_stmt.excluded.visual_vector,
+                        "is_temporary": insert_stmt.excluded.is_temporary,
                     },
                 )
                 await db.execute(upsert_stmt)
@@ -361,8 +422,21 @@ async def _handle_frame_text(
 
     async with AsyncSessionLocal() as db:
         try:
+            asset_is_golden: bool | None = None
+            if asset_id_val is not None:
+                asset_is_golden = await db.scalar(
+                    select(Asset.is_golden).where(Asset.id == asset_id_val)
+                )
+                if asset_is_golden is None:
+                    logger.warning(
+                        f"[{payload.source_node}] frame_text ignored for frame_vectors — "
+                        f"Asset {asset_id_val} not found. trace={trace_id}"
+                    )
+                    asset_id_val = None
+
             # ── Dual-vector ingestion into frame_vectors (UPSERT merge) ──
             if asset_id_val is not None:
+                is_temporary = not bool(asset_is_golden)
                 insert_stmt = (
                     pg_insert(FrameVector)
                     .values(
@@ -370,12 +444,14 @@ async def _handle_frame_text(
                         asset_id=asset_id_val,
                         timestamp=payload.timestamp,
                         text_vector=payload.text_vector,
+                        is_temporary=is_temporary,
                     )
                 )
                 upsert_stmt = insert_stmt.on_conflict_do_update(
                     index_elements=["asset_id", "timestamp"],
                     set_={
                         "text_vector": insert_stmt.excluded.text_vector,
+                        "is_temporary": insert_stmt.excluded.is_temporary,
                     },
                 )
                 await db.execute(upsert_stmt)
@@ -638,7 +714,10 @@ async def _handle_audio_summary(
             await db.execute(
                 update(Asset)
                 .where(Asset.id == asset_id_val)
-                .values(full_transcript=payload.full_script)
+                .values(
+                    full_transcript=payload.full_script,
+                    audio_summary_completed=True,
+                )
             )
 
             # Insert audio segments using bulk insert pattern
@@ -655,12 +734,12 @@ async def _handle_audio_summary(
                 ]
                 await db.execute(pg_insert(AudioSegment), segments_data)
 
-            await db.commit()
             logger.info(
                 f"[{payload.source_node}] 💾 Audio summary persisted: "
                 f"asset_id={asset_id_val} segments={len(payload.transcript)} "
                 f"trace={trace_id}"
             )
+            await _maybe_dispatch_auditor(asset_id_val, db, trace_id)
         except Exception as exc:
             await db.rollback()
             logger.error(
@@ -752,8 +831,8 @@ async def _dispatch_pipeline_final_summary(
     # Validate asset state via shared guard (raises 404 / 409 as appropriate)
     asset = await _get_asset_or_raise(asset_id, db, trace_id)
 
-    # Idempotency — already completed, do not re-trigger similarity engine
-    if asset.status == "completed":
+    # Idempotency — completed assets have already passed the lifecycle lock.
+    if asset.status == "completed" and asset.auditor_dispatched:
         logger.info(
             f"[FEEDER] Asset already completed (idempotent): "
             f"asset={asset_id} trace={trace_id}"
@@ -765,38 +844,27 @@ async def _dispatch_pipeline_final_summary(
             "trace_id": trace_id,
         }
 
-    # Transition processing → completed
+    # Mark only the pipeline side of the barrier. The Auditor is dispatched
+    # by _maybe_dispatch_auditor after audio_final_summary is also durable.
     await db.execute(
         update(Asset)
         .where(Asset.id == asset_id)
-        .values(status="completed")
+        .values(pipeline_summary_completed=True)
     )
-    await db.commit()
 
     logger.info(
-        f"[FEEDER] ✅ Asset completed via pipeline summary: "
+        f"[FEEDER] ✅ Pipeline summary persisted: "
         f"asset={asset_id} is_golden={asset.is_golden} trace={trace_id}"
     )
 
-    # Trigger Similarity Engine for non-golden (suspect) assets only
-    similarity_queued = False
-    if not asset.is_golden:
-        asyncio.create_task(
-            _run_similarity_background(asset_id, trace_id),
-            name=f"similarity:{asset_id}",
-        )
-        similarity_queued = True
-        logger.info(
-            f"[FEEDER] 🔍 Similarity task queued "
-            f"asset={asset_id} trace={trace_id}"
-        )
+    auditor_queued = await _maybe_dispatch_auditor(asset_id, db, trace_id)
 
     return {
-        "status": "completed",
+        "status": "completed" if auditor_queued else "waiting_for_audio_summary",
         "type": payload.type,
         "asset_id": str(asset_id),
         "is_golden": asset.is_golden,
-        "similarity_queued": similarity_queued,
+        "auditor_queued": auditor_queued,
         "frames_reported": m.total_frames_extracted,
         "trace_id": trace_id,
     }
@@ -951,7 +1019,8 @@ async def receive_vector(
         f"trace={trace_id}"
     )
 
-    await _get_asset_or_raise(payload.packet_id, db, trace_id)
+    asset = await _get_asset_or_raise(payload.packet_id, db, trace_id)
+    is_temporary = not asset.is_golden
 
     # Compatibility path for mixed deployments:
     # Some nodes may still POST text-only or visual-only payloads to /vector
@@ -971,6 +1040,7 @@ async def receive_vector(
             timestamp=payload.timestamp,
             visual_vector=payload.visual_vector,
             text_vector=payload.text_vector,
+            is_temporary=is_temporary,
         )
     )
 
@@ -979,6 +1049,7 @@ async def receive_vector(
         set_map["visual_vector"] = insert_stmt.excluded.visual_vector
     if payload.text_vector is not None:
         set_map["text_vector"] = insert_stmt.excluded.text_vector
+    set_map["is_temporary"] = insert_stmt.excluded.is_temporary
 
     upsert_stmt = insert_stmt.on_conflict_do_update(
         index_elements=["asset_id", "timestamp"],
@@ -1058,7 +1129,7 @@ async def mark_asset_complete(
             detail=f"Asset {asset_id} not found.",
         )
 
-    if asset.status == "completed":
+    if asset.status == "completed" and asset.auditor_dispatched:
         logger.info(
             f"[WEBHOOK] Asset already completed (idempotent): "
             f"asset={asset_id} trace={trace_id}"
@@ -1076,29 +1147,22 @@ async def mark_asset_complete(
         )
 
     await db.execute(
-        update(Asset).where(Asset.id == asset_id).values(status="completed")
+        update(Asset)
+        .where(Asset.id == asset_id)
+        .values(pipeline_summary_completed=True)
     )
-    await db.commit()
 
     logger.info(
-        f"[WEBHOOK] ✅ Asset completed: id={asset_id} "
+        f"[WEBHOOK] ✅ Pipeline completion persisted: id={asset_id} "
         f"is_golden={asset.is_golden} trace={trace_id}"
     )
 
-    if not asset.is_golden:
-        asyncio.create_task(
-            _run_similarity_background(asset_id, trace_id),
-            name=f"similarity:{asset_id}",
-        )
-        logger.info(
-            f"[WEBHOOK] 🔍 Similarity task queued "
-            f"asset={asset_id} trace={trace_id}"
-        )
+    auditor_queued = await _maybe_dispatch_auditor(asset_id, db, trace_id)
 
     return {
-        "status": "completed",
+        "status": "completed" if auditor_queued else "waiting_for_audio_summary",
         "asset_id": str(asset_id),
         "is_golden": asset.is_golden,
-        "similarity_queued": not asset.is_golden,
+        "auditor_queued": auditor_queued,
         "trace_id": trace_id,
     }

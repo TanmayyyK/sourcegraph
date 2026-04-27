@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     # GPU node health endpoints (used by active health probe)
     vision_node_url: str = "http://100.119.250.125:8080"   # Rohit / RTX 3050
     context_node_url: str = "http://100.115.89.72:8002"    # Yug / RTX 2050
+    auditor_url: str = "http://localhost:8004"
     health_probe_interval: float = 10.0                    # seconds between probes
 
     # ── Security ────────────────────────────────────────────────

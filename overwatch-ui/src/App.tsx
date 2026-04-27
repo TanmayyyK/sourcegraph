@@ -5,6 +5,8 @@ import CommandCentreHome from "@/components/screens/CommandCentreHome";
 import OverwatchIngestPortal from "@/components/screens/OverwatchIngestModel";
 import InsightsScreen from "@/components/screens/InsightsScreen";
 import NexusScreen from "@/components/screens/NexusScreen";
+import NexusGraphScreen from "@/components/screens/NexusGraphScreen";
+import DocsScreen from "@/components/screens/DocsScreen";
 import ProtectedRoute from "@/components/providers/ProtectedRoute";
 import { useAuth } from "@/components/providers/AuthProvider";
 
@@ -86,7 +88,7 @@ export default function App() {
         element={
           <ProtectedRoute>
             <OverwatchIngestPortal
-              onComplete={() => navigate("/insights")}
+              onComplete={(_verdict, _fileName, assetId) => navigate(assetId ? `/insights/${assetId}` : "/insights")}
               onBack={() => navigate("/home")}
             />
           </ProtectedRoute>
@@ -101,6 +103,14 @@ export default function App() {
         }
       />
       <Route
+        path="/insights/:assetId"
+        element={
+          <ProtectedRoute>
+            <InsightsScreen assets={[]} role={userRole} Maps={navigate} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/analysis/:assetId"
         element={
           <ProtectedRoute>
@@ -108,6 +118,16 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/nexus/:assetId"
+        element={
+          <ProtectedRoute>
+            <NexusGraphScreen Maps={navigate} />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/docs" element={<Navigate to="/docs/intro" replace />} />
+      <Route path="/docs/:slug" element={<DocsScreen />} />
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );

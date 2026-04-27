@@ -318,8 +318,42 @@ async def embed_text(
     return frame_payload
 
 
-@app.post("/embed/text/finish", tags=["inference"])
-async def finish_signal(packet_id: str = Form(...)):
+@app.post("/embed/text/finish", tags=["inference"], dependencies=[Depends(verify_webhook_secret)])
+async def finish_signal(payload: FinishRequest):
+    """
+    End-of-batch signal.
+    Dispatches the text_final_summary webhook using accumulated batch stats.
+    """
+    packet_id = payload.packet_id
+    
+    with _tracker_lock:
+        if packet_id in batch_tracker:
+            batch = batch_tracker.pop(packet_id)
+        else:
+            # Fallback if called with 0 frames
+            batch = {
+                "ocr_chunks": 0,
+                "bounding_boxes": 0,
+                "start_time": time.monotonic(),
+            }
+            
+    node_time_s = time.monotonic() - batch["start_time"]
+    
+    summary_payload = {
+        "packet_id": packet_id,
+        "type": "text_final_summary",
+        "source_node": SOURCE_NODE,
+        "metrics": {
+            "ocr_text_chunks": batch["ocr_chunks"],
+            "bounding_boxes_mapped": batch["bounding_boxes"],
+            "node_time_s": round(node_time_s, 2),
+        }
+    }
+    
+    # We run the webhook in the background so we can ACK the finish signal immediately
+    import asyncio
+    asyncio.create_task(asyncio.to_thread(_fire_webhook, summary_payload, label="text_final_summary"))
+    
     return {"status": "accepted", "packet_id": packet_id}
 
 

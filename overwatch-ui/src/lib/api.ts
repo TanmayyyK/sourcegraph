@@ -1,4 +1,6 @@
-const BASE = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+import type { AssetStatusResponse, SimilarityResultResponse } from "@/types";
+
+const BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
 const TOKEN_KEY = "overwatch_auth_token";
 
 export type ApiResult<T> =
@@ -168,6 +170,18 @@ export const authApi = {
       method: "GET",
     });
   },
+};
+
+export const assetApi = {
+  status: (assetId: string) =>
+    apiFetch<AssetStatusResponse>(`/api/v1/assets/${assetId}/status`, {
+      method: "GET",
+    }),
+
+  result: (assetId: string) =>
+    apiFetch<SimilarityResultResponse>(`/api/v1/assets/${assetId}/result`, {
+      method: "GET",
+    }),
 };
 
 // ─── Types ───────────────────────────────────────────────────────────────────

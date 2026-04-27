@@ -3,6 +3,7 @@ import React, {
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { auth } from "../../lib/api";
+import type { AssetStatusResponse, SimilarityResultResponse } from "@/types";
 import {
   Upload, RefreshCw, Zap, Scissors, Eye, Cpu,
   Type as TypeIcon, CheckCircle, AlertTriangle, Clock, ChevronLeft,
@@ -19,16 +20,6 @@ interface UploadResponse {
   status:    string;
   message:   string;
   trace_id:  string;
-}
-
-interface AssetStatusResponse {
-  asset_id:    string;
-  filename:    string;
-  is_golden:   boolean;
-  status:      "processing" | "completed" | "failed";
-  frame_count: number;
-  created_at:  string;
-  trace_id:    string;
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -850,6 +841,7 @@ const StatusChip: React.FC<{state:PipelineState}> = ({ state }) => {
    ════════════════════════════════════════════════════════════════════════ */
 const ReportCard: React.FC<{
   verdict:Verdict;
+  isGolden: boolean | null;
   backendStatus: AssetStatusResponse["status"] | "timeout" | null;
   fileName:string;
   fileSize:number;
@@ -859,22 +851,31 @@ const ReportCard: React.FC<{
   frameCount: number | null;
   onReset:()=>void;
   onSeeInsights:()=>void;
-}> = ({ verdict, backendStatus, fileName, fileSize, latencyText, errorHint, confidence, frameCount, onReset, onSeeInsights }) => {
+}> = ({ verdict, isGolden, backendStatus, fileName, fileSize, latencyText, errorHint, confidence, frameCount, onReset, onSeeInsights }) => {
   const clean = verdict==="CLEAN";
   const failed = verdict==="FAILED" || backendStatus === "failed" || backendStatus === "timeout";
   const vc    = clean ? C.green : C.coral;
+  const isAuditorAsset = isGolden === false;
+  const scoreText = confidence == null ? "0.0" : confidence.toFixed(1);
   const headline =
-    clean ? "Golden Asset Registered"
-    : failed ? (errorHint ?? (backendStatus === "timeout" ? "System Timeout" : "Pipeline Aborted"))
+    failed ? (errorHint ?? (backendStatus === "timeout" ? "System Timeout" : "Pipeline Aborted"))
+    : isGolden === true ? "Asset Added Successfully"
+    : isAuditorAsset && verdict === "CLEAN" ? "ASSET CLEARED: No Match Found"
+    : isAuditorAsset && verdict === "THREAT" ? `PIRACY DETECTED: ${scoreText}% Match`
     : "Analysis Complete";
   const badgeText =
-    clean ? "Success"
-    : failed ? "Failed"
+    failed ? "Failed"
+    : isGolden === true ? "Added"
+    : isAuditorAsset && verdict === "CLEAN" ? "Cleared"
+    : isAuditorAsset && verdict === "THREAT" ? "Action Required"
+    : clean ? "Success"
     : "Complete";
   const subheading =
     backendStatus === "failed" || backendStatus === "timeout"
       ? "Pipeline Aborted"
-      : "Analysis Complete";
+      : isGolden === true
+        ? "Producer Ingestion Complete"
+        : "Forensic Verdict";
   return (
     <motion.div
       key="report"
@@ -888,7 +889,10 @@ const ReportCard: React.FC<{
       }}
     >
       <div className="flex items-stretch" style={{ borderColor:"rgba(0,0,0,0.06)" }}>
-        <div className="flex-1 p-6 flex items-center gap-5"
+        <div
+          className={`flex-1 p-6 flex items-center gap-5 ${
+            isAuditorAsset && verdict === "THREAT" ? "border-l-4 border-red-500" : ""
+          }`}
           style={{ background: clean ? `${C.green}07` : `${C.coral}08` }}>
           <div style={{ width:50, height:50, borderRadius:13, flexShrink:0,
             background: clean ? `${C.green}16` : `${C.coral}14`,
@@ -901,7 +905,7 @@ const ReportCard: React.FC<{
                 letterSpacing:"0.14em", textTransform:"uppercase", color:vc }}>
                 {subheading}
               </div>
-              <div style={{ padding:"2px 6px", borderRadius:4, background:`${C.green}18`, color:C.green,
+              <div style={{ padding:"2px 6px", borderRadius:4, background:`${vc}18`, color:vc,
                 fontSize:8, fontWeight:700, letterSpacing:"0.05em", textTransform:"uppercase" }}>
                 {badgeText}
               </div>
@@ -985,7 +989,7 @@ const ReportCard: React.FC<{
 /* ════════════════════════════════════════════════════════════════════════════
    API HELPERS
    ════════════════════════════════════════════════════════════════════════ */
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
 async function uploadGoldenAsset(
   file: File,
@@ -1000,11 +1004,10 @@ async function uploadGoldenAsset(
   const headers: HeadersInit = {};
   headers["Authorization"] = `Bearer ${authToken}`;
 
-  const res = await fetch(`${BASE_URL}/api/v1/golden/upload`, {
+  const res = await fetch(`${BASE_URL}/api/v1/assets/upload`, {
     method: "POST",
     headers,
     body: form,
-    credentials: "include",
   });
 
   if (!res.ok) {
@@ -1013,6 +1016,28 @@ async function uploadGoldenAsset(
   }
 
   return res.json() as Promise<UploadResponse>;
+}
+
+async function fetchAssetResult(
+  assetId: string,
+  authToken?: string,
+): Promise<SimilarityResultResponse> {
+  if (!authToken) {
+    throw new Error("Not authenticated: missing auth token");
+  }
+  const headers: HeadersInit = {};
+  headers["Authorization"] = `Bearer ${authToken}`;
+
+  const res = await fetch(`${BASE_URL}/api/v1/assets/${assetId}/result`, {
+    headers,
+  });
+
+  if (!res.ok) {
+    const txt = await res.text().catch(() => res.statusText);
+    throw new Error(`Result fetch failed (${res.status}): ${txt}`);
+  }
+
+  return res.json() as Promise<SimilarityResultResponse>;
 }
 
 async function fetchAssetStatus(
@@ -1027,7 +1052,6 @@ async function fetchAssetStatus(
 
   const res = await fetch(`${BASE_URL}/api/v1/assets/${assetId}/status`, {
     headers,
-    credentials: "include",
   });
 
   if (!res.ok) throw new Error(`Status fetch failed (${res.status})`);
@@ -1063,6 +1087,8 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
   const startedAtPerfRef        = useRef(0);
   const stateRef                = useRef<PipelineState>("IDLE");
   const activeAuthTokenRef      = useRef<string | null>(null);
+  const isGoldenRef             = useRef<boolean | null>(null);
+  const resultPendingPollsRef   = useRef<number>(0);
 
   /*
    * TASK 1 — §5: Track frame-count stability to detect the ANALYZING_AUDIO phase.
@@ -1100,6 +1126,8 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
     frameCountRef.current = 0;
     confidenceRef.current = null;
     uploadStartMsRef.current = 0;
+    isGoldenRef.current = null;
+    resultPendingPollsRef.current = 0;
     lastFrameCountRef.current = -1;
     stableFramePollsRef.current = 0;
   },[stopPolling]);
@@ -1195,7 +1223,27 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
         }
 
         if (status.status === "completed") {
-          finalize("CLEAN", "completed");
+          isGoldenRef.current = status.is_golden;
+          if (status.is_golden) {
+            finalize("CLEAN", "completed");
+            return;
+          }
+
+          try {
+            const result = await fetchAssetResult(assetId, token);
+            const auditedVerdict = result.verdict === "CLEAN" || result.verdict === "SAFE" ? "CLEAN" : "THREAT";
+            const fusedConfidence = result.fused_score > 1
+              ? result.fused_score
+              : result.fused_score * 100;
+            confidenceRef.current = Math.max(0, Math.min(100, fusedConfidence));
+            finalize(auditedVerdict, "completed");
+          } catch {
+            resultPendingPollsRef.current += 1;
+            if (resultPendingPollsRef.current >= 30) {
+              setErrorHint("Auditor Result Unavailable");
+              finalize("FAILED", "failed");
+            }
+          }
         } else if (status.status === "failed") {
           finalize("FAILED", "failed");
         }
@@ -1225,6 +1273,7 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
     confidenceRef.current = null;
     lastFrameCountRef.current = -1;
     stableFramePollsRef.current = 0;
+    resultPendingPollsRef.current = 0;
 
     setState("UPLOADING");
     setChipVis(true);
@@ -1244,6 +1293,7 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
       // ── Real POST to the backend ────────────────────────────────────────
       const uploadResp = await uploadGoldenAsset(file, token);
       assetIdRef.current = uploadResp.asset_id;
+      isGoldenRef.current = uploadResp.is_golden;
 
       // Backend now owns pipeline state; start in EXTRACTING until frames arrive.
       setState("EXTRACTING");
@@ -1395,6 +1445,7 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
           {(state==="COMPLETE" || state==="FAILED") && (
             <ReportCard
               verdict={verdict} fileName={fileName} fileSize={fileSize}
+              isGolden={isGoldenRef.current}
               backendStatus={backendStatus}
               latencyText={latencyText}
               errorHint={errorHint}

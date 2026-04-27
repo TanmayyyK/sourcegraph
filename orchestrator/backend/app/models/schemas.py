@@ -257,7 +257,7 @@ class WebhookAck(BaseModel):
 
 class UploadResponse(BaseModel):
     """
-    Returned by POST /api/v1/golden/upload and POST /api/v1/search/upload.
+    Returned by POST /api/v1/assets/upload.
     The caller should poll GET /api/v1/assets/{asset_id}/status for progress.
     """
     asset_id: UUID
