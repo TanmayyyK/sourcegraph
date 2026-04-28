@@ -5,19 +5,19 @@ Webhook Controller — GPU Node Vector Sink  (v2, Polymorphic Feeder Edition)
 Endpoints
 ─────────
   POST /api/v1/webhooks/vector          Legacy GPU-node vector delivery
-                                         (RTX 3050 Vision / RTX 2050 Text)
-  POST /api/v1/webhooks/complete        Legacy M2 Extractor completion signal
+                                         (ARGUS Vision / HERMES Text)
+  POST /api/v1/webhooks/complete        Legacy ATLAS completion signal
   POST /api/v1/webhooks/feeder          NEW — polymorphic event stream from
                                          simulate_ml_stream.py
 
 /feeder  Payload routing
 ─────────────────────────
   system_ping            → log node health map; no DB write
-  frame_vision           → INSERT into frame_embeddings (Rohit / RTX 3050)
-  frame_text             → INSERT into frame_vision_metadata (Yug / RTX 2050)
-  vision_final_summary   → log GPU-node completion metrics for Vision node (Rohit)
-  text_final_summary     → log GPU-node completion metrics for Text node (Yug)
-  pipeline_final_summary → authoritative "all frames dispatched" signal;
+  frame_vision           → INSERT into frame_embeddings (ARGUS / RTX 3050)
+  frame_text             → INSERT into frame_vision_metadata (HERMES / RTX 2050)
+  vision_final_summary   → log GPU-node completion metrics for Vision node (ARGUS)
+  text_final_summary     → log GPU-node completion metrics for Text node (HERMES)
+  pipeline_final_summary → authoritative "all frames dispatched" signal (ATLAS);
                            transitions Asset → 'completed' and optionally
                            fires the Similarity Engine
 
@@ -308,15 +308,13 @@ async def _handle_frame_vision(
     trace_id: str,
 ) -> None:
     """
-    Background task — persist vision-frame embeddings from Rohit (RTX 3050)
+    Background task — persist vision-frame embeddings from ARGUS (RTX 3050)
     into the `frame_embeddings` staging table.
 
     Idempotency: (packet_id, timestamp, source_node) UNIQUE constraint
     ensures duplicate deliveries are silently discarded.
 
     asset_id is populated only when payload.packet_id is a valid UUID.
-    Rows with NULL asset_id are normal in simulator mode and can be
-    back-filled via migration once the simulator is updated.
     """
     asset_id_val: UUID | None = _resolve_asset_id(
         payload.packet_id, trace_id, "frame_vision"
@@ -339,6 +337,13 @@ async def _handle_frame_vision(
             # ── Dual-vector ingestion into frame_vectors (UPSERT merge) ──
             # Requires asset_id_val (frame_vectors.asset_id is NOT NULL).
             if asset_id_val is not None:
+                # Task 1: Explicitly transition status to 'analyzing' on first frame
+                await db.execute(
+                    update(Asset)
+                    .where(Asset.id == asset_id_val, Asset.status == "processing")
+                    .values(status="analyzing")
+                )
+                
                 is_temporary = not bool(asset_is_golden)
                 insert_stmt = (
                     pg_insert(FrameVector)
@@ -373,25 +378,11 @@ async def _handle_frame_vision(
                     index_elements=["packet_id", "timestamp", "source_node"]
                 )
             )
-            result = await db.execute(stmt)
+            res = await db.execute(stmt)
             await db.commit()
-            inserted: bool = result.rowcount > 0
-
-            if inserted:
-                logger.info(
-                    f"[{payload.source_node}] 💾 Embedding persisted: "
-                    f"packet={payload.packet_id} ts={payload.timestamp:.3f}s "
-                    f"node={payload.source_node} "
-                    f"vector_dim={len(payload.visual_vector)} "
-                    f"asset_id={asset_id_val} trace={trace_id}"
-                )
-            else:
-                logger.debug(
-                    f"[{payload.source_node}] Duplicate vision frame ignored: "
-                    f"packet={payload.packet_id} ts={payload.timestamp:.3f}s "
-                    f"node={payload.source_node} trace={trace_id}"
-                )
-
+            
+            if res.rowcount > 0:
+                 logger.debug(f"[{payload.source_node}] 💾 Staging embedding persisted: ts={payload.timestamp:.3f}s")
         except Exception as exc:
             await db.rollback()
             logger.error(
@@ -406,7 +397,7 @@ async def _handle_frame_text(
     trace_id: str,
 ) -> None:
     """
-    Background task — persist the text metadata from Yug (RTX 2050)
+    Background task — persist the text metadata from HERMES (RTX 2050)
     into the `frame_vision_metadata` staging table.
 
     The metadata counts (chunks/boxes) are passed along without validation.
@@ -436,6 +427,13 @@ async def _handle_frame_text(
 
             # ── Dual-vector ingestion into frame_vectors (UPSERT merge) ──
             if asset_id_val is not None:
+                # Task 1: Explicitly transition status to 'analyzing' on first frame
+                await db.execute(
+                    update(Asset)
+                    .where(Asset.id == asset_id_val, Asset.status == "processing")
+                    .values(status="analyzing")
+                )
+                
                 is_temporary = not bool(asset_is_golden)
                 insert_stmt = (
                     pg_insert(FrameVector)
@@ -472,32 +470,14 @@ async def _handle_frame_text(
                     index_elements=["packet_id", "timestamp", "source_node"]
                 )
             )
-            result = await db.execute(stmt)
+            res = await db.execute(stmt)
             await db.commit()
-            inserted: bool = result.rowcount > 0
-
-            if inserted:
-                logger.info(
-                    f"[{payload.source_node}] 💾 Vision metadata persisted: "
-                    f"packet={payload.packet_id} ts={payload.timestamp:.3f}s "
-                    f"node={payload.source_node} "
-                    f"chunks={payload.chunks_extracted} boxes={payload.boxes_mapped} "
-                    f"asset_id={asset_id_val} trace={trace_id}"
-                )
-            else:
-                logger.debug(
-                    f"[{payload.source_node}] Duplicate vision frame ignored: "
-                    f"packet={payload.packet_id} ts={payload.timestamp:.3f}s "
-                    f"node={payload.source_node} trace={trace_id}"
-                )
-
+            
+            if res.rowcount > 0:
+                logger.debug(f"[{payload.source_node}] 💾 Staging metadata persisted: ts={payload.timestamp:.3f}s")
         except Exception as exc:
             await db.rollback()
-            logger.error(
-                f"[{payload.source_node}] frame_text persist error: "
-                f"packet={payload.packet_id} ts={payload.timestamp} "
-                f"error={exc!r} trace={trace_id}"
-            )
+            logger.error(f"[{payload.source_node}] Metadata staging error: {exc}")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -511,10 +491,12 @@ def _dispatch_system_ping(
     """
     Log node health snapshot.  No DB side-effect — purely observability.
     """
+    # Only flag explicit error statuses. 'UNKNOWN' or 'OFFLINE' are acceptable
+    # for nodes that only report their own local health.
     unhealthy = [
         svc
         for svc, st in payload.services.model_dump().items()
-        if st.upper() != "OK"
+        if st.upper() in ("ERR", "ERROR", "FAILED")
     ]
 
     if unhealthy:
@@ -525,8 +507,7 @@ def _dispatch_system_ping(
         )
     else:
         logger.info(
-            f"[FEEDER] 💚 System ping — all services OK "
-            f"nodes_online={payload.nodes_online} "
+            f"[FEEDER] 💚 System ping — OK (Nodes: {payload.nodes_online}) "
             f"packet={payload.packet_id} trace={trace_id}"
         )
 
@@ -553,7 +534,7 @@ def _dispatch_system_ping(
 _SOURCE_TO_DASHBOARD_KEY: dict[str, str] = {
     "ml_vision": "vision_engine",
     "ml_context": "text_processor",
-    "Yogesh-M2": "orchestrator",
+    "ATLAS": "orchestrator",
 }
 
 def _touch_node_heartbeat(source_node: str) -> None:
@@ -644,6 +625,19 @@ def _dispatch_vision_final_summary(
         f"packet={payload.packet_id} trace={trace_id}"
     )
 
+    # Persist metrics to Asset table (backgrounded)
+    asset_id_val = _resolve_asset_id(payload.packet_id, trace_id, "vision_summary")
+    if asset_id_val:
+        async def _save():
+            async with AsyncSessionLocal() as db:
+                await db.execute(
+                    update(Asset)
+                    .where(Asset.id == asset_id_val)
+                    .values(vision_latency_ms=int(m.node_time_s * 1000))
+                )
+                await db.commit()
+        asyncio.create_task(_save(), name=f"vision_summary:{asset_id_val}")
+
     return {
         "status": "acknowledged",
         "type": payload.type,
@@ -671,6 +665,19 @@ def _dispatch_text_final_summary(
         f"node_time={m.node_time_s:.2f}s "
         f"packet={payload.packet_id} trace={trace_id}"
     )
+
+    # Persist metrics to Asset table (backgrounded)
+    asset_id_val = _resolve_asset_id(payload.packet_id, trace_id, "text_summary")
+    if asset_id_val:
+        async def _save():
+            async with AsyncSessionLocal() as db:
+                await db.execute(
+                    update(Asset)
+                    .where(Asset.id == asset_id_val)
+                    .values(text_latency_ms=int(m.node_time_s * 1000))
+                )
+                await db.commit()
+        asyncio.create_task(_save(), name=f"text_summary:{asset_id_val}")
 
     return {
         "status": "acknowledged",

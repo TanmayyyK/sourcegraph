@@ -54,9 +54,6 @@ export function adaptEntry(raw: Record<string, unknown>): Asset {
 
 /** Generate mock assets for offline / demo mode */
 export function mockAssets(): Asset[] {
-  const now = new Date();
-  const t = (minusMs: number) => new Date(now.getTime() - minusMs).toISOString();
-
   return [
     {
       id: "a1", name: "cinema_reel_2024.mp4", stream: "Golden Library", status: "completed",

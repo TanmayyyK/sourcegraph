@@ -1,6 +1,6 @@
 import type { AssetStatusResponse, SimilarityResultResponse } from "@/types";
 
-const BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const BASE = (import.meta.env.VITE_API_URL || "http://localhost:8000").trim();
 const TOKEN_KEY = "overwatch_auth_token";
 
 export type ApiResult<T> =
@@ -40,6 +40,9 @@ export async function apiFetch<T = unknown>(
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
+
+    // Bypass ngrok browser warning
+    headers.set("ngrok-skip-browser-warning", "69420");
 
     const controller = new AbortController();
     timeoutId = setTimeout(() => controller.abort(), 20000);
@@ -90,6 +93,9 @@ export async function apiUpload(
     if (token) {
       headers.set("Authorization", `Bearer ${token}`);
     }
+
+    // Bypass ngrok browser warning
+    headers.set("ngrok-skip-browser-warning", "69420");
 
     const controller = new AbortController();
     timeoutId = setTimeout(() => controller.abort(), 30000);
@@ -182,10 +188,22 @@ export const assetApi = {
     apiFetch<SimilarityResultResponse>(`/api/v1/assets/${assetId}/result`, {
       method: "GET",
     }),
+
+  finalize: (assetId: string) =>
+    apiFetch<{ status: string }>(`/api/v1/assets/${assetId}/finalize`, {
+      method: "POST",
+    }),
 };
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 export type HealthResponse = {
-  status:  string;
-  version: string;
+  status:         string;
+  version:        string;
+  machine:        string;
+  role:           string;
+  total_assets:   number;
+  golden_assets:  number;
+  suspect_assets: number;
+  tailscale_ip:   string;
+  nodes?:         Record<string, string>;
 };

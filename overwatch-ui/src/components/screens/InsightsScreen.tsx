@@ -12,7 +12,6 @@ import {
   Eye,
   Film,
   GitBranch,
-  Grid,
   Mic,
   ScanText,
   ShieldAlert,
@@ -37,7 +36,7 @@ type Props = {
   Maps?: (path: string) => void;
 };
 
-type Tone = "green" | "red" | "amber" | "blue" | "neutral";
+type Tone = "green" | "red" | "amber" | "yellow" | "emerald" | "blue" | "neutral";
 
 const C = {
   bg: "#F5F2EC",
@@ -52,6 +51,8 @@ const C = {
   coral: "#FF6B47",
   green: "#0EA872",
   amber: "#F59E0B",
+  yellow: "#FACC15",
+  emerald: "#10B981",
 } as const;
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -60,15 +61,21 @@ const TONE_MAP: Record<Tone, { bg: string; text: string; dot: string }> = {
   green: { bg: `${C.green}18`, text: C.green, dot: C.green },
   red: { bg: `${C.coral}18`, text: C.coral, dot: C.coral },
   amber: { bg: `${C.amber}18`, text: C.amber, dot: C.amber },
+  yellow: { bg: `${C.yellow}18`, text: C.yellow, dot: C.yellow },
+  emerald: { bg: `${C.emerald}18`, text: C.emerald, dot: C.emerald },
   blue: { bg: `${C.accent}14`, text: C.accent, dot: C.accent },
   neutral: { bg: C.bgMuted, text: C.muted, dot: C.muted },
 };
 
-const VERDICT_DISPLAY: Record<SimilarityVerdict, { label: string; shortLabel: string; tone: Tone; color: string }> = {
-  PIRACY_DETECTED: { label: "Piracy Detected", shortLabel: "Threat Flagged", tone: "red", color: C.coral },
-  SUSPICIOUS: { label: "Suspicious", shortLabel: "Suspicious", tone: "amber", color: C.amber },
-  CLEAN: { label: "Clean", shortLabel: "Clean", tone: "green", color: C.green },
-  SAFE: { label: "Safe", shortLabel: "Safe", tone: "green", color: C.green },
+type PiracyTierInfo = {
+  label: string;
+  action: string;
+  shortLabel: string;
+  tone: Tone;
+  color: string;
+  textClass: string;
+  bgClass: string;
+  borderClass: string;
 };
 
 function useFonts() {
@@ -88,6 +95,62 @@ function toScorePercent(score: number): number {
   return score > 1 ? Math.round(score) : Math.round(score * 100);
 }
 
+function normalizeConfidenceScore(score: number): number {
+  if (!Number.isFinite(score)) return 0;
+  const rawScore = score > 1 ? score / 100 : score;
+  return Math.max(0, Math.min(1, rawScore));
+}
+
+function getPiracyTier(score: number): PiracyTierInfo {
+  const rawScore = normalizeConfidenceScore(score);
+  if (rawScore >= 0.8) {
+    return {
+      label: "High Confidence (Piracy)",
+      action: "Automated Takedown Initiated",
+      shortLabel: "High Confidence",
+      tone: "red",
+      color: "#EF4444",
+      textClass: "text-red-500",
+      bgClass: "bg-red-500/20",
+      borderClass: "border-red-500",
+    };
+  }
+  if (rawScore >= 0.6) {
+    return {
+      label: "Suspicious",
+      action: "Manual Review Required",
+      shortLabel: "Suspicious",
+      tone: "amber",
+      color: "#F59E0B",
+      textClass: "text-amber-500",
+      bgClass: "bg-amber-500/20",
+      borderClass: "border-amber-500",
+    };
+  }
+  if (rawScore >= 0.4) {
+    return {
+      label: "Low Confidence",
+      action: "Flagged for Observation",
+      shortLabel: "Low Confidence",
+      tone: "yellow",
+      color: "#FACC15",
+      textClass: "text-yellow-400",
+      bgClass: "bg-yellow-400/20",
+      borderClass: "border-yellow-400",
+    };
+  }
+  return {
+    label: "Clean",
+    action: "Discarded",
+    shortLabel: "Clean",
+    tone: "emerald",
+    color: "#10B981",
+    textClass: "text-emerald-500",
+    bgClass: "bg-emerald-500/20",
+    borderClass: "border-emerald-500",
+  };
+}
+
 function getFileTypeLabel(filename: string): string {
   const ext = filename.split(".").pop()?.toUpperCase() ?? "";
   if (!ext) return "Unknown";
@@ -102,7 +165,7 @@ function getFileTypeLabel(filename: string): string {
 
 function normalizeVerdict(verdict: SimilarityVerdict | string | null | undefined): SimilarityVerdict {
   if (verdict === "SAFE") return "SAFE";
-  if (verdict === "PIRACY_DETECTED" || verdict === "SUSPICIOUS" || verdict === "CLEAN") return verdict;
+  if (verdict === "PIRACY_DETECTED" || verdict === "SUSPICIOUS" || verdict === "LOW_CONFIDENCE" || verdict === "CLEAN") return verdict;
   return "CLEAN";
 }
 
@@ -111,8 +174,8 @@ function buildProducerAnalytics(status: AssetStatusResponse | null): ProducerAna
     assetId: status?.asset_id ?? "unavailable",
     filename: status?.filename ?? "No asset selected",
     totalFrames: status?.frame_count ?? 0,
-    visionNodeLatencyMs: 0,
-    contextNodeLatencyMs: 0,
+    visionNodeLatencyMs: status?.vision_latency_ms ?? 0,
+    contextNodeLatencyMs: status?.text_latency_ms ?? 0,
     successfulExtractions: status?.frame_count ?? 0,
     databaseVectorsSynced: status?.frame_count ?? 0,
   };
@@ -236,6 +299,8 @@ function MetricRow({
     tone === "red" ? C.coral :
     tone === "green" ? C.green :
     tone === "amber" ? C.amber :
+    tone === "yellow" ? C.yellow :
+    tone === "emerald" ? C.emerald :
     tone === "blue" ? C.accent :
     C.text;
 
@@ -674,7 +739,7 @@ function InsightsShell({
 }
 
 export function AuditorInsights({ data, Maps }: { data: AuditorForensics; Maps: (path: string) => void }) {
-  const verdictInfo = VERDICT_DISPLAY[data.verdict];
+  const verdictInfo = getPiracyTier(data.fusedScore);
   const visualPct = toScorePercent(data.visualScore);
   const audioPct = toScorePercent(data.audioScore);
   const fusedPct = toScorePercent(data.fusedScore);
@@ -685,16 +750,15 @@ export function AuditorInsights({ data, Maps }: { data: AuditorForensics; Maps: 
       mode="AUDITOR"
       assetId={data.assetId}
       fileType={fileType}
-      verdictLabel={verdictInfo.label}
+      verdictLabel={`${verdictInfo.label} · ${verdictInfo.action}`}
       verdictColor={verdictInfo.color}
       Maps={Maps}
     >
       <Fade delay={0.1}>
         <div style={{ padding: "14px 28px 0" }}>
           <div
+            className={`border ${verdictInfo.bgClass} ${verdictInfo.borderClass}`}
             style={{
-              background: C.bgCard,
-              border: `1px solid ${C.border}`,
               borderRadius: "12px",
               padding: "18px",
               display: "flex",
@@ -706,10 +770,14 @@ export function AuditorInsights({ data, Maps }: { data: AuditorForensics; Maps: 
           >
             <div style={{ flex: 1, minWidth: 0 }}>
               <StatusBadge label={verdictInfo.shortLabel} tone={verdictInfo.tone} />
-              <h2 style={{ fontSize: "24px", fontWeight: 800, color: verdictInfo.color, marginTop: "10px", letterSpacing: "-0.02em" }}>
-                {data.verdict === "PIRACY_DETECTED" ? `PIRACY DETECTED: ${fusedPct}% Match` : verdictInfo.label}
+              <h2 className={verdictInfo.textClass} style={{ fontSize: "24px", fontWeight: 800, marginTop: "10px", letterSpacing: "-0.02em" }}>
+                {verdictInfo.label}
               </h2>
               <p style={{ fontSize: "13px", color: C.muted, marginTop: "5px", lineHeight: 1.6 }}>
+                <span className={verdictInfo.textClass} style={{ fontWeight: 700 }}>
+                  {verdictInfo.action}
+                </span>
+                {" · "}
                 {data.matchedAssetId
                   ? `Matched against reference asset ${data.matchedAssetId}.`
                   : "No protected reference asset was returned by the auditor service."}
@@ -760,7 +828,7 @@ export function AuditorInsights({ data, Maps }: { data: AuditorForensics; Maps: 
         >
           <EngineCard
             title="Visual Similarity"
-            subtitle="Rohit Engine"
+            subtitle="Argus Node"
             badgeLabel="FAISS"
             badgeTone={visualPct >= 70 ? "red" : "green"}
             icon={<Eye size={14} />}
@@ -844,7 +912,7 @@ export function ProducerInsights({ data, Maps }: { data: ProducerAnalytics; Maps
         >
           <EngineCard
             title="Frame Extraction"
-            subtitle="M2 Extractor"
+            subtitle="Atlas Protocol"
             badgeLabel="Complete"
             badgeTone="green"
             icon={<Film size={14} />}
@@ -878,14 +946,14 @@ export function ProducerInsights({ data, Maps }: { data: ProducerAnalytics; Maps
           >
             <DivRow>
               <MetricRow
-                label="Vision Node Execution Time"
+                label="Argus Execution Time"
                 value={data.visionNodeLatencyMs > 0 ? `${data.visionNodeLatencyMs} ms` : "Awaiting telemetry"}
                 icon={<Eye size={11} />}
               />
             </DivRow>
             <DivRow last>
               <MetricRow
-                label="Text Node Execution Time"
+                label="Hermes Execution Time"
                 value={data.contextNodeLatencyMs > 0 ? `${data.contextNodeLatencyMs} ms` : "Awaiting telemetry"}
                 icon={<ScanText size={11} />}
               />

@@ -1,29 +1,162 @@
-# M4 Orchestrator: The Lead Part of the System (Tanmay)
+# SourceGraph Platform Overview
 
-The **M4 Orchestrator Asset Intelligence Network** is a highly distributed, multimodal forensic pipeline designed to perform real-time visual and audio analysis on ingested media files. Its primary goal is to detect piracy, deepfakes, and supply-chain anomalies (such as broadcaster cross-contamination) before assets are published.
+The **M4 Orchestrator Asset Intelligence Network** is a distributed forensic media-analysis platform designed to inspect ingested assets before publication, syndication, or archival. It combines **visual embeddings, OCR, semantic context extraction, audio transcription, vector similarity, and incident scoring** into a single operational workflow.
 
-## The Microservice Architecture
+The platform is architected around a clear separation of responsibilities:
 
-The system is built around strict contracts between distributed nodes, coordinated by the **M4 Orchestrator (Lead: Tanmay)**. 
+- **Control plane**: the Orchestrator service manages lifecycle state, persistence, synchronization, policy thresholds, and operator-facing APIs.
+- **Data plane**: the Extractor, Vision, and Context nodes process the raw media payload and emit structured evidence back to the Orchestrator.
+- **Command layer**: the React-based UI provides ingest controls, runtime status, analytics, and per-asset forensic summaries.
 
-1. **M2 Extractor Node (Yogesh)**
-   - Responsible for ingesting the media (`video_url` + `packet_id`).
-   - Uses `FFmpeg` to extract 1-FPS JPEG frames, optionally utilizing Apple Silicon VideoToolbox acceleration.
-   - Extracts a `16kHz mono WAV` audio track for transcription.
-   - Manages a thread-safe `BatchTracker` to guarantee accurate packet processing.
+## Leadership and Architectural Ownership
 
-2. **Vision Node (Rohit)**
-   - Receives individual frames and performs visual signature extraction (e.g., object detection, Deepfake artifacts).
-   - Hosts the **Ghost Node**, an ephemeral microservice running the Whisper engine to transcribe the audio track.
+The platform architecture is led by **Tanmay Kumar, Lead Architect**, who owns the distributed system shape, backend coordination layer, contract design, and end-to-end product integration across the command center and worker topology.
 
-3. **Context Node (Yug)**
-   - Runs the `ContextNode` on strict hardware constraints (e.g., NVIDIA RTX 2050 4GB VRAM limit).
-   - Extracts text from frames using `EasyOCR`.
-   - Generates semantic embeddings using `SentenceTransformers` (`all-MiniLM-L6-v2`).
-   - Dynamically loads and unloads models from VRAM using the "Anti-Gravity Protocol" to prevent `CUDA_OUT_OF_MEMORY` crashes.
+Node-level execution is distributed across the engineering team:
 
-## Hardware Constraints & Safety
+| Layer | Primary Owner | Responsibility |
+| --- | --- | --- |
+| M4 Orchestrator | Tanmay Kumar | Coordination, persistence, thresholds, APIs, UI integration |
+| M2 Extractor | Yogesh Sharma | Asset intake, FFmpeg normalization, worker dispatch |
+| Vision Node / ARGUS | Rohit Kumar | CLIP embeddings, YOLO detections, audio Ghost Node |
+| Context Node / HERMES | Yug | OCR, semantic embeddings, watermark conflict detection |
 
-A major feature of the M4 Orchestrator system is its ability to run parallel ML models on low-VRAM edge devices. 
-- The VRAM memory governor ensures allocations never exceed the 3.5GB ceiling.
-- Whisper transcription is strictly sequenced to run *only after* GPU visual nodes have confirmed they are idle, preventing `CLIP/YOLO` and `Whisper` from colliding in VRAM.
+## System Objectives
+
+The platform is optimized around four engineering goals:
+
+1. **Pre-publication risk detection** for piracy, stolen broadcasts, deepfakes, or cross-source contamination.
+2. **Auditable evidence production** through structured metadata, timestamps, trace IDs, and persistent vectors.
+3. **Low-VRAM deployment viability** so multimodal inference can run on modest edge hardware instead of requiring oversized GPU infrastructure.
+4. **Operational resilience** through asynchronous node contracts, retry logic, health probes, degraded fallbacks, and explicit terminal states.
+
+## Topology Summary
+
+| Service | Runtime | Main Role | Key Output |
+| --- | --- | --- | --- |
+| M4 Orchestrator | FastAPI + PostgreSQL + pgvector | State, sync, search, verdicts | Asset records, vector rows, similarity results |
+| M2 Extractor | FastAPI + FFmpeg + httpx | Ingest, normalize, broadcast | Frames, audio track, pipeline summary |
+| ARGUS Vision Node | FastAPI + CLIP + YOLOv8n | Visual inference | `512-D` vectors, object detections |
+| HERMES Context Node | FastAPI + EasyOCR + MiniLM | OCR + semantic inference | `384-D` vectors, OCR evidence |
+| Ghost Audio Path | Whisper on demand | Audio transcription | transcript and audio summary |
+
+## End-to-End Processing Lifecycle
+
+The platform follows a deterministic multi-stage lifecycle for each asset:
+
+1. **Asset registration**
+   - A producer or auditor initiates ingest with a media reference and a logical asset context.
+   - The Orchestrator assigns or propagates a `trace_id` and starts the asset lifecycle record.
+
+2. **Extraction and normalization**
+   - The Extractor downloads the source file or receives an upload.
+   - `FFmpeg` emits `1 FPS` normalized frames at `224x224`.
+   - Audio is extracted as `16 kHz`, mono WAV when available.
+
+3. **Parallel visual dispatch**
+   - Each frame is posted concurrently to the Vision Node and Context Node.
+   - The two nodes work independently and may report results out of order.
+
+4. **Asynchronous evidence reconciliation**
+   - The Orchestrator buffers and joins visual and text events using `packet_id`, frame timestamp, and temporal slop rules.
+   - Vector rows are created even when one modality arrives before the other.
+
+5. **Audio phase sequencing**
+   - Audio transcription begins only after the visual workers report idle conditions.
+   - This avoids CLIP/YOLO and Whisper competing for the same VRAM envelope.
+
+6. **Fusion and verdict synthesis**
+   - Similarity scores are computed against protected golden assets.
+   - Conflict rules, embedding matches, and metadata cues are translated into a verdict.
+
+7. **Incident delivery**
+   - The asset becomes visible in the command center with traceable evidence, operational timings, and final risk status.
+
+## Control Plane vs Data Plane
+
+### Control Plane
+
+The Orchestrator owns the following concerns:
+
+- request identity and `trace_id` propagation
+- API authentication and operator session flows
+- asset lifecycle state transitions
+- webhook buffering and reconciliation
+- vector persistence in PostgreSQL / `pgvector`
+- similarity search and threshold-based verdicting
+- health aggregation and dashboard exposure
+
+### Data Plane
+
+The worker nodes focus exclusively on deterministic inference and evidence generation:
+
+- the Extractor performs media normalization and dispatch
+- the Vision node emits visual signatures and object detections
+- the Context node emits OCR text and semantic embeddings
+- the audio path emits transcript evidence after visual drain completes
+
+This boundary is important because it keeps inference nodes stateless at the product level while allowing the Orchestrator to remain the durable source of truth.
+
+## Design Principles
+
+### 1. Asynchronous contracts over synchronous coupling
+
+The worker nodes do not need to coordinate directly with each other. Each node speaks only to the Orchestrator or to the Extractor through a narrow, explicit transport contract.
+
+### 2. Deterministic fallback paths
+
+If a frame cannot be embedded due to corruption or GPU pressure, the node returns a safe fallback instead of poisoning downstream state. This is visible in the Vision node's zero-vector guard and the Context node's `"Empty Context"` semantic fallback.
+
+### 3. Low-VRAM safety first
+
+The platform assumes real deployment constraints:
+
+- Vision runs CLIP and YOLO on an RTX 3050 profile.
+- Context runs OCR and MiniLM on an RTX 2050 profile.
+- Audio work is deferred until the visual queue is drained.
+- explicit cleanup is part of the design, not an afterthought.
+
+### 4. Evidence must be explainable
+
+Similarity signals are only useful if the operator can understand the decision. The platform therefore preserves:
+
+- timestamps
+- OCR snippets
+- object detections
+- matched asset identifiers
+- threshold outcomes
+- per-stage durations
+
+## Security and Trust Model
+
+Internal worker traffic is protected by shared webhook secrets and controlled cluster routing. The platform also enforces separation between external media downloads and internal cluster calls so sensitive internal headers are not leaked to untrusted content sources.
+
+Key trust assumptions:
+
+- only internal services may call worker endpoints with valid node secrets
+- the Orchestrator remains the authoritative asset registry
+- terminal failure states must short-circuit continued processing
+- evidence should be append-only from the perspective of user-facing audit review
+
+## Operational Characteristics
+
+| Characteristic | Implementation |
+| --- | --- |
+| Traceability | request-scoped `trace_id` is propagated across services |
+| Sync tolerance | dual-vector reconciliation supports out-of-order modality arrival |
+| Health reporting | active node probing plus worker heartbeats |
+| Persistence | PostgreSQL with `pgvector` and lifecycle columns |
+| Failure handling | bounded retries, terminal `409` handling, schema-safe `422` logging |
+
+## Current Engineering Constraints
+
+The current architecture is intentionally pragmatic rather than over-generalized:
+
+- the audio path is expensive and therefore sequential
+- GPU workers are designed as specialized single-purpose services rather than generic batch executors
+- schema patching is currently handled in startup logic rather than a full migration framework
+- some public-facing docs still describe the worker topology using internal codenames, which is acceptable for demo-stage engineering docs but should be normalized in a production documentation pass
+
+## Why This Architecture Matters
+
+The system is not just a set of models behind an upload form. It is a **forensic runtime**: each asset passes through a traceable sequence of extract, infer, reconcile, score, and report. That structure is what allows the platform to support both **producer assurance** and **auditor investigation** from the same core pipeline.

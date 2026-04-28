@@ -87,8 +87,9 @@ async def request_otp(payload: OTPRequest, db: AsyncSession = Depends(get_db)) -
                 detail=f"Please wait {int(remaining) + 1}s before requesting a new OTP.",
             )
 
+    from sqlalchemy import func
     # 1. Find or create the user
-    result = await db.execute(select(User).where(User.email == payload.email))
+    result = await db.execute(select(User).where(func.lower(User.email) == payload.email.lower()))
     user = result.scalars().first()
     
     code = f"{random.randint(0, 999999):06d}"
@@ -153,8 +154,9 @@ async def request_otp(payload: OTPRequest, db: AsyncSession = Depends(get_db)) -
 @router.post("/verify-otp", response_model=TokenResponse)
 async def verify_otp(payload: OTPVerify, db: AsyncSession = Depends(get_db)) -> Any:
     """Validates the 6-digit code and returns a JWT."""
+    from sqlalchemy import func
     email_key = payload.email.lower()
-    result = await db.execute(select(User).where(User.email == payload.email))
+    result = await db.execute(select(User).where(func.lower(User.email) == payload.email.lower()))
     user = result.scalars().first()
     
     # 1. Validation checks
@@ -229,7 +231,8 @@ async def google_auth(payload: GoogleAuthRequest, db: AsyncSession = Depends(get
             detail="Google account must provide a verified email.",
         )
 
-    result = await db.execute(select(User).where(User.email == email))
+    from sqlalchemy import func
+    result = await db.execute(select(User).where(func.lower(User.email) == email.lower()))
     user = result.scalars().first()
 
     if payload.mode == "LOGIN" and not user:

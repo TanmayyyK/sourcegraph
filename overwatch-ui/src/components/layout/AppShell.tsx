@@ -18,13 +18,12 @@ type Props = {
   role:        string;
   connected:   boolean;
   assets:      Asset[];
-  fetchResult: (id: string) => void;
 };
 
 export default function AppShell({
   view, onNav, collapsed, onToggle,
   userName, role, connected,
-  assets, fetchResult,
+  assets,
 }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null);
 

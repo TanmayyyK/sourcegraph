@@ -7,7 +7,7 @@ import {
   PanelLeftOpen,
   Eye,
 } from "lucide-react";
-import { useState } from "react";
+
 
 export type AppView = "ingest" | "command" | "insights";
 

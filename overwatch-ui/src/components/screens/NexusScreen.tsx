@@ -3,13 +3,10 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft,
   Activity,
-  BoxSelect,
   Database,
-  Grid,
   Image as ImageIcon,
   Mic,
   ScanText,
-  ShieldAlert,
   Zap
 } from "lucide-react";
 import { useParams } from "react-router-dom";

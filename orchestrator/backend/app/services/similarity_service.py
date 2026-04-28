@@ -15,9 +15,10 @@ Asset-level verdict:
 
 Verdicts
 --------
-  fused_score ≥ PIRACY_THRESHOLD  → PIRACY_DETECTED
-  fused_score ≥ SUSPICIOUS_THRESHOLD → SUSPICIOUS
-  otherwise                        → CLEAN
+  fused_score ≥ 0.80  → PIRACY_DETECTED
+  fused_score ≥ 0.60  → SUSPICIOUS
+  fused_score ≥ 0.40  → LOW_CONFIDENCE
+  otherwise           → CLEAN
 
 Retry
 -----
@@ -242,10 +243,12 @@ class SimilarityService:
 
     @staticmethod
     def _verdict(fused_score: float) -> Verdict:
-        if fused_score >= settings.piracy_threshold:
+        if fused_score >= 0.80:
             return "PIRACY_DETECTED"
-        if fused_score >= settings.suspicious_threshold:
+        if fused_score >= 0.60:
             return "SUSPICIOUS"
+        if fused_score >= 0.40:
+            return "LOW_CONFIDENCE"
         return "CLEAN"
 
 

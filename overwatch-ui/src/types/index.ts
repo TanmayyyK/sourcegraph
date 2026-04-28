@@ -1,6 +1,6 @@
 export type UserRole = "PRODUCER" | "AUDITOR";
 
-export type AssetStatus = "processing" | "completed" | "failed";
+export type AssetStatus = "processing" | "completed" | "failed" | "analyzing";
 
 export type AssetStatusResponse = {
   asset_id: string;
@@ -8,11 +8,13 @@ export type AssetStatusResponse = {
   is_golden: boolean;
   status: AssetStatus;
   frame_count: number;
+  vision_latency_ms: number | null;
+  text_latency_ms: number | null;
   created_at: string;
   trace_id: string;
 };
 
-export type SimilarityVerdict = "PIRACY_DETECTED" | "SUSPICIOUS" | "CLEAN" | "SAFE";
+export type SimilarityVerdict = "PIRACY_DETECTED" | "SUSPICIOUS" | "LOW_CONFIDENCE" | "CLEAN" | "SAFE";
 
 export type SimilarityResultResponse = {
   suspect_asset_id: string;

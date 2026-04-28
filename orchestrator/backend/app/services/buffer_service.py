@@ -132,6 +132,15 @@ class BufferService:
         self._cleanup_task: Optional[asyncio.Task] = None  # type: ignore[type-arg]
         self._stats = {"flushed": 0, "evicted_ttl": 0, "evicted_capacity": 0, "duplicates": 0}
 
+    async def get_asset_count(self, asset_id: UUID) -> int:
+        """Return the number of entries currently in the buffer for this asset."""
+        async with self._lock:
+            count = 0
+            for key in self._buffer:
+                if key.startswith(str(asset_id)):
+                    count += 1
+            return count
+
     # ── Public API ───────────────────────────────────────────────────────
 
     async def ingest(

@@ -27,10 +27,10 @@
 
 from __future__ import annotations
 
-from typing import Annotated, Literal, Union
+from typing import Annotated, Any, Literal, Union
 from uuid import UUID
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -39,7 +39,7 @@ from pydantic import BaseModel, Field, field_validator
 
 # Verdict is a type alias, not a BaseModel.
 # Used as an annotation in SimilarityService and SimilarityResultResponse.
-Verdict = Literal["PIRACY_DETECTED", "SUSPICIOUS", "CLEAN"]
+Verdict = Literal["PIRACY_DETECTED", "SUSPICIOUS", "LOW_CONFIDENCE", "CLEAN"]
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -67,10 +67,23 @@ class FeederPayloadBase(BaseModel):
 # ── 1. system_ping ────────────────────────────────────────────────────────────
 
 class ServiceHealthMap(BaseModel):
-    ingest_api: str
-    vision_engine: str
-    text_processor: str
+    atlas: str
+    argus: str
+    hermes: str
     orchestrator: str
+
+    @model_validator(mode='before')
+    @classmethod
+    def remap_legacy_names(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            # Remap old TITAN protocol names to new professional identifiers
+            if "ingest_api" in data and "atlas" not in data:
+                data["atlas"] = data.pop("ingest_api")
+            if "vision_engine" in data and "argus" not in data:
+                data["argus"] = data.pop("vision_engine")
+            if "text_processor" in data and "hermes" not in data:
+                data["hermes"] = data.pop("text_processor")
+        return data
 
 
 class SystemPingPayload(FeederPayloadBase):
@@ -313,6 +326,8 @@ class AssetStatusResponse(BaseModel):
     is_golden: bool
     status: str                    # 'processing' | 'completed' | 'failed'
     frame_count: int               # number of FrameVector rows written so far
+    vision_latency_ms: int | None = None
+    text_latency_ms: int | None = None
     created_at: str                # ISO 8601 string
     trace_id: str
 
@@ -325,9 +340,10 @@ class SimilarityResultResponse(BaseModel):
     (GET /api/v1/assets/{id}/result).
 
     verdict values:
-      PIRACY_DETECTED — fused_score ≥ piracy_threshold
-      SUSPICIOUS      — fused_score ≥ suspicious_threshold
-      CLEAN           — below both thresholds
+      PIRACY_DETECTED — fused_score ≥ 0.80
+      SUSPICIOUS      — fused_score ≥ 0.60
+      LOW_CONFIDENCE  — fused_score ≥ 0.40
+      CLEAN           — fused_score < 0.40
     """
     suspect_asset_id: UUID
     golden_asset_id: UUID | None       # None when no golden library exists
@@ -349,3 +365,4 @@ class AnalysisPayload(BaseModel):
     nodes: list[dict]
     edges: list[dict]
     ingest_logs: list[str]
+    temporal_data: list[dict] = []

@@ -29,14 +29,14 @@ class Settings(BaseSettings):
 
     # ── Node Topology ───────────────────────────────────────────
     tailscale_ip: str = "100.69.253.89"
-    # Full URL of the M2 FFmpeg Extractor (env: EXTRACTOR_URL)
+    # Full URL of the ATLAS (M2 FFmpeg Extractor) (env: EXTRACTOR_URL)
     extractor_url: str = "http://100.103.180.14:8003"
     extractor_timeout_seconds: float = 300.0
     extractor_max_retries: int = 3
 
     # GPU node health endpoints (used by active health probe)
-    vision_node_url: str = "http://100.119.250.125:8080"   # Rohit / RTX 3050
-    context_node_url: str = "http://100.115.89.72:8002"    # Yug / RTX 2050
+    vision_node_url: str = "http://100.119.250.125:8080"   # ARGUS / RTX 3050
+    context_node_url: str = "http://100.115.89.72:8002"    # HERMES / RTX 2050
     auditor_url: str = "http://localhost:8004"
     health_probe_interval: float = 10.0                    # seconds between probes
 

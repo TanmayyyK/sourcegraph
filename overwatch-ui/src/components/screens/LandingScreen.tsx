@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Link } from "react-router-dom";
+import SystemStatusOverlay from "./SystemStatusOverlay";
 
 // ─── Colour tokens ────────────────────────────────────────────────────────────
 const C = {
@@ -23,7 +24,7 @@ const C = {
 const LOGOS = [
   { 
     value: "Distributed Inference", 
-    label: "Innovation: Asynchronous multi-node processing utilizing independent Extractor, Vision, and Context GPU engines." 
+    label: "Innovation: Asynchronous multi-node processing utilizing independent ATLAS, ARGUS, and HERMES GPU engines." 
   },
   { 
     value: "Zero-Poison Guards", 
@@ -697,6 +698,7 @@ export default function LandingScreen({ onLoginClick, onSignupClick }: { onLogin
       <TeamSection />
       <CtaSection onSignupClick={onSignupClick} />
       <Footer />
+      <SystemStatusOverlay />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import {
   LogOut,
   Settings,
 } from "lucide-react";
+import { apiFetch, HealthResponse } from "@/lib/api";
 
 /* ══════════════════════════════════════════════════════════════════════════
    DESIGN TOKENS  —  unified from LandingScreen + OverwatchIngestPortal
@@ -35,18 +36,17 @@ const EASE_SPRING = [0.22, 1, 0.36, 1] as const;
 /* ══════════════════════════════════════════════════════════════════════════
    STATIC DATA
    ══════════════════════════════════════════════════════════════════════ */
-const NAV_LINKS = ["Dashboard", "Assets", "Threats", "Analytics", "Settings"];
+const NAV_LINKS = [
+  { label: "Home", kind: "home" },
+  { label: "Features", kind: "features" },
+  { label: "GitHub", kind: "external", href: "https://github.com/TanmayyyK/sourcegraph" },
+  { label: "Docs", kind: "docs", href: "/docs" },
+] as const;
 
 /* ══════════════════════════════════════════════════════════════════════════
    API TYPES
    ══════════════════════════════════════════════════════════════════════ */
-interface FeedAsset {
-  id:         string;
-  filename:   string;
-  status:     "processing" | "completed" | "failed";
-  is_golden:  boolean;
-  created_at: string;
-}
+
 
 interface DashboardStats {
   totalAssets:  number;
@@ -73,17 +73,20 @@ function useDashboardStats(): DashboardStats {
 
     async function fetchHealth() {
       try {
-        const res = await fetch("http://127.0.0.1:8000/");
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+        const res = await apiFetch<HealthResponse>("/");
         if (cancelled) return;
-        setStats({
-          totalAssets:  data.total_assets,
-          goldenAssets: data.golden_assets,
-          isOffline:    false,
-          isLoading:    false,
-          nodes:        data.nodes || {},
-        });
+        
+        if (res.ok) {
+          setStats({
+            totalAssets:  res.data.total_assets,
+            goldenAssets: res.data.golden_assets,
+            isOffline:    false,
+            isLoading:    false,
+            nodes:        res.data.nodes || {},
+          });
+        } else {
+          throw new Error(res.error);
+        }
       } catch (err) {
         console.error("[CommandCentre] Health fetch failed:", err);
         if (cancelled) return;
@@ -211,6 +214,28 @@ const AppNavbar: React.FC<{
 
   const initials = userName.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
 
+  const handleCenterNavClick = (item: (typeof NAV_LINKS)[number]) => {
+    if (item.kind === "home") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      onNavigate("HOME");
+      return;
+    }
+
+    if (item.kind === "features") {
+      document.getElementById("features")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    if (item.kind === "external" && item.href) {
+      window.open(item.href, "_blank", "noopener,noreferrer");
+      return;
+    }
+
+    if (item.kind === "docs" && item.href) {
+      window.location.assign(item.href);
+    }
+  };
+
   return (
     <nav style={{
       position:       "fixed",
@@ -251,14 +276,14 @@ const AppNavbar: React.FC<{
 
       {/* Centre nav links */}
       <div style={{ display: "flex", alignItems: "center", gap: "2px" }}>
-        {NAV_LINKS.map((l) => (
+        {NAV_LINKS.map((item) => (
           <button
-            key={l} type="button" style={linkBase}
+            key={item.label} type="button" style={linkBase}
             onMouseEnter={(e) => { e.currentTarget.style.background = C.bgMuted; e.currentTarget.style.color = C.text; }}
             onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.textMuted; }}
-            onClick={() => onNavigate(l.toUpperCase())}
+            onClick={() => handleCenterNavClick(item)}
           >
-            {l}
+            {item.label}
           </button>
         ))}
       </div>
@@ -343,21 +368,12 @@ const AppNavbar: React.FC<{
 const HeroSection: React.FC<{
   userName:    string;
   onNavigate:  (dest: string) => void;
-  statsData:   DashboardStats;            // ← live stats
-}> = ({ userName, onNavigate, statsData }) => {
+}> = ({ userName, onNavigate }) => {
   const hour    = new Date().getHours();
   const timeTag = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
   const firstName = userName.split(" ")[0];
 
   const [glowPrimary, setGlowPrimary] = useState(false);
-
-  /** Formats the live count, with graceful fallbacks during load / offline */
-  const fmtCount = (n: number) => n.toLocaleString();
-  const assetsValue = statsData.isLoading
-    ? "…"
-    : statsData.isOffline
-    ? "—"
-    : fmtCount(statsData.totalAssets);
 
   return (
     <section style={{
@@ -529,7 +545,7 @@ const HeroSection: React.FC<{
           </motion.button>
         </motion.div>
 
-        {/* Stats row — "Assets Protected" now uses live totalAssets */}
+        {/* Stats row */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -543,10 +559,10 @@ const HeroSection: React.FC<{
           }}
         >
           {[
-            { value: assetsValue, label: "Assets Protected" },
-            { value: "99.97%",   label: "Uptime"           },
-            { value: "< 800ms",  label: "Avg Ingest Time"  },
-            { value: "24",       label: "Threats Blocked"  },
+            { value: "96.2%",   label: "Detection Precision" },
+            { value: "<2min",   label: "Average Pipeline"    },
+            { value: "AES-256", label: "Data Encryption"     },
+            { value: "JSON-LD", label: "Structured Reports"  },
           ].map((s) => (
             <div key={s.label} style={{ textAlign: "center" }}>
               <p style={{
@@ -672,9 +688,9 @@ const NodeRoster: React.FC<{ statsData: DashboardStats }> = ({ statsData }) => {
   const ref    = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
   const nodes  = [
-    { name: "Yogesh", id: "orchestrator",   role: "Lead Analyst",   color: C.accent },
-    { name: "Yug",    id: "text_processor",  role: "Text & OCR Engine",  color: C.violet },
-    { name: "Rohit",  id: "vision_engine", role: "Vision Engine", color: C.green  },
+    { name: "ATLAS",  id: "orchestrator",   role: "Lead Analyst",   color: C.accent },
+    { name: "HERMES", id: "text_processor",  role: "Context Engine", color: C.violet },
+    { name: "ARGUS",  id: "vision_engine", role: "Vision Engine", color: C.green  },
   ];
 
   return (
@@ -881,7 +897,7 @@ const CardsSection: React.FC<{
       padding:    "100px 24px 120px",
       background: C.bg,
       fontFamily: "DM Sans, sans-serif",
-    }}>
+    }} id="features">
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
 
         {/* Section header */}
@@ -935,16 +951,15 @@ const StickyStatus: React.FC<{ statsData: DashboardStats }> = ({ statsData }) =>
   const isOffline = statsData.isOffline;
 
   const services = [
-    { label: "Ingest API",        ok: !isOffline },
-    { label: "Vision Engine",     ok: statsData?.nodes?.vision_engine === "OK" },
-    { label: "Text Processor",    ok: statsData?.nodes?.text_processor === "OK" },
+    { label: "ATLAS (Extractor)", ok: statsData?.nodes?.atlas === "OK" },
+    { label: "ARGUS (Vision)",    ok: statsData?.nodes?.argus === "OK" },
+    { label: "HERMES (Context)",  ok: statsData?.nodes?.hermes === "OK" },
     { label: "Orchestrator",      ok: statsData?.nodes?.orchestrator === "OK" },
-    { label: "All Microservices", ok: !isOffline },
   ];
 
   const dotColor    = isOffline ? C.coral : C.green;
   const statusLabel = isOffline ? "System Offline" : "System Online";
-  const nodeLabel   = isOffline ? "unreachable" : "3/3 nodes";
+  const nodeLabel   = isOffline ? "unreachable" : "4/4 nodes online";
 
   return (
     <motion.div
@@ -1035,7 +1050,6 @@ const CommandCenterHome: React.FC<CommandCenterHomeProps> = ({
       <HeroSection
         userName={userName}
         onNavigate={onNavigate}
-        statsData={statsData}
       />
 
       <CardsSection

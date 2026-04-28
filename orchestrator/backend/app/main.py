@@ -231,8 +231,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         shows the node as ONLINE even when no video is being processed.
         """
         targets = [
-            ("vision_engine",  settings.vision_node_url),
-            ("text_processor", settings.context_node_url),
+            ("argus",  settings.vision_node_url),
+            ("hermes", settings.context_node_url),
         ]
         while not _probe_cancel.is_set():
             for key, base_url in targets:
@@ -296,8 +296,13 @@ def create_app() -> FastAPI:
     # and remove allow_origin_regex before promoting to production.
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=False,  # must be False when allow_origins=["*"]
+        allow_origins=[
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "https://overwatch-v1.web.app",
+            "https://overwatch-v1.firebaseapp.com"
+        ],
+        allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
         expose_headers=["X-Trace-ID"],

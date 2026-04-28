@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { apiFetch } from "@/lib/api";
 import {
   ReactFlow,
   Controls,
@@ -105,6 +106,10 @@ const C = {
   coral:      "#F26B5B",   // Critical
   green:      "#2DA44E",   // Success
   amber:      "#D97706",   // Warning
+  redTier:    "#EF4444",
+  amberTier:  "#F59E0B",
+  yellowTier: "#FACC15",
+  emeraldTier:"#10B981",
   // Node palette
   colorAsset:   "#7C5CF7",
   colorEngine:  "#4C63F7",
@@ -143,6 +148,55 @@ interface AnalysisPayload {
   nodes:       ApiNode[];
   edges:       ApiEdge[];
   ingest_logs: string[];
+  temporal_data?: Array<{ ts: number; val: number; type: string }>;
+}
+
+function normalizeConfidenceScore(score?: number): number {
+  if (!Number.isFinite(score ?? NaN)) return 0;
+  const rawScore = (score ?? 0) > 1 ? (score ?? 0) / 100 : (score ?? 0);
+  return Math.max(0, Math.min(1, rawScore));
+}
+
+function getPiracyTier(score?: number) {
+  const rawScore = normalizeConfidenceScore(score);
+  if (rawScore >= 0.8) {
+    return {
+      label: "High Confidence (Piracy)",
+      action: "Automated Takedown Initiated",
+      color: C.redTier,
+      textClass: "text-red-500",
+      bgClass: "bg-red-500/20",
+      borderClass: "border-red-500",
+    };
+  }
+  if (rawScore >= 0.6) {
+    return {
+      label: "Suspicious",
+      action: "Manual Review Required",
+      color: C.amberTier,
+      textClass: "text-amber-500",
+      bgClass: "bg-amber-500/20",
+      borderClass: "border-amber-500",
+    };
+  }
+  if (rawScore >= 0.4) {
+    return {
+      label: "Low Confidence",
+      action: "Flagged for Observation",
+      color: C.yellowTier,
+      textClass: "text-yellow-400",
+      bgClass: "bg-yellow-400/20",
+      borderClass: "border-yellow-400",
+    };
+  }
+  return {
+    label: "Clean",
+    action: "Discarded",
+    color: C.emeraldTier,
+    textClass: "text-emerald-500",
+    bgClass: "bg-emerald-500/20",
+    borderClass: "border-emerald-500",
+  };
 }
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
@@ -163,7 +217,7 @@ function generateMockPayload(assetId: string): AnalysisPayload {
       { id: "threat_deepfake", type: "threat",
         data: { label: "Deepfake Signal",role: "GAN Artifact Pattern",status: "alert",       score: 94, nodeType: "threat"  }, position: { x: 140, y: 460 } },
       { id: "verdict_final",   type: "verdict",
-        data: { label: "FLAGGED",        role: "Final Verdict",       status: "alert",       score: 91, nodeType: "verdict" }, position: { x: 430, y: 460 } },
+        data: { label: "High Confidence (Piracy)", role: "Automated Takedown Initiated", status: "alert", score: 91, nodeType: "verdict" }, position: { x: 430, y: 460 } },
     ],
     edges: [
       { id: "e1", source: "asset_root",      target: "engine_audio",    label: "Audio Stream"    },
@@ -197,7 +251,7 @@ function nodeColor(type: string, score?: number): string {
     case "asset":   return C.colorAsset;
     case "engine":  return C.colorEngine;
     case "threat":  return C.colorThreat;
-    case "verdict": return (score ?? 0) >= 70 ? C.colorThreat : C.colorVerdict;
+    case "verdict": return getPiracyTier(score).color;
     default:        return C.accent;
   }
 }
@@ -217,9 +271,10 @@ function parseLog(line: string) {
 // ─── Custom Node ──────────────────────────────────────────────────────────────
 
 function NexusNode({ data, selected }: NodeProps) {
-  const type      = (data.nodeType as string) ?? "engine";
-  const status    = (data.status   as string) ?? "idle";
-  const score     = data.score  as number | undefined;
+  const nodeData = data as unknown as NodeData;
+  const type      = (nodeData.nodeType as string) ?? "engine";
+  const status    = (nodeData.status   as string) ?? "idle";
+  const score     = nodeData.score;
   const accentCol = nodeColor(type, score);
   const isProcess = status === "processing";
   const isAlert   = status === "alert";
@@ -316,13 +371,13 @@ function NexusNode({ data, selected }: NodeProps) {
           overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
           marginBottom: "2px",
         }}>
-          {data.label as string}
+          {(data as unknown as NodeData).label}
         </div>
 
         {/* Role subtitle */}
-        {data.role && (
+        {(data as unknown as NodeData).role && (
           <div style={{ fontSize: "11px", color: C.textMuted, letterSpacing: "0.005em" }}>
-            {data.role as string}
+            {(data as unknown as NodeData).role}
           </div>
         )}
 
@@ -454,20 +509,43 @@ function LogTerminal({ logs }: { logs: string[] }) {
 
 // ─── Temporal Chart ───────────────────────────────────────────────────────────
 
-function TemporalChart({ selectedNode, apiNodes }: { selectedNode: string | null; apiNodes: ApiNode[] }) {
+function TemporalChart({
+  selectedNode,
+  apiNodes,
+  temporalData = []
+}: {
+  selectedNode: string | null;
+  apiNodes: ApiNode[];
+  temporalData?: Array<{ ts: number; val: number; type: string }>;
+}) {
   const active = apiNodes.find(n => n.id === selectedNode);
   const score  = active?.data.score ?? 55;
   const isAlert = active?.type === "threat" || active?.data.status === "alert";
   const accent  = isAlert ? C.coral : C.accent;
 
   const bars = useMemo(() => {
+    // If we have real temporal data from the backend, use it!
+    if (temporalData && temporalData.length > 0) {
+      // Sample or interpolate to 36 bars
+      const barCount = 36;
+      const maxVal = Math.max(...temporalData.map(d => d.val), 1);
+      
+      return Array.from({ length: barCount }, (_, i) => {
+        const idx = Math.floor((i / barCount) * temporalData.length);
+        const val = temporalData[idx]?.val ?? 0;
+        // Normalize to 0.1 - 1.0 range for visibility
+        return Math.max(0.08, val / maxVal);
+      });
+    }
+
+    // Fallback: procedural wave based on score
     return Array.from({ length: 36 }, (_, i) => {
       const base = score / 100;
       const wave = 0.28 * Math.sin(i * 0.65 + score * 0.08)
                  + 0.12 * Math.cos(i * 1.4  + score * 0.05);
       return Math.max(0.05, Math.min(1, base + wave));
     });
-  }, [score]);
+  }, [score, temporalData]);
 
   return (
     <div style={{
@@ -554,6 +632,7 @@ function ForensicSidebar({
   ] : [];
 
   const activeNode = apiNodes.find(n => n.id === selectedNode);
+  const activeTier = activeNode?.type === "verdict" ? getPiracyTier(activeNode.data.score) : null;
 
   return (
     <div style={{
@@ -663,7 +742,11 @@ function ForensicSidebar({
               Temporal Alignment
             </span>
           </div>
-          <TemporalChart selectedNode={selectedNode} apiNodes={apiNodes}/>
+          <TemporalChart
+            selectedNode={selectedNode}
+            apiNodes={apiNodes}
+            temporalData={payload?.temporal_data}
+          />
         </div>
 
         {/* Selected node detail card */}
@@ -675,9 +758,10 @@ function ForensicSidebar({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.22 }}
+              className={activeTier ? `border ${activeTier.bgClass} ${activeTier.borderClass}` : undefined}
               style={{
-                background: `${nodeColor(activeNode.type, activeNode.data.score)}08`,
-                border: `1px solid ${nodeColor(activeNode.type, activeNode.data.score)}20`,
+                background: activeTier ? undefined : `${nodeColor(activeNode.type, activeNode.data.score)}08`,
+                border: activeTier ? undefined : `1px solid ${nodeColor(activeNode.type, activeNode.data.score)}20`,
                 borderRadius: "10px",
                 padding: "14px",
               }}
@@ -685,7 +769,7 @@ function ForensicSidebar({
               <div style={{
                 fontFamily: "'DM Mono', monospace", fontSize: "9.5px", fontWeight: 600,
                 letterSpacing: "0.1em", textTransform: "uppercase",
-                color: nodeColor(activeNode.type, activeNode.data.score),
+                color: activeTier?.color ?? nodeColor(activeNode.type, activeNode.data.score),
                 marginBottom: "10px",
               }}>
                 Selected Node
@@ -863,16 +947,24 @@ export default function NexusGraphScreen({ Maps }: { Maps?: (path: string) => vo
   const [selectedId,   setSelectedId]   = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
 
   // ── Build ReactFlow graph from payload ──
   const buildGraph = useCallback((data: AnalysisPayload) => {
+    // Normalize DB status values to what the UI components expect
+    const normalizeStatus = (s?: string): NodeStatus => {
+      if (!s) return "idle";
+      if (s === "completed") return "complete";
+      if (s === "failed") return "alert";
+      return s as NodeStatus;
+    };
+
     const rfNodes = data.nodes.map(n => ({
       id:       n.id,
       type:     n.type,
       position: n.position,
-      data:     { ...n.data, nodeType: n.type },
+      data:     { ...n.data, nodeType: n.type, status: normalizeStatus(n.data.status as string) },
       draggable: true,
     }));
 
@@ -901,16 +993,19 @@ export default function NexusGraphScreen({ Maps }: { Maps?: (path: string) => vo
     setIsLoading(false);
   }, [setNodes, setEdges]);
 
-  // ── Fetch ──
+  // ── Fetch from real backend ──
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
-      try {
-        const res = await fetch(`/api/v1/analysis/${assetId}`);
-        if (!res.ok) throw new Error("fallback");
-        const data: AnalysisPayload = await res.json();
-        if (!cancelled) { setPayload(data); buildGraph(data); }
-      } catch {
+      const result = await apiFetch<AnalysisPayload>(`/api/v1/analysis/${assetId}`);
+      if (cancelled) return;
+
+      if (result.ok) {
+        setPayload(result.data);
+        buildGraph(result.data);
+      } else {
+        // Fallback to mock only if the real API is unreachable
+        console.warn("[NexusGraph] API unavailable, using mock data:", result.error);
         const mock = generateMockPayload(assetId ?? "unknown");
         const t = setTimeout(() => {
           if (!cancelled) { setPayload(mock); buildGraph(mock); }
@@ -924,7 +1019,7 @@ export default function NexusGraphScreen({ Maps }: { Maps?: (path: string) => vo
 
   // ── Highlight connected edges on selection ──
   useEffect(() => {
-    setEdges(prev =>
+    setEdges((prev: any[]) =>
       prev.map(e => ({
         ...e,
         data: {

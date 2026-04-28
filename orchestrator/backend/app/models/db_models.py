@@ -158,6 +158,10 @@ class Asset(Base):
         Boolean, nullable=False, default=False, server_default="false"
     )
 
+    # Telemetry metrics from GPU nodes
+    vision_latency_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    text_latency_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
     # Auth linkage (nullable to protect legacy data)
     uploader_id: Mapped[uuid.UUID | None] = mapped_column(
         UUID(as_uuid=True),

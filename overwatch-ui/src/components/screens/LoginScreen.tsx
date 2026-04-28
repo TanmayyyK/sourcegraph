@@ -33,15 +33,18 @@ export default function LoginScreen({ initialMode, onLogin, onBack }: LoginScree
 
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined;
 
+  const isSubmitting = React.useRef(false);
+
   // Step 1: Send the email to FastAPI to generate the code
   const handleRequestOTP = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || isSubmitting.current) return;
     if (mode === 'SIGNUP' && !name.trim()) {
       setError('Please enter your name to create an account.');
       return;
     }
     
+    isSubmitting.current = true;
     setLoading(true);
     setError('');
     
@@ -60,16 +63,18 @@ export default function LoginScreen({ initialMode, onLogin, onBack }: LoginScree
     }
     
     setLoading(false);
+    isSubmitting.current = false;
   };
 
   // Step 2: Send the 6-digit code to FastAPI to get the JWT
   const handleVerifyOTP = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (code.length !== 6) {
-      setError('Please enter the 6-digit code.');
+    if (code.length !== 6 || isSubmitting.current) {
+      if (code.length !== 6) setError('Please enter the 6-digit code.');
       return;
     }
     
+    isSubmitting.current = true;
     setLoading(true);
     setError('');
     
@@ -77,12 +82,13 @@ export default function LoginScreen({ initialMode, onLogin, onBack }: LoginScree
     
     if (!result.ok) {
       setError(result.error || 'Invalid or expired code.');
+      setLoading(false);
+      isSubmitting.current = false;
     } else {
       // Success! The API client saved the JWT. Now trigger the UI handoff.
       await onLogin(result.data.name, result.data.role as UserRole);
+      // We don't reset isSubmitting here because we're navigating away
     }
-    
-    setLoading(false);
   };
 
   const handleGoogleSuccess = async (credential?: string) => {
@@ -219,7 +225,7 @@ export default function LoginScreen({ initialMode, onLogin, onBack }: LoginScree
                 <button 
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3.5 px-4 rounded-xl text-[15px] font-bold text-white transition-all active:scale-[0.98] disabled:opacity-70"
+                  className="w-full py-3.5 px-4 rounded-xl text-[15px] font-bold text-white transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
                   style={{ background: 'linear-gradient(135deg, #4C63F7, #7C5CF7)', boxShadow: '0 6px 20px rgba(76, 99, 247, 0.3)' }}
                 >
                   {loading ? 'Sending...' : 'Continue with Email'}
@@ -247,7 +253,7 @@ export default function LoginScreen({ initialMode, onLogin, onBack }: LoginScree
                 <button 
                   type="submit"
                   disabled={loading || code.length !== 6}
-                  className="w-full py-3.5 px-4 rounded-xl text-[15px] font-bold text-white transition-all active:scale-[0.98] disabled:opacity-70"
+                  className="w-full py-3.5 px-4 rounded-xl text-[15px] font-bold text-white transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
                   style={{ background: 'linear-gradient(135deg, #4C63F7, #7C5CF7)', boxShadow: '0 6px 20px rgba(76, 99, 247, 0.3)' }}
                 >
                   {loading ? 'Verifying...' : 'Verify Code'}

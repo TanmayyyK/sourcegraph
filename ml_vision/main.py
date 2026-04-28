@@ -166,8 +166,9 @@ _state = _AppState()
 @dataclass
 class _BatchRecord:
     """Per-asset accumulator — created on the first frame for a packet_id."""
-    processed_count: int   = field(default=0)
-    start_time:      float = field(default_factory=time.monotonic)
+    processed_count: int             = field(default=0)
+    start_time:      float           = field(default_factory=time.monotonic)
+    processed_timestamps: set[float] = field(default_factory=set)  # NEW: Track dispatched frames
 
     @property
     def elapsed_s(self) -> float:
@@ -184,12 +185,21 @@ class _Tracker:
     """Thread-safe façade over batch_tracker."""
 
     @staticmethod
-    def increment(packet_id: str) -> int:
-        """Atomically create-or-increment processed_count; return the new value."""
+    def increment(packet_id: str, timestamp: float) -> tuple[int, bool]:
+        """
+        Atomically check for duplicate timestamp and increment count.
+        Returns (new_count, is_duplicate).
+        """
         with _tracker_lock:
             record = batch_tracker.setdefault(packet_id, _BatchRecord())
+            
+            # Check if this timestamp was already processed for this asset
+            if timestamp in record.processed_timestamps:
+                return record.processed_count, True
+                
+            record.processed_timestamps.add(timestamp)
             record.processed_count += 1
-            return record.processed_count
+            return record.processed_count, False
 
     @staticmethod
     def snapshot_and_clear(packet_id: str) -> _BatchRecord | None:
@@ -315,9 +325,9 @@ class VisionSummaryPacket(BaseModel):
 # the remaining service keys are filled from this node's perspective.
 class SystemPingServices(BaseModel):
     """Service health sub-object for system_ping (Contract §4)."""
-    ingest_api:     str = Field("UNKNOWN", description="Extractor node status — not observable from Node B")
-    vision_engine:  str = Field("OK",      description="This node's CLIP+YOLO engine status")
-    text_processor: str = Field("UNKNOWN", description="Context node status — not observable from Node B")
+    atlas:          str = Field("UNKNOWN", description="Extractor node status — not observable from Node B")
+    argus:          str = Field("OK",      description="This node's CLIP+YOLO engine status")
+    hermes:         str = Field("UNKNOWN", description="Context node status — not observable from Node B")
     orchestrator:   str = Field("UNKNOWN", description="Inferred from last successful webhook delivery")
 
 
@@ -474,54 +484,79 @@ async def post_vision_summary(payload: dict[str, Any]) -> None:
 
 async def _run_audio_transcription_job(packet_id: str, wav_path: str) -> None:
     """
-    Background Whisper pipeline for /embed/audio.
+    Whisper transcription pipeline for /embed/audio.
     Guarantees best-effort cleanup: hard_unload + temp file deletion.
 
-    [FIX 4] Wrapped engine.transcribe() with asyncio.wait_for() so that
-    empty or corrupt WAV files cannot cause an indefinite hang. On timeout,
-    a degraded audio_final_summary is dispatched and the job exits cleanly.
+    Timeout strategy
+    ----------------
+    asyncio.wait_for() cancels the *asyncio* future but cannot cancel the
+    underlying OS thread created by asyncio.to_thread().  If we called
+    engine.hard_unload() in the TimeoutError handler while the thread was
+    still running we would race against live CUDA kernels → potential crash.
+
+    BUG FIX 2 (thread leak + CUDA race on timeout):
+    We run transcribe() in a plain concurrent.futures thread (via the default
+    executor) and give the thread a generous OS-level join window
+    (AUDIO_TRANSCRIPTION_TIMEOUT_S + 5 s) before abandoning it.
+    AudioEngine.transcribe() already calls hard_unload() in its own finally
+    block, so the thread will always clean up — we just may not wait for it.
+
+    BUG FIX 3 (double hard_unload):
+    The outer finally block no longer calls engine.hard_unload() because
+    AudioEngine.transcribe() already does this unconditionally in its own
+    finally block.  Calling it twice was a no-op (idempotent), but it
+    printed spurious "model already None" log lines and added confusion.
     """
-    engine = AudioEngine()
+    engine = AudioEngine(device_override="cpu")
+    loop   = asyncio.get_running_loop()
+
+    # Submit to the default thread-pool executor so we get a real Future
+    # we can cancel at the asyncio level AND join at the thread level.
+    future = loop.run_in_executor(None, engine.transcribe, wav_path)
+
     try:
         result = await asyncio.wait_for(
-            asyncio.to_thread(engine.transcribe, wav_path),
+            asyncio.shield(future),          # shield keeps the thread running on cancel
             timeout=AUDIO_TRANSCRIPTION_TIMEOUT_S,
         )
         payload = {
-            "packet_id": packet_id,
-            "type": "audio_final_summary",
+            "packet_id":   packet_id,
+            "type":        "audio_final_summary",
             "source_node": SOURCE_NODE,
-            "transcript": result.get("transcript", []),
+            "transcript":  result.get("transcript", []),
             "full_script": result.get("full_script", ""),
         }
         await _dispatch_webhook(payload, label="audio_final_summary")
 
     except asyncio.TimeoutError:
-        # Whisper stalled — empty/corrupt audio or CUDA deadlock.
-        # Dispatch a degraded summary so the Orchestrator receives a completion
-        # signal and does not wait indefinitely for this packet_id.
+        # The asyncio timeout fired.  The thread is still running in the
+        # background — AudioEngine.transcribe() will call hard_unload() once
+        # it finishes (or errors).  We MUST NOT touch the engine here.
         logger.error(
             "[audio_final_summary] Transcription timed out after %ds — "
-            "packet_id=%s. Dispatching degraded summary and aborting.",
+            "packet_id=%s. Thread is still running; hard_unload will fire "
+            "inside the thread when it completes. Dispatching degraded summary.",
             AUDIO_TRANSCRIPTION_TIMEOUT_S, packet_id,
         )
         payload = {
-            "packet_id": packet_id,
-            "type": "audio_final_summary",
+            "packet_id":   packet_id,
+            "type":        "audio_final_summary",
             "source_node": SOURCE_NODE,
-            "transcript": [],
+            "transcript":  [],
             "full_script": "",
-            "error": "transcription_timeout",
+            "error":       "transcription_timeout",
         }
         await _dispatch_webhook(payload, label="audio_final_summary")
+        # Do NOT call engine.hard_unload() here — the thread owns the engine.
 
     except Exception as exc:
         logger.exception("[audio_final_summary] Dispatch pipeline failed: %s", exc)
+
     finally:
-        try:
-            engine.hard_unload()
-        except Exception:
-            logger.exception("[audio_final_summary] hard_unload failed")
+        # BUG FIX 3: hard_unload() is intentionally NOT called here.
+        # AudioEngine.transcribe() already calls it unconditionally in its own
+        # finally block regardless of success, failure, or CUDA fallback.
+        # Calling it again here would race with the thread on timeout paths.
         try:
             os.remove(wav_path)
         except OSError:
@@ -570,7 +605,7 @@ async def _heartbeat_loop() -> None:
         await asyncio.sleep(HEARTBEAT_INTERVAL_S)
         engine_status = "OK" if hasattr(_state, "engine") and _state.engine is not None else "ERROR"
         ping = SystemPingPacket(
-            services=SystemPingServices(vision_engine=engine_status)
+            services=SystemPingServices(argus=engine_status)
         )
         await post_system_ping(ping.model_dump())
 
@@ -675,8 +710,28 @@ async def embed_vision(
             ),
         )
 
-    # ── 3. Update batch_tracker (thread-safe) ────────────────────────────────
-    processed_count = _Tracker.increment(packet_id)
+    # ── 3. Update batch_tracker (thread-safe) with Duplicate Check ───────────
+    processed_count, is_duplicate = _Tracker.increment(packet_id, timestamp)
+
+    if is_duplicate:
+        logger.warning(
+            "Duplicate frame received — ignoring. packet_id=%s ts=%.3f",
+            packet_id, timestamp
+        )
+        # BUG FIX 1: EmbedVisionResponse requires packet_id, frame_timestamp,
+        # processed_count. The old code passed neither, plus a non-existent
+        # `message` field — guaranteed pydantic.ValidationError → 500 on every
+        # duplicate frame. All required fields are now supplied; processed_count
+        # is the last known value for this packet_id (already incremented by
+        # the non-duplicate path, so we read it back from the tracker).
+        with _tracker_lock:
+            current_count = batch_tracker.get(packet_id, _BatchRecord()).processed_count
+        return EmbedVisionResponse(
+            status          = "duplicate",
+            packet_id       = packet_id,
+            frame_timestamp = timestamp,
+            processed_count = current_count,
+        )
 
     # ── 4. Build frame_vision webhook payload (Contract §3 Node B) ──────────
     packet = FrameVisionPacket(

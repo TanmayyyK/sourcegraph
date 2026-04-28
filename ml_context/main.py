@@ -20,6 +20,7 @@
 from __future__ import annotations
 
 import os
+import asyncio
 # Must be set before any OpenMP-linked library (numpy, cv2, easyocr) is imported.
 # Mirrors the fix in main.py — without this the process crashes on Windows/some
 # Linux builds when both Intel and GNU OpenMP runtimes are loaded simultaneously.
@@ -33,6 +34,7 @@ from typing import Annotated, Any
 import numpy as np
 import requests
 import uvicorn
+from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, Header, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -96,10 +98,28 @@ log.info("✅  OverwatchNode visual phase ready.  VRAM governor active.")
 # FastAPI App
 # ──────────────────────────────────────────────────────────────────────────────
 
+# ── Lifespan ──────────────────────────────────────────────────────────────
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Start the heartbeat loop in the background
+    heartbeat_task = asyncio.create_task(_heartbeat_loop())
+    log.info("🩺  HERMES health probe active (Node C)")
+    
+    yield
+    
+    # Shutdown
+    heartbeat_task.cancel()
+    try:
+        await heartbeat_task
+    except asyncio.CancelledError:
+        pass
+
 app = FastAPI(
     title="SourceGraph — ML Context Node",
     description="OCR extraction and 384-D semantic text embedding (Node C, ml_context).",
     version="1.0.0",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -135,6 +155,19 @@ def verify_webhook_secret(
 class FinishRequest(BaseModel):
     packet_id: str
     source_node: str | None = None
+
+
+class SystemPingServices(BaseModel):
+    atlas:        str = "UNKNOWN"
+    argus:        str = "UNKNOWN"
+    hermes:       str = "OK"
+    orchestrator: str = "UNKNOWN"
+
+class SystemPingPacket(BaseModel):
+    packet_id:    str = "system_broadcast"
+    type:         str = "system_ping"
+    nodes_online: str = "1/3"
+    services:     SystemPingServices = SystemPingServices()
 
 
 def _get_or_init_batch(packet_id: str) -> dict[str, Any]:
@@ -262,10 +295,15 @@ def _run_inference(image_bytes: bytes) -> tuple[str, list[float], float, int, in
 
 @app.get("/health", tags=["system"])
 async def health_check():
+    """
+    Standard contract health check.
+    Returns liveness status and GPU availability.
+    """
     return {
-        "status": "idle",
-        "active_batches": 0,
-        "queue_size": 0
+        "status": "ok",
+        "gpu_available": torch.cuda.is_available(),
+        "node_role": "Context Node (HERMES)",
+        "active_batches": len(batch_tracker)
     }
 
 
@@ -318,7 +356,7 @@ async def embed_text(
     return frame_payload
 
 
-@app.post("/embed/text/finish", tags=["inference"], dependencies=[Depends(verify_webhook_secret)])
+@app.post("/embed/text/finish", tags=["Inference"], dependencies=[Depends(verify_webhook_secret)])
 async def finish_signal(payload: FinishRequest):
     """
     End-of-batch signal.
@@ -327,6 +365,7 @@ async def finish_signal(payload: FinishRequest):
     packet_id = payload.packet_id
     
     with _tracker_lock:
+        # Retrieve and remove batch from memory
         if packet_id in batch_tracker:
             batch = batch_tracker.pop(packet_id)
         else:
@@ -350,11 +389,30 @@ async def finish_signal(payload: FinishRequest):
         }
     }
     
-    # We run the webhook in the background so we can ACK the finish signal immediately
-    import asyncio
-    asyncio.create_task(asyncio.to_thread(_fire_webhook, summary_payload, label="text_final_summary"))
+    # Dispatch webhook in a background thread to avoid blocking the ACK
+    asyncio.to_thread(_fire_webhook, summary_payload, label="text_final_summary")
     
     return {"status": "accepted", "packet_id": packet_id}
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Heartbeat Loop
+# ──────────────────────────────────────────────────────────────────────────────
+
+async def _heartbeat_loop():
+    """Periodic system_ping to Orchestrator."""
+    while True:
+        try:
+            # Pings every 30s
+            await asyncio.sleep(30)
+            payload = SystemPingPacket().model_dump()
+            # Since requests is used in _fire_webhook, we run it in a thread
+            # to avoid blocking the event loop.
+            await asyncio.to_thread(_fire_webhook, payload, label="system_ping")
+        except asyncio.CancelledError:
+            break
+        except Exception as exc:
+            log.error("🩺  Heartbeat failed: %s", exc)
 
 
 if __name__ == "__main__":

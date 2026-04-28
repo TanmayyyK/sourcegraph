@@ -2,7 +2,7 @@ import React, {
   useCallback, useEffect, useRef, useState, ReactNode,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { auth } from "../../lib/api";
+import { auth, assetApi } from "../../lib/api";
 import type { AssetStatusResponse, SimilarityResultResponse } from "@/types";
 import {
   Upload, RefreshCw, Zap, Scissors, Eye, Cpu,
@@ -52,10 +52,61 @@ const C = {
   coral:      "#F26B5B",
   green:      "#22C55E",
   amber:      "#F59E0B",
+  redTier:    "#EF4444",
+  yellowTier: "#FACC15",
+  emeraldTier:"#10B981",
 } as const;
 
 const TS = 1.2;
 const T  = (s: number) => s * TS;
+
+function normalizeConfidenceScore(confidence: number | null | undefined): number {
+  if (!Number.isFinite(confidence ?? NaN)) return 0;
+  const rawScore = (confidence ?? 0) > 1 ? (confidence ?? 0) / 100 : (confidence ?? 0);
+  return Math.max(0, Math.min(1, rawScore));
+}
+
+function getPiracyTier(confidence: number | null | undefined) {
+  const rawScore = normalizeConfidenceScore(confidence);
+  if (rawScore >= 0.8) {
+    return {
+      label: "High Confidence (Piracy)",
+      action: "Automated Takedown Initiated",
+      color: C.redTier,
+      textClass: "text-red-500",
+      bgClass: "bg-red-500/20",
+      borderClass: "border-red-500",
+    };
+  }
+  if (rawScore >= 0.6) {
+    return {
+      label: "Suspicious",
+      action: "Manual Review Required",
+      color: C.amber,
+      textClass: "text-amber-500",
+      bgClass: "bg-amber-500/20",
+      borderClass: "border-amber-500",
+    };
+  }
+  if (rawScore >= 0.4) {
+    return {
+      label: "Low Confidence",
+      action: "Flagged for Observation",
+      color: C.yellowTier,
+      textClass: "text-yellow-400",
+      bgClass: "bg-yellow-400/20",
+      borderClass: "border-yellow-400",
+    };
+  }
+  return {
+    label: "Clean",
+    action: "Discarded",
+    color: C.emeraldTier,
+    textClass: "text-emerald-500",
+    bgClass: "bg-emerald-500/20",
+    borderClass: "border-emerald-500",
+  };
+}
 
 /* ════════════════════════════════════════════════════════════════════════════
    VIRTUAL CANVAS  (everything uses these pixel coordinates; scaled to fit)
@@ -72,35 +123,35 @@ const OS = 190;   // diameter   (radius = 95)
 
 /* Node centres */
 const N = {
-  yogesh: { cx: 200,  cy: 260 },
-  yug:    { cx: 660,  cy: 155 },
-  rohit:  { cx: 660,  cy: 365 },
+  atlas:  { cx: 200,  cy: 260 },
+  hermes: { cx: 660,  cy: 155 },
+  argus:  { cx: 660,  cy: 365 },
   orch:   { cx: 1155, cy: 260 },
 } as const;
 
 const E = {
-  yogesh_r: { x: N.yogesh.cx + CW / 2, y: N.yogesh.cy },
-  yug_l:    { x: N.yug.cx    - CW / 2, y: N.yug.cy    },
-  yug_r:    { x: N.yug.cx    + CW / 2, y: N.yug.cy    },
-  rohit_l:  { x: N.rohit.cx  - CW / 2, y: N.rohit.cy  },
-  rohit_r:  { x: N.rohit.cx  + CW / 2, y: N.rohit.cy  },
+  atlas_r:  { x: N.atlas.cx  + CW / 2, y: N.atlas.cy  },
+  hermes_l: { x: N.hermes.cx - CW / 2, y: N.hermes.cy },
+  hermes_r: { x: N.hermes.cx + CW / 2, y: N.hermes.cy },
+  argus_l:  { x: N.argus.cx  - CW / 2, y: N.argus.cy  },
+  argus_r:  { x: N.argus.cx  + CW / 2, y: N.argus.cy  },
   orch_l:   { x: N.orch.cx   - OS / 2, y: N.orch.cy   },
 } as const;
 
-const mx1 = (E.yogesh_r.x + E.yug_l.x)  / 2;
-const mx2 = (E.yug_r.x    + E.orch_l.x) / 2;
+const mx1 = (E.atlas_r.x + E.hermes_l.x)  / 2;
+const mx2 = (E.hermes_r.x + E.orch_l.x) / 2;
 
 const PATHS = {
-  yogesh_yug:
-    `M ${E.yogesh_r.x} ${E.yogesh_r.y} C ${mx1} ${E.yogesh_r.y}, ${mx1} ${E.yug_l.y},   ${E.yug_l.x}   ${E.yug_l.y}`,
-  yogesh_rohit:
-    `M ${E.yogesh_r.x} ${E.yogesh_r.y} C ${mx1} ${E.yogesh_r.y}, ${mx1} ${E.rohit_l.y}, ${E.rohit_l.x} ${E.rohit_l.y}`,
-  yug_orch:
-    `M ${E.yug_r.x}   ${E.yug_r.y}   C ${mx2} ${E.yug_r.y},   ${mx2} ${E.orch_l.y},  ${E.orch_l.x}  ${E.orch_l.y}`,
-  rohit_orch:
-    `M ${E.rohit_r.x} ${E.rohit_r.y} C ${mx2} ${E.rohit_r.y}, ${mx2} ${E.orch_l.y},  ${E.orch_l.x}  ${E.orch_l.y}`,
+  atlas_hermes:
+    `M ${E.atlas_r.x} ${E.atlas_r.y} C ${mx1} ${E.atlas_r.y}, ${mx1} ${E.hermes_l.y},   ${E.hermes_l.x}   ${E.hermes_l.y}`,
+  atlas_argus:
+    `M ${E.atlas_r.x} ${E.atlas_r.y} C ${mx1} ${E.atlas_r.y}, ${mx1} ${E.argus_l.y}, ${E.argus_l.x} ${E.argus_l.y}`,
+  hermes_orch:
+    `M ${E.hermes_r.x}   ${E.hermes_r.y}   C ${mx2} ${E.hermes_r.y},   ${mx2} ${E.orch_l.y},  ${E.orch_l.x}  ${E.orch_l.y}`,
+  argus_orch:
+    `M ${E.argus_r.x} ${E.argus_r.y} C ${mx2} ${E.argus_r.y}, ${mx2} ${E.orch_l.y},  ${E.orch_l.x}  ${E.orch_l.y}`,
   upload:
-    `M ${N.yogesh.cx - CW / 2 - 155} ${N.yogesh.cy} L ${N.yogesh.cx - CW / 2} ${N.yogesh.cy}`,
+    `M ${N.atlas.cx - CW / 2 - 155} ${N.atlas.cy} L ${N.atlas.cx - CW / 2} ${N.atlas.cy}`,
 } as const;
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -155,12 +206,12 @@ function useElapsed(running: boolean, startRef: React.MutableRefObject<number>) 
    ════════════════════════════════════════════════════════════════════════ */
 // TASK 1 — §3: Added "Audio" step between "Analyze" and "Synthesize".
 const STEPS: { key: PipelineState; label: string }[] = [
-  { key: "UPLOADING",       label: "Upload"    },
+  { key: "UPLOADING",       label: "Buffer"    },
   { key: "EXTRACTING",      label: "Extract"   },
   { key: "BIFURCATING",     label: "Bifurcate" },
-  { key: "ANALYZING",       label: "Analyze"   },
-  { key: "ANALYZING_AUDIO", label: "Audio"     },
-  { key: "COMPLETE",        label: "Synthesize"},
+  { key: "ANALYZING",       label: "Argus"     },
+  { key: "ANALYZING_AUDIO", label: "Hermes"    },
+  { key: "COMPLETE",        label: "Sync"      },
 ];
 
 // TASK 1 — §3: ORDER now includes ANALYZING_AUDIO between ANALYZING and COMPLETE.
@@ -353,13 +404,19 @@ const NodeCard: React.FC<NodeCardProps> = ({
 interface OrchProps {
   cx: number; cy: number;
   progress: number; verdict: Verdict; pulsing: boolean;
+  confidence?: number | null;
   onSeeInsights?: () => void;
 }
-const OrchestratorCard: React.FC<OrchProps> = ({ cx, cy, progress, verdict, pulsing, onSeeInsights }) => {
+const OrchestratorCard: React.FC<OrchProps> = ({ cx, cy, progress, verdict, pulsing, confidence, onSeeInsights }) => {
   const R        = OS / 2 || 0;
   const trackR   = Math.max(0, (R - 10) || 0);
   const circ     = 2 * Math.PI * trackR;
-  const verdColor = verdict==="CLEAN" ? C.green : verdict==="THREAT" ? C.coral : C.blue;
+  const tier = getPiracyTier(confidence);
+  const verdColor =
+    verdict === "FAILED" ? C.coral :
+    verdict === "THREAT" ? tier.color :
+    verdict === "CLEAN" ? tier.color :
+    C.blue;
 
   return (
     <motion.div
@@ -414,10 +471,11 @@ const OrchestratorCard: React.FC<OrchProps> = ({ cx, cy, progress, verdict, puls
           {verdict && (
             <motion.div
               initial={{ opacity:0, y:3 }} animate={{ opacity:1, y:0 }}
+              className={verdict === "FAILED" ? "text-red-500" : tier.textClass}
               style={{ fontSize:8, fontWeight:700, letterSpacing:"0.13em",
-                textTransform:"uppercase", color:verdColor, fontFamily:"DM Mono, monospace" }}
+                textTransform:"uppercase", fontFamily:"DM Mono, monospace" }}
             >
-              {verdict === "CLEAN" ? "Analysis Complete" : verdict}
+              {verdict === "FAILED" ? "Failed" : tier.label}
             </motion.div>
           )}
           {!verdict && progress > 0 && progress < 1 && (
@@ -632,12 +690,12 @@ const IdleDropzone: React.FC<IdleDropzoneProps> = ({ onPick }) => {
    ════════════════════════════════════════════════════════════════════════ */
 interface PipelineCanvasProps {
   state:PipelineState; fileName:string;
-  orchProgress:number; verdict:Verdict;
+  orchProgress:number; verdict:Verdict; confidence?: number | null;
   chipMoving:boolean; chipVisible:boolean; onChipArrive:()=>void;
   onComplete?: () => void;
 }
 const PipelineCanvas: React.FC<PipelineCanvasProps> = ({
-  state, fileName, orchProgress, verdict,
+  state, fileName, orchProgress, verdict, confidence,
   chipMoving, chipVisible, onChipArrive, onComplete,
 }) => {
   const { ref, scale } = useScaledCanvas(VW, VH);
@@ -652,14 +710,14 @@ const PipelineCanvas: React.FC<PipelineCanvasProps> = ({
   ].includes(state);
   const showClosed  = ["UPLOADING","EXTRACTING"].includes(state);
 
-  // TASK 1 — §4: pulseYug is FALSE during ANALYZING_AUDIO (only Rohit pulses then).
-  const pulseYug    = state === "ANALYZING";
-  // TASK 1 — §4: pulseRohit is TRUE during both ANALYZING and ANALYZING_AUDIO.
-  const pulseRohit  = state === "ANALYZING" || state === "ANALYZING_AUDIO";
+  // pulseHermes activates during BIFURCATING (frames arriving) and ANALYZING.
+  const pulseHermes = state === "BIFURCATING" || state === "ANALYZING";
+  // pulseArgus activates during BIFURCATING, ANALYZING, and ANALYZING_AUDIO.
+  const pulseArgus  = state === "BIFURCATING" || state === "ANALYZING" || state === "ANALYZING_AUDIO";
   const pulseOrch   = state === "COMPLETE" || state === "FAILED";
 
-  // Standard bifurcation dots (both yug + rohit paths) only during ANALYZING.
-  const showDots      = state === "ANALYZING";
+  // Flow dots on both yug + rohit paths during BIFURCATING and ANALYZING.
+  const showDots      = state === "BIFURCATING" || state === "ANALYZING";
   // TASK 1 — §5: During ANALYZING_AUDIO only the rohit→orch path carries audio data.
   const showAudioDots = state === "ANALYZING_AUDIO";
 
@@ -667,13 +725,13 @@ const PipelineCanvas: React.FC<PipelineCanvasProps> = ({
   const waiting = ["UPLOADING","EXTRACTING"].includes(state);
 
   // TASK 1 — §4: Rohit's NodeCard gets amber accent + ghost-node subtitle during ANALYZING_AUDIO.
-  const rohitAccent   = state === "ANALYZING_AUDIO" ? C.amber : C.blue;
-  const rohitSubtitle = state === "ANALYZING_AUDIO"
+  const argusAccent   = state === "ANALYZING_AUDIO" ? C.amber : C.blue;
+  const argusSubtitle = state === "ANALYZING_AUDIO"
     ? "Whisper 16kHz · Transcribing"
     : "512D CLIP ViT-L/14";
 
-  const chipFrom = { x: N.yogesh.cx - CW/2 - 145, y: N.yogesh.cy };
-  const chipTo   = { x: N.yogesh.cx - CW/2,         y: N.yogesh.cy };
+  const chipFrom = { x: N.atlas.cx - CW/2 - 145, y: N.atlas.cy };
+  const chipTo   = { x: N.atlas.cx - CW/2,         y: N.atlas.cy };
 
   return (
     <div ref={ref} className="absolute inset-0 flex items-center justify-center overflow-hidden">
@@ -683,44 +741,44 @@ const PipelineCanvas: React.FC<PipelineCanvasProps> = ({
       }}>
         <svg width={VW} height={VH} viewBox={`0 0 ${VW} ${VH}`}
           style={{ position:"absolute", inset:0, overflow:"visible" }}>
-          <path d={PATHS.yogesh_yug}   fill="none" stroke={`${C.blue}18`}   strokeWidth={2} />
-          <path d={PATHS.yogesh_rohit} fill="none" stroke={`${C.violet}18`} strokeWidth={2} />
-          <path d={PATHS.yug_orch}     fill="none" stroke={`${C.blue}18`}   strokeWidth={2} />
-          <path d={PATHS.rohit_orch}   fill="none" stroke={`${C.violet}18`} strokeWidth={2} />
+          <path d={PATHS.atlas_hermes} fill="none" stroke={`${C.blue}18`}   strokeWidth={2} />
+          <path d={PATHS.atlas_argus}  fill="none" stroke={`${C.violet}18`} strokeWidth={2} />
+          <path d={PATHS.hermes_orch}  fill="none" stroke={`${C.blue}18`}   strokeWidth={2} />
+          <path d={PATHS.argus_orch}   fill="none" stroke={`${C.violet}18`} strokeWidth={2} />
           <path d={PATHS.upload}       fill="none" stroke={`${C.blue}18`}   strokeWidth={2} />
 
           <FlowEdge d={PATHS.upload}       color={C.blue}   visible={showUpEdge}  delay={0}   />
-          <FlowEdge d={PATHS.yogesh_yug}   color={C.blue}   visible={showEdgesI}  delay={0.05}/>
-          <FlowEdge d={PATHS.yogesh_rohit} color={C.violet} visible={showEdgesI}  delay={0.12}/>
-          <FlowEdge d={PATHS.yug_orch}     color={C.blue}   visible={showEdgesI}  delay={0.20}/>
-          <FlowEdge d={PATHS.rohit_orch}   color={C.violet} visible={showEdgesI}  delay={0.28}/>
+          <FlowEdge d={PATHS.atlas_hermes} color={C.blue}   visible={showEdgesI}  delay={0.05}/>
+          <FlowEdge d={PATHS.atlas_argus}  color={C.violet} visible={showEdgesI}  delay={0.12}/>
+          <FlowEdge d={PATHS.hermes_orch}  color={C.blue}   visible={showEdgesI}  delay={0.20}/>
+          <FlowEdge d={PATHS.argus_orch}   color={C.violet} visible={showEdgesI}  delay={0.28}/>
 
           {/* Standard bifurcation dots — both nodes active */}
           {showDots && (<>
-            <FlowDot d={PATHS.yogesh_yug}   color={C.blue}   dur={0.95} delay={0}    />
-            <FlowDot d={PATHS.yogesh_yug}   color={C.blue}   dur={0.95} delay={0.48} />
-            <FlowDot d={PATHS.yogesh_rohit} color={C.violet} dur={0.95} delay={0.22} />
-            <FlowDot d={PATHS.yogesh_rohit} color={C.violet} dur={0.95} delay={0.70} />
-            <FlowDot d={PATHS.yug_orch}     color={C.blue}   dur={1.05} delay={0.1}  />
-            <FlowDot d={PATHS.rohit_orch}   color={C.violet} dur={1.05} delay={0.35} />
+            <FlowDot d={PATHS.atlas_hermes} color={C.blue}   dur={0.95} delay={0}    />
+            <FlowDot d={PATHS.atlas_hermes} color={C.blue}   dur={0.95} delay={0.48} />
+            <FlowDot d={PATHS.atlas_argus}  color={C.violet} dur={0.95} delay={0.22} />
+            <FlowDot d={PATHS.atlas_argus}  color={C.violet} dur={0.95} delay={0.70} />
+            <FlowDot d={PATHS.hermes_orch}  color={C.blue}   dur={1.05} delay={0.1}  />
+            <FlowDot d={PATHS.argus_orch}   color={C.violet} dur={1.05} delay={0.35} />
           </>)}
 
           {/*
-            TASK 1 — §5: ANALYZING_AUDIO — Ghost Node (Whisper) active on Rohit only.
-            Audio flows exclusively through the rohit→orch path; amber colour signals
+            TASK 1 — §5: ANALYZING_AUDIO — Ghost Node (Whisper) active on Argus only.
+            Audio flows exclusively through the argus→orch path; amber colour signals
             the Ghost Node transcription pass, distinct from the CLIP violet.
           */}
           {showAudioDots && (<>
-            <FlowDot d={PATHS.rohit_orch} color={C.amber} dur={1.1} delay={0}    />
-            <FlowDot d={PATHS.rohit_orch} color={C.amber} dur={1.1} delay={0.55} />
+            <FlowDot d={PATHS.argus_orch} color={C.amber} dur={1.1} delay={0}    />
+            <FlowDot d={PATHS.argus_orch} color={C.amber} dur={1.1} delay={0.55} />
           </>)}
 
           {showEdgesI && (<>
-            <circle cx={E.yogesh_r.x} cy={E.yogesh_r.y} r={4} fill={C.card}   stroke={C.blue}   strokeWidth={2} />
-            <circle cx={E.yug_l.x}    cy={E.yug_l.y}    r={4} fill={C.card}   stroke={C.blue}   strokeWidth={2} />
-            <circle cx={E.yug_r.x}    cy={E.yug_r.y}    r={4} fill={C.card}   stroke={C.blue}   strokeWidth={2} />
-            <circle cx={E.rohit_l.x}  cy={E.rohit_l.y}  r={4} fill={C.card}   stroke={C.violet} strokeWidth={2} />
-            <circle cx={E.rohit_r.x}  cy={E.rohit_r.y}  r={4} fill={C.card}   stroke={C.violet} strokeWidth={2} />
+            <circle cx={E.atlas_r.x}  cy={E.atlas_r.y}  r={4} fill={C.card}   stroke={C.blue}   strokeWidth={2} />
+            <circle cx={E.hermes_l.x} cy={E.hermes_l.y} r={4} fill={C.card}   stroke={C.blue}   strokeWidth={2} />
+            <circle cx={E.hermes_r.x} cy={E.hermes_r.y} r={4} fill={C.card}   stroke={C.blue}   strokeWidth={2} />
+            <circle cx={E.argus_l.x}  cy={E.argus_l.y}  r={4} fill={C.card}   stroke={C.violet} strokeWidth={2} />
+            <circle cx={E.argus_r.x}  cy={E.argus_r.y}  r={4} fill={C.card}   stroke={C.violet} strokeWidth={2} />
             <circle cx={E.orch_l.x}   cy={E.orch_l.y}   r={4} fill={C.card}   stroke={C.blue}   strokeWidth={2} />
           </>)}
         </svg>
@@ -730,15 +788,15 @@ const PipelineCanvas: React.FC<PipelineCanvasProps> = ({
           <AnimatePresence mode="wait">
             {showClosed && (
               <ClosedModule key="closed"
-                cx={N.yogesh.cx} cy={N.yogesh.cy} state={state} />
+                cx={N.atlas.cx} cy={N.atlas.cy} state={state} />
             )}
           </AnimatePresence>
 
           <AnimatePresence>
             {showNodes && (<>
               <div style={{ opacity: 1, transition:"opacity 200ms ease" }}>
-                <NodeCard key="yog" cx={N.yogesh.cx} cy={N.yogesh.cy}
-                  title="Yogesh" role="Extractor"
+                <NodeCard key="atlas" cx={N.atlas.cx} cy={N.atlas.cy}
+                  title="Atlas" role="Atlas Protocol"
                   subtitle="SHA-256 · frame extract"
                   icon={<Scissors size={15} strokeWidth={2} />}
                   accent={C.coral} pulsing={state === "EXTRACTING"} delay={0} />
@@ -749,31 +807,31 @@ const PipelineCanvas: React.FC<PipelineCanvasProps> = ({
                 opacity: waiting || state === "ANALYZING_AUDIO" ? 0.4 : 1,
                 transition:"opacity 200ms ease",
               }}>
-                <NodeCard key="yug" cx={N.yug.cx} cy={N.yug.cy}
-                  title="Yug" role="Text & OCR Engine"
+                <NodeCard key="hermes" cx={N.hermes.cx} cy={N.hermes.cy}
+                  title="Hermes" role="Text & OCR Engine"
                   subtitle="384D BPE Tokenizer"
                   icon={<TypeIcon size={15} strokeWidth={2} />}
-                  accent={C.violet} pulsing={pulseYug} delay={0.1} />
+                  accent={C.violet} pulsing={pulseHermes} delay={0.1} />
               </div>
 
               {/*
-                TASK 1 — §4: Rohit's NodeCard receives:
+                TASK 1 — §4: Argus NodeCard receives:
                   • accent={C.amber}  during ANALYZING_AUDIO  (Ghost Node active)
                   • subtitle="Whisper 16kHz · Transcribing"   (Ghost Node label)
                   • pulsing=true  during both ANALYZING and ANALYZING_AUDIO
                 The base <NodeCard> structure and animations are left completely untouched.
               */}
               <div style={{ opacity: waiting ? 0.4 : 1, transition:"opacity 200ms ease" }}>
-                <NodeCard key="roh" cx={N.rohit.cx} cy={N.rohit.cy}
-                  title="Rohit" role="Vision Engine"
-                  subtitle={rohitSubtitle}
+                <NodeCard key="argus" cx={N.argus.cx} cy={N.argus.cy}
+                  title="Argus" role="Vision Engine"
+                  subtitle={argusSubtitle}
                   icon={
                     state === "ANALYZING_AUDIO"
                       ? <Mic size={15} strokeWidth={2} />
                       : <Eye size={15} strokeWidth={2} />
                   }
-                  accent={rohitAccent}
-                  pulsing={pulseRohit} delay={0.18} />
+                  accent={argusAccent}
+                  pulsing={pulseArgus} delay={0.18} />
               </div>
             </>)}
           </AnimatePresence>
@@ -783,7 +841,7 @@ const PipelineCanvas: React.FC<PipelineCanvasProps> = ({
               <div style={{ opacity: waiting ? 0.45 : 1, transition:"opacity 200ms ease" }}>
                 <OrchestratorCard key="orch"
                   cx={N.orch.cx} cy={N.orch.cy}
-                  progress={orchProgress} verdict={verdict} pulsing={pulseOrch}
+                  progress={orchProgress} verdict={verdict} confidence={confidence} pulsing={pulseOrch}
                   onSeeInsights={onComplete} />
               </div>
             )}
@@ -851,23 +909,26 @@ const ReportCard: React.FC<{
   frameCount: number | null;
   onReset:()=>void;
   onSeeInsights:()=>void;
-}> = ({ verdict, isGolden, backendStatus, fileName, fileSize, latencyText, errorHint, confidence, frameCount, onReset, onSeeInsights }) => {
+  // TASK: Force Finalize recovery props
+  showForceFinalize: boolean;
+  setShowForceFinalize: (val: boolean) => void;
+  stuckSecondsRef: React.MutableRefObject<number>;
+  assetId: string | null;
+}> = ({ verdict, isGolden, backendStatus, fileName, fileSize, latencyText, errorHint, confidence, frameCount, onReset, onSeeInsights, showForceFinalize, setShowForceFinalize, stuckSecondsRef, assetId }) => {
+  const tier = getPiracyTier(confidence);
   const clean = verdict==="CLEAN";
   const failed = verdict==="FAILED" || backendStatus === "failed" || backendStatus === "timeout";
-  const vc    = clean ? C.green : C.coral;
+  const vc    = failed ? C.coral : isGolden === true ? C.green : tier.color;
   const isAuditorAsset = isGolden === false;
-  const scoreText = confidence == null ? "0.0" : confidence.toFixed(1);
   const headline =
     failed ? (errorHint ?? (backendStatus === "timeout" ? "System Timeout" : "Pipeline Aborted"))
     : isGolden === true ? "Asset Added Successfully"
-    : isAuditorAsset && verdict === "CLEAN" ? "ASSET CLEARED: No Match Found"
-    : isAuditorAsset && verdict === "THREAT" ? `PIRACY DETECTED: ${scoreText}% Match`
+    : isAuditorAsset ? tier.label
     : "Analysis Complete";
   const badgeText =
     failed ? "Failed"
     : isGolden === true ? "Added"
-    : isAuditorAsset && verdict === "CLEAN" ? "Cleared"
-    : isAuditorAsset && verdict === "THREAT" ? "Action Required"
+    : isAuditorAsset ? tier.action
     : clean ? "Success"
     : "Complete";
   const subheading =
@@ -881,21 +942,24 @@ const ReportCard: React.FC<{
       key="report"
       initial={{ y:64, opacity:0 }} animate={{ y:0, opacity:1 }} exit={{ y:44, opacity:0 }}
       transition={{ type:"spring", stiffness:230, damping:28 }}
-      className="absolute left-7 right-7 bottom-5 z-30 rounded-[20px] overflow-hidden"
+      className={`absolute left-7 right-7 bottom-5 z-30 rounded-[20px] overflow-hidden border ${
+        failed ? "border-red-500" : isGolden === true ? "border-emerald-500" : tier.borderClass
+      }`}
       style={{
         background:C.card,
-        border:`1px solid ${vc}2a`,
         boxShadow:`0 20px 60px rgba(0,0,0,0.09), 0 0 0 1px ${vc}16`,
       }}
     >
       <div className="flex items-stretch" style={{ borderColor:"rgba(0,0,0,0.06)" }}>
         <div
           className={`flex-1 p-6 flex items-center gap-5 ${
-            isAuditorAsset && verdict === "THREAT" ? "border-l-4 border-red-500" : ""
+            isAuditorAsset ? `border-l-4 ${failed ? "border-red-500" : tier.borderClass}` : ""
+          } ${
+            failed ? "bg-red-500/20" : isGolden === true ? "bg-emerald-500/20" : isAuditorAsset ? tier.bgClass : ""
           }`}
-          style={{ background: clean ? `${C.green}07` : `${C.coral}08` }}>
+        >
           <div style={{ width:50, height:50, borderRadius:13, flexShrink:0,
-            background: clean ? `${C.green}16` : `${C.coral}14`,
+            background: failed ? `${C.coral}14` : isGolden === true ? `${C.green}16` : `${vc}14`,
             color:vc, display:"flex", alignItems:"center", justifyContent:"center" }}>
             {clean ? <CheckCircle size={24} strokeWidth={2} /> : <AlertTriangle size={24} strokeWidth={2} />}
           </div>
@@ -905,8 +969,13 @@ const ReportCard: React.FC<{
                 letterSpacing:"0.14em", textTransform:"uppercase", color:vc }}>
                 {subheading}
               </div>
-              <div style={{ padding:"2px 6px", borderRadius:4, background:`${vc}18`, color:vc,
-                fontSize:8, fontWeight:700, letterSpacing:"0.05em", textTransform:"uppercase" }}>
+              <div
+                className={`border ${
+                  failed ? "border-red-500 bg-red-500/20 text-red-500" : isGolden === true ? "border-emerald-500 bg-emerald-500/20 text-emerald-500" : `${tier.borderClass} ${tier.bgClass} ${tier.textClass}`
+                }`}
+                style={{ padding:"2px 6px", borderRadius:4,
+                  fontSize:8, fontWeight:700, letterSpacing:"0.05em", textTransform:"uppercase" }}
+              >
                 {badgeText}
               </div>
             </div>
@@ -914,9 +983,14 @@ const ReportCard: React.FC<{
               letterSpacing:"0.14em", textTransform:"uppercase", color:C.muted, marginBottom:4 }}>
               Final Analysis Verdict
             </div>
-            <div style={{ fontSize:21, fontWeight:800, color:C.ink, fontFamily:"DM Sans, sans-serif" }}>
+            <div className={failed ? "text-red-500" : isGolden === true ? "text-emerald-500" : tier.textClass} style={{ fontSize:21, fontWeight:800, fontFamily:"DM Sans, sans-serif" }}>
               {headline}
             </div>
+            {!failed && isAuditorAsset && (
+              <div className={tier.textClass} style={{ fontSize:10.5, fontWeight:700, fontFamily:"DM Mono, monospace", marginTop:6 }}>
+                {tier.action}
+              </div>
+            )}
             {failed && errorHint && (
               <div style={{ fontSize:10.5, color:C.muted, fontFamily:"DM Mono, monospace", marginTop:6 }}>
                 {errorHint}
@@ -933,7 +1007,7 @@ const ReportCard: React.FC<{
         {[
           { label:"Latency",    value: latencyText ?? "—", sub:"end-to-end"  },
           { label:"Frames",     value: (frameCount ?? 0) > 0 ? frameCount!.toLocaleString() : "—", sub:"@ 1080p" },
-          { label:"Confidence", value: confidence == null ? "—" : `${confidence.toFixed(1)}%`, sub:"fusion"      },
+          { label:"Piracy", value: confidence == null ? "—" : `${confidence.toFixed(1)}%`, sub:"fusion"      },
         ].map((m,i)=>(
           <React.Fragment key={m.label}>
             <div className="px-8 py-5 flex flex-col justify-center gap-1">
@@ -966,6 +1040,28 @@ const ReportCard: React.FC<{
             <RefreshCw size={13} strokeWidth={2.2} /> Reset
           </motion.button>
 
+          {showForceFinalize && backendStatus !== "completed" && (
+            <motion.button
+              onClick={async () => {
+                if (!assetId) return;
+                const res = await assetApi.finalize(assetId);
+                if (res.ok) {
+                  setShowForceFinalize(false);
+                  stuckSecondsRef.current = 0;
+                }
+              }}
+              style={{ padding:"10px 18px", borderRadius:10,
+                background:"rgba(245, 158, 11, 0.1)", border:`1px solid ${C.amber}`,
+                color:C.amber, cursor:"pointer", fontSize:12, fontWeight:700,
+                fontFamily:"DM Sans, sans-serif",
+                display:"flex", alignItems:"center", gap:7 }}
+              whileHover={{ scale:1.04, background:"rgba(245, 158, 11, 0.15)" }} 
+              whileTap={{ scale:0.96 }}
+            >
+              <Zap size={13} fill="currentColor" /> Force Finalize
+            </motion.button>
+          )}
+
           {backendStatus === "completed" && (
             <motion.button
               onClick={onSeeInsights}
@@ -989,7 +1085,7 @@ const ReportCard: React.FC<{
 /* ════════════════════════════════════════════════════════════════════════════
    API HELPERS
    ════════════════════════════════════════════════════════════════════════ */
-const BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
+const BASE_URL = (import.meta.env.VITE_API_URL || "http://127.0.0.1:8000").trim();
 
 async function uploadGoldenAsset(
   file: File,
@@ -1003,6 +1099,7 @@ async function uploadGoldenAsset(
 
   const headers: HeadersInit = {};
   headers["Authorization"] = `Bearer ${authToken}`;
+  headers["ngrok-skip-browser-warning"] = "69420";
 
   const res = await fetch(`${BASE_URL}/api/v1/assets/upload`, {
     method: "POST",
@@ -1027,6 +1124,7 @@ async function fetchAssetResult(
   }
   const headers: HeadersInit = {};
   headers["Authorization"] = `Bearer ${authToken}`;
+  headers["ngrok-skip-browser-warning"] = "69420";
 
   const res = await fetch(`${BASE_URL}/api/v1/assets/${assetId}/result`, {
     headers,
@@ -1040,6 +1138,24 @@ async function fetchAssetResult(
   return res.json() as Promise<SimilarityResultResponse>;
 }
 
+/**
+ * Custom hook to manage polling interval.
+ * delay = null stops the timer.
+ */
+function useInterval(callback: () => void, delay: number | null) {
+  const savedCallback = useRef(callback);
+  useEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    if (delay !== null) {
+      const id = setInterval(() => savedCallback.current(), delay);
+      return () => clearInterval(id);
+    }
+  }, [delay]);
+}
+
 async function fetchAssetStatus(
   assetId: string,
   authToken?: string,
@@ -1049,6 +1165,7 @@ async function fetchAssetStatus(
   }
   const headers: HeadersInit = {};
   headers["Authorization"] = `Bearer ${authToken}`;
+  headers["ngrok-skip-browser-warning"] = "69420";
 
   const res = await fetch(`${BASE_URL}/api/v1/assets/${assetId}/status`, {
     headers,
@@ -1079,10 +1196,14 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
   const [backendStatus, setBackendStatus] = useState<AssetStatusResponse["status"] | "timeout" | null>(null);
   const [errorHint, setErrorHint] = useState<string | null>(null);
   const [failedAt, setFailedAt] = useState<PipelineState | null>(null);
+  const [showForceFinalize, setShowForceFinalize] = useState(false);
+
   const confidenceRef           = useRef<number | null>(null);
   const assetIdRef              = useRef<string>("");
   const frameCountRef           = useRef<number>(0);
   const pollStartedAtRef        = useRef<number>(0);
+  const stuckSecondsRef         = useRef<number>(0);
+
   const uploadStartMsRef        = useRef<number>(0);
   const startedAtPerfRef        = useRef(0);
   const stateRef                = useRef<PipelineState>("IDLE");
@@ -1097,20 +1218,18 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
    */
   const lastFrameCountRef      = useRef<number>(-1);
   const stableFramePollsRef    = useRef<number>(0);
+  const bifurcationShownRef    = useRef<boolean>(false);
 
   // Number of consecutive polls with the same non-zero frame_count before we
   // consider frame extraction finished and transition to ANALYZING_AUDIO.
   const STABLE_POLLS_THRESHOLD = 2;
 
-  const pollTimer = useRef<number | null>(null);
+  const [pollDelay, setPollDelay] = useState<number | null>(null);
   const isRunning = !["IDLE","COMPLETE","FAILED"].includes(state);
   const elapsed   = useElapsed(isRunning, startedAtPerfRef);
 
   const stopPolling = useCallback(()=>{
-    if (pollTimer.current !== null) {
-      clearInterval(pollTimer.current);
-      pollTimer.current = null;
-    }
+    setPollDelay(null);
   },[]);
 
   const reset = useCallback(()=>{
@@ -1130,6 +1249,9 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
     resultPendingPollsRef.current = 0;
     lastFrameCountRef.current = -1;
     stableFramePollsRef.current = 0;
+    bifurcationShownRef.current = false;
+    stuckSecondsRef.current     = 0;
+    setShowForceFinalize(false);
   },[stopPolling]);
 
   useEffect(() => {
@@ -1164,35 +1286,43 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
    *   frame_count stability — once frame extraction is done (count stops growing)
    *   but status is still "processing", the Ghost Node is active on Rohit.
    */
-  const startPolling = useCallback((assetId: string, token: string)=>{
-    stopPolling();
-    pollStartedAtRef.current = performance.now();
-    // Reset frame-stability trackers for the new poll session.
-    lastFrameCountRef.current   = -1;
-    stableFramePollsRef.current = 0;
+  useInterval(async () => {
+    if (!assetIdRef.current || !activeAuthTokenRef.current) return;
+    
+    try {
+      // TASK 1 — §1: Hard timeout increased to 300_000 ms (5 min) to accommodate
+      //   the full GPU Idle Handshake + audio transcription window.
+      if (performance.now() - pollStartedAtRef.current > 600_000) {
+        setErrorHint("System Timeout");
+        finalize("FAILED", "timeout");
+        return;
+      }
 
-    pollTimer.current = window.setInterval(async ()=>{
-      try {
-        // TASK 1 — §1: Hard timeout increased to 300_000 ms (5 min) to accommodate
-        //   the full GPU Idle Handshake + audio transcription window.
-        if (performance.now() - pollStartedAtRef.current > 600_000) {
-          setErrorHint("System Timeout");
-          finalize("FAILED", "timeout");
-          return;
-        }
+      const status = await fetchAssetStatus(assetIdRef.current, activeAuthTokenRef.current);
+      frameCountRef.current = status.frame_count;
+      setBackendStatus(status.status);
 
-        const status = await fetchAssetStatus(assetId, token);
-        frameCountRef.current = status.frame_count;
-        setBackendStatus(status.status);
-
-        if (status.status === "processing") {
+        if (status.status === "processing" || status.status === "analyzing") {
           const fc = status.frame_count;
 
-          if (fc === 0) {
-            // Still extracting — no frames have arrived yet.
+          if (fc === 0 && status.status === "processing") {
+            // Still in initial extraction — no frames have arrived at Orchestrator yet.
             setState("EXTRACTING");
             setOrchProg(0.42);
             lastFrameCountRef.current   = 0;
+            stableFramePollsRef.current = 0;
+            return;
+          }
+
+          // If we are 'analyzing' or have frames (fc > 0), we must have moved past initial extraction.
+
+          // First time frames appeared — show BIFURCATING for one poll cycle
+          // so the stepper visually advances through the Bifurcate step.
+          if (!bifurcationShownRef.current) {
+            bifurcationShownRef.current = true;
+            setState("BIFURCATING");
+            setOrchProg(0.58);
+            lastFrameCountRef.current   = fc;
             stableFramePollsRef.current = 0;
             return;
           }
@@ -1207,7 +1337,7 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
           }
 
           /*
-           * TASK 1 — §5: Once the frame_count has been stable for STABLE_POLLS_THRESHOLD
+           * Once the frame_count has been stable for STABLE_POLLS_THRESHOLD
            * consecutive polls, the Extractor has sent its /finish signals and the
            * GPU Idle Handshake is underway.  Transition to ANALYZING_AUDIO so Rohit's
            * NodeCard pulses in amber and shows the Ghost Node label.
@@ -1215,9 +1345,16 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
           if (stableFramePollsRef.current >= STABLE_POLLS_THRESHOLD) {
             setState("ANALYZING_AUDIO");
             setOrchProg(0.88);
+            
+            // Increment stuck timer for ANALYZING_AUDIO state
+            stuckSecondsRef.current += 2; // polls every 2s
+            if (stuckSecondsRef.current >= 90) {
+              setShowForceFinalize(true);
+            }
           } else {
             setState("ANALYZING");
             setOrchProg(0.78);
+            stuckSecondsRef.current = 0; // reset if count moves again
           }
           return;
         }
@@ -1230,7 +1367,7 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
           }
 
           try {
-            const result = await fetchAssetResult(assetId, token);
+            const result = await fetchAssetResult(assetIdRef.current, activeAuthTokenRef.current);
             const auditedVerdict = result.verdict === "CLEAN" || result.verdict === "SAFE" ? "CLEAN" : "THREAT";
             const fusedConfidence = result.fused_score > 1
               ? result.fused_score
@@ -1247,11 +1384,25 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
         } else if (status.status === "failed") {
           finalize("FAILED", "failed");
         }
-      } catch {
+      } catch (pollErr) {
         // Transient network error — keep polling, don't surface to UI
+        console.warn("[OverwatchIngest] Poll error (retrying):", pollErr);
       }
-    }, 2000);
-  },[stopPolling, finalize]);
+  }, pollDelay);
+
+  const startPolling = useCallback((assetId: string, token: string)=>{
+    stopPolling();
+    assetIdRef.current = assetId;
+    activeAuthTokenRef.current = token;
+    pollStartedAtRef.current = performance.now();
+    
+    // Reset frame-stability trackers for the new poll session.
+    lastFrameCountRef.current   = -1;
+    stableFramePollsRef.current = 0;
+    bifurcationShownRef.current = false;
+
+    setPollDelay(2000);
+  },[stopPolling]);
 
   /**
    * Real pipeline: uploads the file to the FastAPI backend,
@@ -1273,6 +1424,7 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
     confidenceRef.current = null;
     lastFrameCountRef.current = -1;
     stableFramePollsRef.current = 0;
+    bifurcationShownRef.current = false;
     resultPendingPollsRef.current = 0;
 
     setState("UPLOADING");
@@ -1427,7 +1579,7 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
               transition={{ opacity:{ duration:T(0.28) } }}>
               <PipelineCanvas
                 state={state} fileName={fileName}
-                orchProgress={orchProg} verdict={verdict}
+                orchProgress={orchProg} verdict={verdict} confidence={confidenceRef.current}
                 chipMoving={chipMov} chipVisible={chipVis}
                 onChipArrive={()=>setChipMov(false)}
                 onComplete={
@@ -1453,6 +1605,10 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
               frameCount={frameCountRef.current || null}
               onReset={reset}
               onSeeInsights={()=>onComplete?.(verdict, fileName, assetIdRef.current)}
+              showForceFinalize={showForceFinalize}
+              setShowForceFinalize={setShowForceFinalize}
+              stuckSecondsRef={stuckSecondsRef}
+              assetId={assetIdRef.current}
             />
           )}
         </AnimatePresence>

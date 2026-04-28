@@ -519,14 +519,14 @@ async def _post(
     """
     assert _http is not None, "HTTP client not initialised — startup did not complete"
 
-    delay = BACKOFF_INITIAL_S
-    for attempt in range(1, MAX_FRAME_RETRIES + 2):
+    delay = 3.0  # Constant retry delay as requested
+    for attempt in range(1, 4 + 1):  # 1 initial + 3 retries = 4 attempts total
         try:
             resp = await _http.post(url, json=json, files=files, data=data,
                                     timeout=timeout)
-        except (httpx.ConnectError, httpx.TimeoutException, httpx.NetworkError) as exc:
-            if attempt > MAX_FRAME_RETRIES:
-                msg = f"[{label}] ❌ Network fault after {MAX_FRAME_RETRIES} retries: {exc}"
+        except (httpx.ConnectError, httpx.TimeoutException, httpx.NetworkError, httpx.RemoteProtocolError) as exc:
+            if attempt > 3:
+                msg = f"[{label}] ❌ Network fault after 3 retries: {exc}"
                 logger.error(msg)
                 return False, False, msg
             logger.warning(
@@ -534,7 +534,6 @@ async def _post(
                 label, attempt, exc, delay,
             )
             await asyncio.sleep(delay)
-            delay *= 2
             continue
 
         status = resp.status_code
@@ -919,12 +918,12 @@ async def _webhook_system_ping(packet_id: str) -> None:
     payload = {
         "packet_id":    packet_id,
         "type":         "system_ping",
-        "nodes_online": "3/3",
+        "nodes_online": "1/3",
         "services": {
-            "ingest_api":     "OK",
-            "vision_engine":  "OK",
-            "text_processor": "OK",
-            "orchestrator":   "OK",
+            "atlas":          "OK",
+            "argus":          "UNKNOWN",
+            "hermes":         "UNKNOWN",
+            "orchestrator":   "UNKNOWN",
         },
     }
     ok, _abort, msg = await _post(
@@ -1067,31 +1066,30 @@ async def _run_pipeline_inner(
             return
         tracker.set_total_frames(n_frames)
 
-        # ── 4. Concurrent broadcast ───────────────────────────────────────────
+        # ── 4. Concurrent broadcast with Semaphore(5) ─────────────────────────
         frame_paths = sorted(frames_dir.glob("*.jpg"))
         logger.info(
-            "📡 Broadcasting %d frames → Vision Node + Context Node…  "
+            "📡 Broadcasting %d frames → Vision Node + Context Node (concurrency=5)…  "
             "[is_golden=%s]",
             n_frames, is_golden,
         )
-        for idx, frame_path in enumerate(frame_paths, start=1):
-            should_continue = await _broadcast_frame(
-                frame_path, idx, packet_id, tracker
-            )
-            if not should_continue:
-                logger.error(
-                    "🔴 Batch abort received (409). "
-                    "Halting broadcast at frame %d / %d.", idx, n_frames
-                )
-                break
-            if idx % 100 == 0 or idx == n_frames:
-                snap = tracker.snapshot()
-                logger.info(
-                    "   … %d / %d dispatched  ✅ %d  ❌ %d",
-                    idx, n_frames,
-                    snap["successful_broadcasts"],
-                    snap["failed_broadcasts"],
-                )
+        
+        sem = asyncio.Semaphore(5)
+
+        async def _sem_broadcast(fp: Path, i: int) -> bool:
+            async with sem:
+                return await _broadcast_frame(fp, i, packet_id, tracker)
+
+        broadcast_tasks = [
+            _sem_broadcast(frame_path, idx) 
+            for idx, frame_path in enumerate(frame_paths, start=1)
+        ]
+        
+        # We process them in chunks or all at once via gather (the semaphore handles the limit)
+        broadcast_results = await asyncio.gather(*broadcast_tasks)
+        
+        if not all(broadcast_results) or tracker.aborted:
+            logger.warning("⚠️ Some frames failed or batch was aborted (409).")
 
         # ── 5. Finishing handshake ────────────────────────────────────────────
         logger.info("🏁 Sending /finish signal to both GPU nodes…")
