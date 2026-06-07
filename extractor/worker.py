@@ -1423,6 +1423,12 @@ async def extract(
         raise HTTPException(status_code=500, detail=f"Upload failed: {exc}")
 
 
+@app.get("/")
+async def root():
+    """Root liveness probe for HF Spaces health checks."""
+    return {"status": "ok", "node": "Extractor Node (ATLAS)"}
+
+
 @app.get("/health")
 async def health():
     """Contract Section 3 — Node A  GET /health"""

@@ -295,6 +295,12 @@ def _run_inference(image_bytes: bytes) -> tuple[str, list[float], float, int, in
 # Endpoints
 # ──────────────────────────────────────────────────────────────────────────────
 
+@app.get("/", tags=["system"])
+async def root():
+    """Root liveness probe for HF Spaces health checks."""
+    return {"status": "ok", "node": "Context Node (HERMES)"}
+
+
 @app.get("/health", tags=["system"])
 async def health_check():
     """
