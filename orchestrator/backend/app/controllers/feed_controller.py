@@ -49,11 +49,16 @@ NODE_LAST_SEEN = {
     "orchestrator": time.time() 
 }
 
+import uuid
+
 # Dedicated secondary engine for health probes to bypass statement caching issues in PgBouncer
 health_engine = create_async_engine(
     settings.database_url,
     echo=False,
-    connect_args={"statement_cache_size": 0},
+    connect_args={
+        "statement_cache_size": 0,
+        "prepared_statement_name_func": lambda: f"stmt_{uuid.uuid4()}"
+    },
 )
 
 
