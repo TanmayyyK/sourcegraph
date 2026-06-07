@@ -1,6 +1,15 @@
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
+# ── HF Spaces CPU-only + cache routing ────────────────────────────────────
+os.environ.setdefault("CUDA_VISIBLE_DEVICES", "")           # Disable GPU lookup
+os.environ.setdefault("HF_HOME", "/tmp/cache/huggingface")
+os.environ.setdefault("HF_HUB_CACHE", "/tmp/cache/huggingface/hub")
+os.environ.setdefault("TRANSFORMERS_CACHE", "/tmp/cache/huggingface/transformers")
+os.environ.setdefault("TORCH_HOME", "/tmp/cache/torch")
+os.environ.setdefault("EASYOCR_MODULE_PATH", "/tmp/cache/easyocr")
+os.environ.setdefault("XDG_CACHE_HOME", "/tmp/cache/xdg")
+
 # faster_whisper / WhisperModel removed — audio phase disabled.
 # Only OCR + MiniLM visual pipeline is active.
 
@@ -83,9 +92,9 @@ class OverwatchNode:
         if self._easy_ocr is None or self._minilm is None:
             self._assert_memory()
             print("🔍 [Overwatch Node] Loading Visual & Embedding Phase engines...")
-            use_gpu = torch.cuda.is_available()
-            self._easy_ocr = easyocr.Reader(['en'], gpu=use_gpu)
-            self._minilm   = SentenceTransformer('all-MiniLM-L6-v2', device='cuda' if use_gpu else 'cpu')
+            use_gpu = False  # Force CPU — HF Spaces CPU Basic has no CUDA
+            self._easy_ocr = easyocr.Reader(['en'], gpu=False)
+            self._minilm   = SentenceTransformer('all-MiniLM-L6-v2', device='cpu')
             self.is_visual_phase_active = True
             print(f"✅ [Overwatch Node] Visual Phase ready (GPU: {use_gpu}).")
 

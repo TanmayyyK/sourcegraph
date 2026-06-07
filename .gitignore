@@ -1,26 +1,5 @@
-# Python & Node
-    __pycache__/
-    *.pyc
-    node_modules/
-    .env
 
-# Media Files (DO NOT COMMIT VIDEOS)
-    *.mp4
-    *.wav
-    *.jpg
-    *.png
-    /data/
-    /temp/
-    extractor/_pipeline_output/
-    *.mp4
-    
-# Machine Learning Weights
-    *.pt
-    *.pth
-    *.onnx
-    /models/weights/
-
-# Database
-    /postgres-data/*.mp4
-*.wav
-extractor/_sandbox_output/
+# Test assets (binary — excluded from HF push)
+test_frame.jpg
+_sandbox_output/
+temp_processing/

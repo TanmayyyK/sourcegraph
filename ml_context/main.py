@@ -25,6 +25,7 @@ import asyncio
 # Mirrors the fix in main.py — without this the process crashes on Windows/some
 # Linux builds when both Intel and GNU OpenMP runtimes are loaded simultaneously.
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+os.environ.setdefault("CUDA_VISIBLE_DEVICES", "")  # Force CPU-only on HF Spaces
 
 import time
 import threading
@@ -33,6 +34,7 @@ from typing import Annotated, Any
 
 import numpy as np
 import requests
+import torch
 import uvicorn
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
@@ -68,7 +70,7 @@ ORCHESTRATOR_URL: str = os.getenv(
 )
 WEBHOOK_SECRET: str   = os.getenv("WEBHOOK_SECRET", "change-me-in-production")
 HOST: str             = os.getenv("HOST", "0.0.0.0")
-PORT: int             = int(os.getenv("PORT", "8002"))
+PORT: int             = int(os.getenv("PORT", "7860"))
 SOURCE_NODE: str      = "RTX-2050-Yug"
 
 # Contract-mandated vector dimensionality for this node
