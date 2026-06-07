@@ -233,6 +233,34 @@ async def _run_auditor_background(asset_id: UUID, is_golden: bool, trace_id: str
             )
 
 
+async def _stub_audio_barrier_if_missing(
+    asset_id: UUID,
+    db: AsyncSession,
+    trace_id: str,
+) -> None:
+    """
+    Close the audio lifecycle barrier with an empty transcript when Whisper
+    was skipped, failed, or has not yet committed.  Keeps the Auditor path
+    unblocked without changing the dual-summary contract.
+    """
+    result = await db.execute(
+        update(Asset)
+        .where(
+            Asset.id == asset_id,
+            Asset.audio_summary_completed.is_(False),
+        )
+        .values(
+            audio_summary_completed=True,
+            full_transcript="",
+        )
+    )
+    if result.rowcount:
+        logger.info(
+            f"[WEBHOOK] 🔇 Audio barrier stubbed (empty transcript): "
+            f"asset={asset_id} trace={trace_id}"
+        )
+
+
 async def _maybe_dispatch_auditor(
     asset_id: UUID,
     db: AsyncSession,
@@ -864,6 +892,7 @@ async def _dispatch_pipeline_final_summary(
         .where(Asset.id == asset_id)
         .values(pipeline_summary_completed=True)
     )
+    await _stub_audio_barrier_if_missing(asset_id, db, trace_id)
 
     logger.info(
         f"[FEEDER] ✅ Pipeline summary persisted: "
@@ -1164,6 +1193,7 @@ async def mark_asset_complete(
         .where(Asset.id == asset_id)
         .values(pipeline_summary_completed=True)
     )
+    await _stub_audio_barrier_if_missing(asset_id, db, trace_id)
 
     logger.info(
         f"[WEBHOOK] ✅ Pipeline completion persisted: id={asset_id} "

@@ -933,6 +933,22 @@ async def _webhook_system_ping(packet_id: str) -> None:
     (logger.info if ok else logger.warning)("📡 system_ping → %s", msg)
 
 
+async def _webhook_audio_final_summary_stub(packet_id: str) -> None:
+    """Dispatch empty audio summary — Whisper bypassed, Auditor barrier closed."""
+    payload = {
+        "packet_id":   packet_id,
+        "type":        "audio_final_summary",
+        "source_node": SOURCE_NODE_NAME,
+        "transcript":  [],
+        "full_script": "",
+    }
+    ok, _abort, msg = await _post(
+        "Orchestrator/audio_stub", ORCHESTRATOR_WEBHOOK,
+        json=payload, timeout=ORCHESTRATOR_TIMEOUT,
+    )
+    (logger.info if ok else logger.warning)("🔇 audio_final_summary (stub) → %s", msg)
+
+
 async def _webhook_pipeline_final_summary(packet_id: str, metrics: dict) -> None:
     payload = {
         "packet_id":   packet_id,
@@ -1099,85 +1115,16 @@ async def _run_pipeline_inner(
         idle_confirmed = await _await_gpu_idle(packet_id)
         if not idle_confirmed:
             logger.critical(
-                "🚫 [AudioPhase] Skipping audio phase — GPU idle handshake was not confirmed."
+                "🚫 [AudioPhase] GPU idle handshake was not confirmed — "
+                "using stub audio summary."
             )
-            metrics = tracker.snapshot()
-            logger.info("📊 Metrics snapshot: %s", metrics)
-            await _webhook_pipeline_final_summary(packet_id, metrics)
-            return
 
-        # ── 6. Audio Phase — dispatched ONLY after GPU idle is confirmed ──────
-        #
-        # BLOCKING AUDIO TRANSCRIPTION (Strict Sequencing)
-        # ─────────────────────────────────────────────────
-        # The Vision Node's /embed/audio endpoint now runs Whisper SYNCHRONOUSLY.
-        # It holds the HTTP connection open until:
-        #   1. Whisper transcription completes (or times out on the GPU side)
-        #   2. audio_final_summary webhook is dispatched to the Orchestrator
-        #   3. Only THEN does it return 200 OK
-        #
-        # This guarantees pipeline_final_summary (line below) fires AFTER the
-        # Orchestrator has received and committed the audio data — eliminating
-        # the 14-second race condition.
-        #
-        # Timeout is set to 600s to accommodate long audio transcription on
-        # the RTX 3050 with Whisper.
-        #
-        audio_path = tmp_dir / "audio.wav"
+        # ── 6. Audio Phase (STUB) — empty summary, Whisper bypassed ───────────
+        # Preserves execution order: audio_final_summary → pipeline_final_summary
+        logger.info("🔇 [AudioPhase] Stub mode — dispatching empty audio summary")
+        await _webhook_audio_final_summary_stub(packet_id)
 
-        # Step A — extract
-        audio_ok: bool = await loop.run_in_executor(
-            None, _extract_audio_ffmpeg, video_path, audio_path
-        )
-
-        if audio_ok:
-            # Step B — dispatch (BLOCKING — waits for Whisper to finish)
-            logger.info(
-                "📤 [AudioPhase] Dispatching '%s' (%.1f KB) → %s  packet_id=%s",
-                audio_path.name, audio_path.stat().st_size / 1024,
-                VISION_AUDIO_URL, packet_id,
-            )
-            audio_bytes = audio_path.read_bytes()
-            audio_ok_post, audio_abort, audio_detail = await _post(
-                "Vision/Audio",
-                VISION_AUDIO_URL,
-                # Field name "audio" matches vision_main.py's /embed/audio
-                # parameter: `audio: UploadFile = File(...)`.
-                files={"audio": ("audio.wav", audio_bytes, "audio/wav")},
-                data={"packet_id": packet_id},
-                # 600s timeout — Whisper transcription is synchronous on
-                # Rohit's node.  The connection stays open until completion.
-                timeout=600,
-            )
-            if audio_ok_post:
-                # Step C — Vision Node returned 200 OK, meaning Whisper finished
-                # AND audio_final_summary was already dispatched to the Orchestrator.
-                logger.info(
-                    "✅ [AudioPhase] Audio transcription COMPLETE — Vision Node "
-                    "confirmed 200 OK after Whisper + webhook dispatch.  detail=%s",
-                    audio_detail,
-                )
-            elif audio_abort:
-                logger.error(
-                    "🔴 [AudioPhase] Vision Node returned 409 for audio upload — "
-                    "asset may be in a terminal state on Rohit's side. "
-                    "Visual pipeline summary will still be sent.  detail=%s",
-                    audio_detail,
-                )
-            else:
-                logger.warning(
-                    "⚠  [AudioPhase] Audio upload failed — no audio_final_summary "
-                    "will be generated for this asset.  detail=%s",
-                    audio_detail,
-                )
-        else:
-            logger.info(
-                "🔇 [AudioPhase] Skipped — no audio track extracted from '%s'. "
-                "No audio_final_summary will be generated.", video_path.name,
-            )
-        # ── End Audio Phase ───────────────────────────────────────────────────
-
-        # pipeline_final_summary fires HERE — strictly AFTER audio 200 OK
+        # pipeline_final_summary fires AFTER stub audio summary
         metrics = tracker.snapshot()
         logger.info("📊 Metrics snapshot: %s", metrics)
         await _webhook_pipeline_final_summary(packet_id, metrics)

@@ -1,0 +1,1499 @@
+index,time_utc,latitude,longitude,cumulative_km,waypoint_type,station_name,recommended_speed_kmh,stop_duration_s,segment_name,curve_angle_deg,source
+1,2026-05-14T00:30:00.000Z,28.6142432,77.1178222,0.000,station_start,Delhi Cantt,0.0,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+2,2026-05-14T00:32:47.060Z,28.6159884,77.1193080,0.242,station_exit,,10.4,0,Delhi Cantt → Subzi Mandi,7.0,osm_node
+3,2026-05-14T00:33:02.515Z,28.6163545,77.1195466,0.289,station_exit,,11.4,0,Delhi Cantt → Subzi Mandi,2.2,osm_node
+4,2026-05-14T00:33:18.903Z,28.6167869,77.1198042,0.343,station_exit,,12.4,0,Delhi Cantt → Subzi Mandi,1.4,osm_node
+5,2026-05-14T00:33:32.014Z,28.6171641,77.1200161,0.390,station_exit,,13.3,0,Delhi Cantt → Subzi Mandi,9.5,osm_node
+6,2026-05-14T00:33:42.735Z,28.6174596,77.1202580,0.431,station_exit,,13.9,0,Delhi Cantt → Subzi Mandi,1.2,osm_node
+7,2026-05-14T00:34:57.029Z,28.6198699,77.1223205,0.766,station_exit,,18.6,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+8,2026-05-14T00:35:54.050Z,28.6221859,77.1243054,1.088,railway_geometry,,22.1,0,Delhi Cantt → Subzi Mandi,0.1,osm_node
+9,2026-05-14T00:36:56.639Z,28.6252002,77.1268767,1.507,railway_geometry,,26.0,0,Delhi Cantt → Subzi Mandi,0.5,osm_node
+10,2026-05-14T00:37:45.844Z,28.6278953,77.1292189,1.884,interpolation,,29.1,0,Delhi Cantt → Subzi Mandi,0.0,interpolation
+11,2026-05-14T00:38:30.325Z,28.6305905,77.1315612,2.261,railway_geometry,,31.9,0,Delhi Cantt → Subzi Mandi,0.1,osm_node
+12,2026-05-14T00:39:19.496Z,28.6338585,77.1343944,2.717,station_approach,,35.0,0,Delhi Cantt → Subzi Mandi,1.1,osm_node
+13,2026-05-14T00:40:14.116Z,28.6377812,77.1379347,3.274,station_approach,,38.4,0,Delhi Cantt → Subzi Mandi,1.1,osm_node
+14,2026-05-14T00:40:30.663Z,28.6390608,77.1390442,3.453,station_approach,,39.4,0,Delhi Cantt → Subzi Mandi,2.4,osm_node
+15,2026-05-14T00:40:33.539Z,28.6392793,77.1392506,3.484,intermediate_station_pass,Naraina Vihar,39.6,0,Delhi Cantt → Subzi Mandi,0.0,station_projection
+16,2026-05-14T00:40:36.646Z,28.6395165,77.1394746,3.518,station_exit,,39.8,0,Delhi Cantt → Subzi Mandi,3.3,osm_node
+17,2026-05-14T00:40:41.240Z,28.6398521,77.1398302,3.569,station_exit,,40.1,0,Delhi Cantt → Subzi Mandi,7.1,osm_node
+18,2026-05-14T00:40:44.385Z,28.6400549,77.1401058,3.604,station_exit,,40.3,0,Delhi Cantt → Subzi Mandi,1.9,osm_node
+19,2026-05-14T00:40:48.899Z,28.6403358,77.1405148,3.655,station_exit,,40.6,0,Delhi Cantt → Subzi Mandi,3.0,osm_node
+20,2026-05-14T00:40:51.111Z,28.6404647,77.1407242,3.680,station_exit,,40.7,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+21,2026-05-14T00:40:54.814Z,28.6406814,77.1410764,3.722,station_exit,,40.9,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+22,2026-05-14T00:40:58.423Z,28.6408938,77.1414216,3.763,station_exit,,41.2,0,Delhi Cantt → Subzi Mandi,3.9,osm_node
+23,2026-05-14T00:41:03.477Z,28.6412215,77.1418839,3.821,station_exit,,41.5,0,Delhi Cantt → Subzi Mandi,6.1,osm_node
+24,2026-05-14T00:41:08.307Z,28.6415765,77.1422885,3.877,station_exit,,41.8,0,Delhi Cantt → Subzi Mandi,3.9,osm_node
+25,2026-05-14T00:41:12.559Z,28.6419120,77.1426219,3.927,station_exit,,42.0,0,Delhi Cantt → Subzi Mandi,4.1,osm_node
+26,2026-05-14T00:41:16.685Z,28.6422592,77.1429197,3.975,station_exit,,42.3,0,Delhi Cantt → Subzi Mandi,5.8,osm_node
+27,2026-05-14T00:41:20.699Z,28.6426230,77.1431707,4.022,station_exit,,42.5,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+28,2026-05-14T00:41:24.044Z,28.6429278,77.1433811,4.062,station_approach,,42.8,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+29,2026-05-14T00:41:27.224Z,28.6432190,77.1435821,4.100,station_approach,,43.0,0,Delhi Cantt → Subzi Mandi,0.3,osm_node
+30,2026-05-14T00:42:08.184Z,28.6470554,77.1462614,4.600,railway_geometry,,45.0,0,Delhi Cantt → Subzi Mandi,0.1,osm_node
+31,2026-05-14T00:42:09.617Z,28.6471929,77.1463572,4.618,intermediate_station_pass,Kirti Nagar,45.0,0,Delhi Cantt → Subzi Mandi,0.0,station_projection
+32,2026-05-14T00:42:29.684Z,28.6491174,77.1476981,4.869,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,0.3,osm_node
+33,2026-05-14T00:42:34.490Z,28.6495771,77.1480217,4.929,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,0.7,osm_node
+34,2026-05-14T00:42:41.612Z,28.6502633,77.1484916,5.018,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,2.2,osm_node
+35,2026-05-14T00:42:45.782Z,28.6506554,77.1487844,5.070,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,4.5,osm_node
+36,2026-05-14T00:42:49.707Z,28.6510045,77.1490920,5.119,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,3.0,osm_node
+37,2026-05-14T00:42:52.038Z,28.6512199,77.1492620,5.148,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,2.4,osm_node
+38,2026-05-14T00:43:25.007Z,28.6541759,77.1518096,5.560,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.2,osm_node
+39,2026-05-14T00:43:30.286Z,28.6546477,77.1522197,5.626,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.3,osm_node
+40,2026-05-14T00:43:45.182Z,28.6559848,77.1533686,5.812,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.3,osm_node
+41,2026-05-14T00:43:55.001Z,28.6568627,77.1541311,5.935,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,12.9,osm_node
+42,2026-05-14T00:43:58.218Z,28.6570942,77.1544476,5.975,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,14.5,osm_node
+43,2026-05-14T00:44:08.146Z,28.6580012,77.1551888,6.100,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.3,osm_node
+44,2026-05-14T00:44:21.044Z,28.6591836,77.1561452,6.261,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,2.3,osm_node
+45,2026-05-14T00:44:27.110Z,28.6597236,77.1566197,6.337,railway_geometry,,45.0,0,Delhi Cantt → Subzi Mandi,3.8,osm_node
+46,2026-05-14T00:44:29.423Z,28.6599185,77.1568159,6.365,intermediate_station_pass,Patel Nagar,45.0,0,Delhi Cantt → Subzi Mandi,0.0,station_projection
+47,2026-05-14T00:44:32.398Z,28.6601692,77.1570682,6.403,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,4.0,osm_node
+48,2026-05-14T00:44:40.563Z,28.6608133,77.1578133,6.505,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,1.4,osm_node
+49,2026-05-14T00:44:43.957Z,28.6610743,77.1581305,6.547,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,1.7,osm_node
+50,2026-05-14T00:44:50.252Z,28.6615425,77.1587352,6.626,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,6.3,osm_node
+51,2026-05-14T00:44:54.037Z,28.6617873,77.1591319,6.673,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,2.8,osm_node
+52,2026-05-14T00:44:58.226Z,28.6620387,77.1595856,6.725,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,1.5,osm_node
+53,2026-05-14T00:45:03.171Z,28.6623232,77.1601299,6.787,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,5.3,osm_node
+54,2026-05-14T00:45:12.025Z,28.6627516,77.1611538,6.898,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+55,2026-05-14T00:45:12.695Z,28.6627847,77.1612309,6.906,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+56,2026-05-14T00:45:22.506Z,28.6632656,77.1623620,7.029,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,0.1,osm_node
+57,2026-05-14T00:45:24.312Z,28.6633539,77.1625704,7.052,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,1.9,osm_node
+58,2026-05-14T00:45:35.992Z,28.6639628,77.1638961,7.198,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.5,osm_node
+59,2026-05-14T00:45:50.997Z,28.6647584,77.1655912,7.385,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.7,osm_node
+60,2026-05-14T00:46:04.004Z,28.6654321,77.1670702,7.548,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.3,osm_node
+61,2026-05-14T00:46:19.810Z,28.6662430,77.1688721,7.745,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,8.0,osm_node
+62,2026-05-14T00:46:24.138Z,28.6664027,77.1693959,7.799,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.2,osm_node
+63,2026-05-14T00:46:27.574Z,28.6665309,77.1698112,7.842,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,6.4,osm_node
+64,2026-05-14T00:46:29.285Z,28.6665742,77.1700247,7.864,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,1.0,osm_node
+65,2026-05-14T00:46:31.201Z,28.6666190,77.1702648,7.888,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,2.5,osm_node
+66,2026-05-14T00:46:33.595Z,28.6666634,77.1705674,7.918,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.8,osm_node
+67,2026-05-14T00:46:35.618Z,28.6666979,77.1708235,7.943,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,2.4,osm_node
+68,2026-05-14T00:46:37.432Z,28.6667203,77.1710546,7.966,railway_geometry,,45.0,0,Delhi Cantt → Subzi Mandi,3.3,osm_node
+69,2026-05-14T00:46:38.673Z,28.6667276,77.1712133,7.981,intermediate_station_pass,Dayabasti,45.0,0,Delhi Cantt → Subzi Mandi,0.0,station_projection
+70,2026-05-14T00:46:39.962Z,28.6667351,77.1713782,7.997,railway_geometry,,45.0,0,Delhi Cantt → Subzi Mandi,3.4,osm_node
+71,2026-05-14T00:46:42.542Z,28.6667332,77.1717088,8.029,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,3.3,osm_node
+72,2026-05-14T00:46:44.979Z,28.6667158,77.1720204,8.060,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,2.0,osm_node
+73,2026-05-14T00:46:46.990Z,28.6666936,77.1722768,8.085,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,2.5,osm_node
+74,2026-05-14T00:46:49.135Z,28.6666593,77.1725488,8.112,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,0.6,osm_node
+75,2026-05-14T00:46:51.001Z,28.6666273,77.1727851,8.135,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,3.9,osm_node
+76,2026-05-14T00:46:53.165Z,28.6665741,77.1730556,8.162,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,2.7,osm_node
+77,2026-05-14T00:46:56.153Z,28.6664850,77.1734247,8.200,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,1.6,osm_node
+78,2026-05-14T00:46:59.342Z,28.6663802,77.1738154,8.239,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,0.9,osm_node
+79,2026-05-14T00:47:07.748Z,28.6660896,77.1748402,8.345,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,1.3,osm_node
+80,2026-05-14T00:47:13.616Z,28.6659013,77.1755608,8.418,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,1.4,osm_node
+81,2026-05-14T00:47:17.711Z,28.6657804,77.1760670,8.469,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,0.2,osm_node
+82,2026-05-14T00:47:22.015Z,28.6656517,77.1765986,8.523,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,1.6,osm_node
+83,2026-05-14T00:47:24.555Z,28.6655681,77.1769097,8.555,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,1.2,osm_node
+84,2026-05-14T00:47:26.654Z,28.6654944,77.1771652,8.581,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,2.9,osm_node
+85,2026-05-14T00:47:32.889Z,28.6653091,77.1779356,8.659,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,4.0,osm_node
+86,2026-05-14T00:47:35.436Z,28.6652144,77.1782435,8.691,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,2.3,osm_node
+87,2026-05-14T00:47:41.189Z,28.6650256,77.1789485,8.763,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.2,osm_node
+88,2026-05-14T00:47:46.012Z,28.6648652,77.1795387,8.823,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,1.0,osm_node
+89,2026-05-14T00:47:49.300Z,28.6647621,77.1799433,8.864,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,5.4,osm_node
+90,2026-05-14T00:47:52.068Z,28.6647036,77.1802916,8.899,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,1.7,osm_node
+91,2026-05-14T00:47:54.220Z,28.6646653,77.1805638,8.925,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.3,osm_node
+92,2026-05-14T00:48:03.288Z,28.6644979,77.1817098,9.039,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.7,osm_node
+93,2026-05-14T00:48:04.608Z,28.6644717,77.1818762,9.055,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.7,osm_node
+94,2026-05-14T00:48:07.924Z,28.6644103,77.1822952,9.097,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,1.8,osm_node
+95,2026-05-14T00:48:09.574Z,28.6643855,77.1825047,9.117,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+96,2026-05-14T00:48:14.808Z,28.6643065,77.1831692,9.183,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,4.7,osm_node
+97,2026-05-14T00:48:16.825Z,28.6642577,77.1834216,9.208,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,3.2,osm_node
+98,2026-05-14T00:48:19.259Z,28.6641841,77.1837219,9.238,intermediate_station_pass,Vivekanand Puri,45.0,0,Delhi Cantt → Subzi Mandi,0.0,station_projection
+99,2026-05-14T00:48:19.650Z,28.6641723,77.1837702,9.243,railway_geometry,,45.0,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+100,2026-05-14T00:48:22.448Z,28.6640767,77.1841117,9.278,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,7.2,osm_node
+101,2026-05-14T00:48:24.162Z,28.6640417,77.1843277,9.300,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,3.3,osm_node
+102,2026-05-14T00:48:25.495Z,28.6640230,77.1844971,9.316,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,1.7,osm_node
+103,2026-05-14T00:48:28.081Z,28.6639782,77.1848245,9.349,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,4.9,osm_node
+104,2026-05-14T00:48:29.715Z,28.6639344,77.1850278,9.369,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,4.1,osm_node
+105,2026-05-14T00:48:31.451Z,28.6638743,77.1852393,9.391,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,4.2,osm_node
+106,2026-05-14T00:48:33.947Z,28.6638075,77.1855499,9.422,intermediate_station_pass,Delhi Sarai Rohilla,45.0,0,Delhi Cantt → Subzi Mandi,0.0,station_projection
+107,2026-05-14T00:48:34.801Z,28.6637847,77.1856562,9.433,railway_geometry,,45.0,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+108,2026-05-14T00:48:36.906Z,28.6637546,77.1859237,9.459,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,5.6,osm_node
+109,2026-05-14T00:48:38.617Z,28.6637116,77.1861373,9.480,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,4.2,osm_node
+110,2026-05-14T00:48:46.448Z,28.6634519,77.1870960,9.578,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,0.2,osm_node
+111,2026-05-14T00:48:50.358Z,28.6633235,77.1875750,9.627,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,0.9,osm_node
+112,2026-05-14T00:48:53.629Z,28.6632104,77.1879738,9.668,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,1.0,osm_node
+113,2026-05-14T00:49:25.353Z,28.6620529,77.1918181,10.065,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,1.0,osm_node
+114,2026-05-14T00:49:29.085Z,28.6619235,77.1922729,10.111,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.2,osm_node
+115,2026-05-14T00:49:30.711Z,28.6618664,77.1924708,10.132,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,6.2,osm_node
+116,2026-05-14T00:49:32.401Z,28.6618269,77.1926826,10.153,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,2.8,osm_node
+117,2026-05-14T00:49:35.068Z,28.6617788,77.1930198,10.186,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,4.1,osm_node
+118,2026-05-14T00:49:36.887Z,28.6617318,77.1932466,10.209,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,2.5,osm_node
+119,2026-05-14T00:49:39.360Z,28.6616560,77.1935514,10.240,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,5.2,osm_node
+120,2026-05-14T00:49:41.883Z,28.6616039,77.1938691,10.271,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+121,2026-05-14T00:49:42.783Z,28.6615890,77.1939832,10.282,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+122,2026-05-14T00:49:44.527Z,28.6615555,77.1942034,10.304,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,13.6,osm_node
+123,2026-05-14T00:49:47.204Z,28.6615752,77.1945456,10.338,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,2.1,osm_node
+124,2026-05-14T00:49:48.664Z,28.6615920,77.1947316,10.356,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,4.7,osm_node
+125,2026-05-14T00:49:51.202Z,28.6616444,77.1950512,10.388,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+126,2026-05-14T00:49:52.230Z,28.6616719,77.1951792,10.401,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+127,2026-05-14T00:49:57.269Z,28.6619270,77.1957556,10.464,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.3,osm_node
+128,2026-05-14T00:50:00.882Z,28.6621082,77.1961698,10.509,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,1.9,osm_node
+129,2026-05-14T00:50:03.928Z,28.6622509,77.1965246,10.547,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,2.4,osm_node
+130,2026-05-14T00:50:08.858Z,28.6625028,77.1970872,10.608,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,1.0,osm_node
+131,2026-05-14T00:50:12.995Z,28.6627070,77.1975633,10.660,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+132,2026-05-14T00:50:15.556Z,28.6628334,77.1978582,10.692,intermediate_station_pass,Delhi Kishanganj,45.0,0,Delhi Cantt → Subzi Mandi,0.0,station_projection
+133,2026-05-14T00:50:25.722Z,28.6633352,77.1990282,10.819,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,0.9,osm_node
+134,2026-05-14T00:50:46.789Z,28.6644070,77.2014351,11.083,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,1.6,osm_node
+135,2026-05-14T00:50:50.948Z,28.6646067,77.2019169,11.135,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,3.6,osm_node
+136,2026-05-14T00:50:53.075Z,28.6646949,77.2021701,11.161,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,2.0,osm_node
+137,2026-05-14T00:50:56.029Z,28.6648064,77.2025266,11.198,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,2.1,osm_node
+138,2026-05-14T00:50:59.332Z,28.6649183,77.2029301,11.239,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,6.7,osm_node
+139,2026-05-14T00:51:02.857Z,28.6650809,77.2033420,11.283,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,3.8,osm_node
+140,2026-05-14T00:51:05.716Z,28.6652318,77.2036654,11.319,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+141,2026-05-14T00:51:07.301Z,28.6653154,77.2038447,11.339,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,0.7,osm_node
+142,2026-05-14T00:51:09.684Z,28.6654381,77.2041161,11.369,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,1.5,osm_node
+143,2026-05-14T00:51:11.511Z,28.6655273,77.2043269,11.392,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,2.1,osm_node
+144,2026-05-14T00:51:13.625Z,28.6656382,77.2045664,11.418,station_exit,,45.0,0,Delhi Cantt → Subzi Mandi,7.2,osm_node
+145,2026-05-14T00:51:16.513Z,28.6657526,77.2049127,11.454,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,3.8,osm_node
+146,2026-05-14T00:51:19.716Z,28.6658568,77.2053056,11.494,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,4.9,osm_node
+147,2026-05-14T00:51:22.171Z,28.6659137,77.2056133,11.525,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.8,osm_node
+148,2026-05-14T00:51:23.591Z,28.6659444,77.2057918,11.543,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,3.1,osm_node
+149,2026-05-14T00:51:25.354Z,28.6659719,77.2060156,11.565,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+150,2026-05-14T00:51:25.705Z,28.6659966,77.2060506,11.569,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,0.0,osm_node
+151,2026-05-14T00:51:28.725Z,28.6660509,77.2056687,11.607,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,5.1,osm_node
+152,2026-05-14T00:51:33.988Z,28.6661969,77.2050152,11.673,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,3.0,osm_node
+153,2026-05-14T00:51:49.677Z,28.6667223,77.2030964,11.869,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,3.0,osm_node
+154,2026-05-14T00:51:53.209Z,28.6668601,77.2026721,11.913,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,6.4,osm_node
+155,2026-05-14T00:51:57.226Z,28.6670630,77.2022123,11.963,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,6.9,osm_node
+156,2026-05-14T00:52:04.252Z,28.6674995,77.2014621,12.051,station_approach,,45.0,0,Delhi Cantt → Subzi Mandi,2.6,osm_node
+157,2026-05-14T00:52:15.663Z,28.6682564,77.2002817,12.193,station_pass_primary,Subzi Mandi,45.0,0,Delhi Cantt → Subzi Mandi,0.4,osm_node
+158,2026-05-14T00:52:29.538Z,28.6691856,77.1988539,12.367,station_exit,,45.0,0,Subzi Mandi → Badli,0.1,osm_node
+159,2026-05-14T00:52:42.455Z,28.6701483,77.1973783,12.546,station_exit,,55.0,0,Subzi Mandi → Badli,0.6,osm_node
+160,2026-05-14T00:52:52.739Z,28.6710024,77.1960953,12.703,station_exit,,55.0,0,Subzi Mandi → Badli,3.3,osm_node
+161,2026-05-14T00:52:55.886Z,28.6712831,77.1957204,12.752,station_exit,,55.0,0,Subzi Mandi → Badli,5.3,osm_node
+162,2026-05-14T00:52:58.185Z,28.6715094,77.1954693,12.787,station_exit,,55.0,0,Subzi Mandi → Badli,6.7,osm_node
+163,2026-05-14T00:53:01.067Z,28.6718233,77.1951941,12.831,station_exit,,55.0,0,Subzi Mandi → Badli,5.9,osm_node
+164,2026-05-14T00:53:06.503Z,28.6724587,77.1947469,12.914,station_exit,,55.0,0,Subzi Mandi → Badli,8.0,osm_node
+165,2026-05-14T00:53:09.453Z,28.6728299,77.1945611,12.959,station_exit,,55.0,0,Subzi Mandi → Badli,0.2,osm_node
+166,2026-05-14T00:53:31.916Z,28.6756519,77.1931371,13.302,interpolation,,55.0,0,Subzi Mandi → Badli,0.0,interpolation
+167,2026-05-14T00:53:54.378Z,28.6784740,77.1917130,13.645,railway_geometry,,55.0,0,Subzi Mandi → Badli,0.0,osm_node
+168,2026-05-14T00:53:56.722Z,28.6787685,77.1915644,13.681,railway_geometry,,55.0,0,Subzi Mandi → Badli,0.1,osm_node
+169,2026-05-14T00:54:21.523Z,28.6818819,77.1899856,14.060,railway_geometry,,55.0,0,Subzi Mandi → Badli,0.1,osm_node
+170,2026-05-14T00:54:25.271Z,28.6823529,77.1897483,14.117,railway_geometry,,55.0,0,Subzi Mandi → Badli,0.0,osm_node
+171,2026-05-14T00:55:03.806Z,28.6871954,77.1873082,14.706,railway_geometry,,55.0,0,Subzi Mandi → Badli,0.0,osm_node
+172,2026-05-14T00:55:19.705Z,28.6891929,77.1863003,14.949,railway_geometry,,55.0,0,Subzi Mandi → Badli,0.0,osm_node
+173,2026-05-14T00:55:41.561Z,28.6919387,77.1849142,15.283,railway_geometry,,55.0,0,Subzi Mandi → Badli,0.2,osm_node
+174,2026-05-14T00:55:46.234Z,28.6925250,77.1846160,15.354,railway_geometry,,55.0,0,Subzi Mandi → Badli,0.0,osm_node
+175,2026-05-14T00:56:10.610Z,28.6955835,77.1830602,15.726,railway_geometry,,55.0,0,Subzi Mandi → Badli,0.2,osm_node
+176,2026-05-14T00:56:24.581Z,28.6973395,77.1821762,15.940,station_approach,,55.0,0,Subzi Mandi → Badli,1.9,osm_node
+177,2026-05-14T00:56:31.574Z,28.6982054,77.1817015,16.047,station_approach,,55.0,0,Subzi Mandi → Badli,9.3,osm_node
+178,2026-05-14T00:56:40.310Z,28.6991890,77.1809173,16.180,station_approach,,55.0,0,Subzi Mandi → Badli,4.2,osm_node
+179,2026-05-14T00:57:01.342Z,28.7012256,77.1790255,16.472,station_approach,,45.0,0,Subzi Mandi → Badli,0.1,osm_node
+180,2026-05-14T00:57:22.614Z,28.7030810,77.1773056,16.738,station_approach,,45.0,0,Subzi Mandi → Badli,0.1,osm_node
+181,2026-05-14T00:57:26.728Z,28.7034402,77.1769734,16.790,intermediate_station_pass,Delhi Azadpur,45.0,0,Subzi Mandi → Badli,0.0,station_projection
+182,2026-05-14T00:57:49.096Z,28.7053929,77.1751674,17.069,station_exit,,45.0,0,Subzi Mandi → Badli,0.2,osm_node
+183,2026-05-14T00:57:57.696Z,28.7062248,77.1743926,17.189,station_exit,,55.0,0,Subzi Mandi → Badli,0.3,osm_node
+184,2026-05-14T00:58:39.033Z,28.7106396,77.1703187,17.820,station_approach,,55.0,0,Subzi Mandi → Badli,0.0,osm_node
+185,2026-05-14T00:59:12.596Z,28.7138988,77.1673123,18.286,station_approach,,45.0,0,Subzi Mandi → Badli,0.0,interpolation
+186,2026-05-14T00:59:16.181Z,28.7142121,77.1670233,18.331,intermediate_station_pass,Adarsh Nagar,45.0,0,Subzi Mandi → Badli,0.0,station_projection
+187,2026-05-14T00:59:46.517Z,28.7171580,77.1643059,18.753,station_exit,,55.0,0,Subzi Mandi → Badli,0.2,osm_node
+188,2026-05-14T00:59:54.289Z,28.7179860,77.1635371,18.871,station_exit,,55.0,0,Subzi Mandi → Badli,0.0,osm_node
+189,2026-05-14T01:00:20.790Z,28.7208084,77.1609138,19.276,station_exit,,55.0,0,Subzi Mandi → Badli,0.2,osm_node
+190,2026-05-14T01:00:24.637Z,28.7212190,77.1605343,19.335,railway_geometry,,55.0,0,Subzi Mandi → Badli,0.0,osm_node
+191,2026-05-14T01:00:56.676Z,28.7246384,77.1573732,19.824,interpolation,,55.0,0,Subzi Mandi → Badli,0.0,interpolation
+192,2026-05-14T01:01:28.713Z,28.7280578,77.1542121,20.314,railway_geometry,,55.0,0,Subzi Mandi → Badli,0.4,osm_node
+193,2026-05-14T01:02:05.883Z,28.7320038,77.1505149,20.882,railway_geometry,,55.0,0,Subzi Mandi → Badli,2.4,osm_node
+194,2026-05-14T01:02:12.031Z,28.7326786,77.1499355,20.976,railway_geometry,,55.0,0,Subzi Mandi → Badli,2.1,osm_node
+195,2026-05-14T01:02:25.615Z,28.7341278,77.1485942,21.183,railway_geometry,,55.0,0,Subzi Mandi → Badli,0.0,osm_node
+196,2026-05-14T01:02:49.909Z,28.7367203,77.1461965,21.554,interpolation,,55.0,0,Subzi Mandi → Badli,0.0,interpolation
+197,2026-05-14T01:03:14.203Z,28.7393128,77.1437987,21.925,station_approach,,55.0,0,Subzi Mandi → Badli,0.0,osm_node
+198,2026-05-14T01:03:20.146Z,28.7399471,77.1432121,22.016,station_approach,,55.0,0,Subzi Mandi → Badli,0.1,osm_node
+199,2026-05-14T01:03:54.746Z,28.7432996,77.1401017,22.497,station_approach,,45.0,0,Subzi Mandi → Badli,0.0,osm_node
+200,2026-05-14T01:04:18.280Z,28.7453519,77.1381975,22.791,station_pass_primary,Badli,45.0,0,Subzi Mandi → Badli,0.1,osm_node
+201,2026-05-14T01:04:55.685Z,28.7491633,77.1346747,23.337,station_exit,,60.0,0,Badli → Narela,0.0,osm_node
+202,2026-05-14T01:05:08.468Z,28.7506519,77.1332988,23.550,station_exit,,60.0,0,Badli → Narela,0.0,osm_node
+203,2026-05-14T01:05:26.374Z,28.7530845,77.1310500,23.898,interpolation,,80.0,0,Badli → Narela,0.0,interpolation
+204,2026-05-14T01:05:42.042Z,28.7555170,77.1288013,24.246,railway_geometry,,80.0,0,Badli → Narela,0.4,osm_node
+205,2026-05-14T01:05:54.753Z,28.7574801,77.1269622,24.528,railway_geometry,,80.0,0,Badli → Narela,0.1,osm_node
+206,2026-05-14T01:06:05.421Z,28.7591289,77.1254203,24.765,railway_geometry,,80.0,0,Badli → Narela,0.2,osm_node
+207,2026-05-14T01:06:16.171Z,28.7607957,77.1238740,25.004,railway_geometry,,80.0,0,Badli → Narela,0.3,osm_node
+208,2026-05-14T01:06:29.749Z,28.7629091,77.1219324,25.306,station_approach,,80.0,0,Badli → Narela,0.5,osm_node
+209,2026-05-14T01:06:41.776Z,28.7645346,77.1204101,25.540,station_approach,,60.0,0,Badli → Narela,0.0,osm_node
+210,2026-05-14T01:06:54.958Z,28.7660622,77.1189807,25.760,station_approach,,60.0,0,Badli → Narela,0.3,osm_node
+211,2026-05-14T01:07:12.756Z,28.7678745,77.1173025,26.019,station_approach,,45.0,0,Badli → Narela,0.3,osm_node
+212,2026-05-14T01:07:32.371Z,28.7695794,77.1157071,26.264,intermediate_station_pass,Khera Kalan,45.0,0,Badli → Narela,0.0,station_projection
+213,2026-05-14T01:07:46.796Z,28.7708331,77.1145339,26.445,station_exit,,45.0,0,Badli → Narela,1.1,osm_node
+214,2026-05-14T01:07:52.221Z,28.7713122,77.1141033,26.512,station_exit,,45.0,0,Badli → Narela,4.0,osm_node
+215,2026-05-14T01:07:57.767Z,28.7718274,77.1137029,26.582,station_exit,,45.0,0,Badli → Narela,2.1,osm_node
+216,2026-05-14T01:08:01.693Z,28.7722221,77.1134196,26.634,station_exit,,50.1,0,Badli → Narela,5.9,osm_node
+217,2026-05-14T01:08:05.113Z,28.7726229,77.1131940,26.683,station_exit,,54.5,0,Badli → Narela,1.1,osm_node
+218,2026-05-14T01:08:08.876Z,28.7730983,77.1129132,26.743,station_exit,,59.4,0,Badli → Narela,9.3,osm_node
+219,2026-05-14T01:08:21.508Z,28.7748895,77.1122470,26.952,station_exit,,60.0,0,Badli → Narela,0.1,osm_node
+220,2026-05-14T01:08:36.058Z,28.7772877,77.1113514,27.233,station_exit,,78.9,0,Badli → Narela,0.1,osm_node
+221,2026-05-14T01:08:50.820Z,28.7800702,77.1103075,27.559,railway_geometry,,80.0,0,Badli → Narela,0.0,osm_node
+222,2026-05-14T01:08:51.655Z,28.7802288,77.1102480,27.577,railway_geometry,,80.0,0,Badli → Narela,0.0,osm_node
+223,2026-05-14T01:09:01.112Z,28.7820242,77.1095744,27.787,railway_geometry,,80.0,0,Badli → Narela,0.0,osm_node
+224,2026-05-14T01:09:22.949Z,28.7861699,77.1080191,28.273,railway_geometry,,80.0,0,Badli → Narela,0.1,osm_node
+225,2026-05-14T01:09:41.052Z,28.7896057,77.1067257,28.675,railway_geometry,,80.0,0,Badli → Narela,0.0,osm_node
+226,2026-05-14T01:09:58.011Z,28.7928233,77.1055110,29.052,railway_geometry,,80.0,0,Badli → Narela,0.0,osm_node
+227,2026-05-14T01:10:15.314Z,28.7956962,77.1044272,29.388,station_approach,,60.0,0,Badli → Narela,0.0,osm_node
+228,2026-05-14T01:10:24.911Z,28.7970621,77.1039128,29.548,station_approach,,60.0,0,Badli → Narela,0.0,osm_node
+229,2026-05-14T01:10:57.831Z,28.8011624,77.1023695,30.028,station_approach,,45.0,0,Badli → Narela,0.0,interpolation
+230,2026-05-14T01:11:01.068Z,28.8015079,77.1022395,30.069,intermediate_station_pass,Holambi Kalan,45.0,0,Badli → Narela,0.0,station_projection
+231,2026-05-14T01:11:31.214Z,28.8052627,77.1008263,30.508,station_exit,,60.0,0,Badli → Narela,0.0,osm_node
+232,2026-05-14T01:11:51.543Z,28.8081565,77.0997371,30.847,station_exit,,60.0,0,Badli → Narela,0.1,osm_node
+233,2026-05-14T01:12:00.054Z,28.8094803,77.0992427,31.002,station_exit,,71.0,0,Badli → Narela,0.1,osm_node
+234,2026-05-14T01:12:27.127Z,28.8143310,77.0974188,31.570,railway_geometry,,80.0,0,Badli → Narela,0.0,osm_node
+235,2026-05-14T01:12:32.140Z,28.8152823,77.0970603,31.681,railway_geometry,,80.0,0,Badli → Narela,0.0,osm_node
+236,2026-05-14T01:12:33.191Z,28.8154818,77.0969851,31.705,railway_geometry,,80.0,0,Badli → Narela,0.0,osm_node
+237,2026-05-14T01:12:48.666Z,28.8184186,77.0958782,32.049,interpolation,,80.0,0,Badli → Narela,0.0,interpolation
+238,2026-05-14T01:13:04.142Z,28.8213553,77.0947714,32.393,railway_geometry,,80.0,0,Badli → Narela,0.0,osm_node
+239,2026-05-14T01:13:23.157Z,28.8249646,77.0934138,32.815,interpolation,,80.0,0,Badli → Narela,0.0,interpolation
+240,2026-05-14T01:13:42.173Z,28.8285739,77.0920562,33.238,railway_geometry,,80.0,0,Badli → Narela,0.0,osm_node
+241,2026-05-14T01:14:02.116Z,28.8323594,77.0906325,33.681,interpolation,,80.0,0,Badli → Narela,0.0,interpolation
+242,2026-05-14T01:14:22.060Z,28.8361450,77.0892089,34.124,interpolation,,80.0,0,Badli → Narela,0.0,interpolation
+243,2026-05-14T01:14:44.852Z,28.8399305,77.0877852,34.567,station_approach,,60.0,0,Badli → Narela,0.1,osm_node
+244,2026-05-14T01:14:54.476Z,28.8413014,77.0872725,34.728,station_approach,,60.0,0,Badli → Narela,7.1,osm_node
+245,2026-05-14T01:14:55.920Z,28.8414971,77.0871670,34.752,station_approach,,60.0,0,Badli → Narela,2.2,osm_node
+246,2026-05-14T01:14:56.980Z,28.8416380,77.0870835,34.769,station_approach,,60.0,0,Badli → Narela,8.6,osm_node
+247,2026-05-14T01:15:01.061Z,28.8421329,77.0866731,34.837,station_approach,,60.0,0,Badli → Narela,0.0,osm_node
+248,2026-05-14T01:15:01.471Z,28.8421846,77.0866349,34.844,station_approach,,60.0,0,Badli → Narela,0.0,osm_node
+249,2026-05-14T01:15:03.653Z,28.8424314,77.0863900,34.881,station_approach,,60.0,0,Badli → Narela,11.3,osm_node
+250,2026-05-14T01:15:05.609Z,28.8426862,77.0862244,34.913,station_approach,,60.0,0,Badli → Narela,11.9,osm_node
+251,2026-05-14T01:15:08.652Z,28.8431206,77.0860660,34.964,station_approach,,60.0,0,Badli → Narela,0.3,osm_node
+252,2026-05-14T01:15:23.627Z,28.8449880,77.0853713,35.182,station_approach,,45.0,0,Badli → Narela,1.0,osm_node
+253,2026-05-14T01:15:32.691Z,28.8459513,77.0849921,35.296,station_approach,,45.0,0,Badli → Narela,1.7,osm_node
+254,2026-05-14T01:15:37.371Z,28.8464534,77.0848129,35.354,station_pass_primary,Narela,45.0,0,Badli → Narela,2.1,osm_node
+255,2026-05-14T01:15:40.493Z,28.8467920,77.0847073,35.393,station_exit,,45.0,0,Narela → Sonipat Junction,3.2,osm_node
+256,2026-05-14T01:15:45.834Z,28.8473790,77.0845637,35.460,station_exit,,45.0,0,Narela → Sonipat Junction,0.9,osm_node
+257,2026-05-14T01:15:51.848Z,28.8480423,77.0844140,35.535,station_exit,,45.0,0,Narela → Sonipat Junction,0.8,osm_node
+258,2026-05-14T01:15:55.065Z,28.8483960,77.0843280,35.575,station_exit,,45.0,0,Narela → Sonipat Junction,1.5,osm_node
+259,2026-05-14T01:16:02.354Z,28.8492017,77.0841577,35.666,station_exit,,45.0,0,Narela → Sonipat Junction,0.0,osm_node
+260,2026-05-14T01:16:04.568Z,28.8494464,77.0841060,35.694,station_exit,,45.0,0,Narela → Sonipat Junction,0.0,osm_node
+261,2026-05-14T01:16:04.961Z,28.8494883,77.0840899,35.699,station_exit,,45.0,0,Narela → Sonipat Junction,0.0,osm_node
+262,2026-05-14T01:16:08.109Z,28.8498409,77.0839623,35.740,station_exit,,49.1,0,Narela → Sonipat Junction,6.2,osm_node
+263,2026-05-14T01:16:11.030Z,28.8502056,77.0838785,35.781,station_exit,,52.9,0,Narela → Sonipat Junction,6.9,osm_node
+264,2026-05-14T01:16:13.003Z,28.8504590,77.0837831,35.811,station_exit,,55.4,0,Narela → Sonipat Junction,0.3,osm_node
+265,2026-05-14T01:16:18.606Z,28.8512277,77.0834996,35.901,station_exit,,60.0,0,Narela → Sonipat Junction,6.6,osm_node
+266,2026-05-14T01:16:20.872Z,28.8515607,77.0834237,35.939,station_exit,,60.0,0,Narela → Sonipat Junction,6.9,osm_node
+267,2026-05-14T01:16:37.837Z,28.8539770,77.0825189,36.221,station_exit,,60.0,0,Narela → Sonipat Junction,0.0,osm_node
+268,2026-05-14T01:16:53.633Z,28.8566101,77.0815313,36.530,railway_geometry,,80.5,0,Narela → Sonipat Junction,0.2,osm_node
+269,2026-05-14T01:17:06.663Z,28.8593632,77.0805124,36.851,railway_geometry,,97.4,0,Narela → Sonipat Junction,0.3,osm_node
+270,2026-05-14T01:17:14.172Z,28.8611844,77.0798270,37.065,railway_geometry,,107.1,0,Narela → Sonipat Junction,1.1,osm_node
+271,2026-05-14T01:17:16.556Z,28.8617949,77.0795828,37.137,railway_geometry,,110.2,0,Narela → Sonipat Junction,1.7,osm_node
+272,2026-05-14T01:17:18.264Z,28.8622375,77.0793888,37.189,railway_geometry,,112.0,0,Narela → Sonipat Junction,2.3,osm_node
+273,2026-05-14T01:17:20.784Z,28.8628851,77.0790708,37.268,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.2,osm_node
+274,2026-05-14T01:17:23.351Z,28.8635463,77.0787500,37.348,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.4,osm_node
+275,2026-05-14T01:17:32.304Z,28.8658448,77.0776131,37.626,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.0,osm_node
+276,2026-05-14T01:17:41.639Z,28.8682420,77.0764293,37.917,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.3,osm_node
+277,2026-05-14T01:17:47.380Z,28.8697134,77.0756933,38.095,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.2,osm_node
+278,2026-05-14T01:17:52.283Z,28.8709720,77.0750702,38.248,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.1,osm_node
+279,2026-05-14T01:17:56.897Z,28.8721576,77.0744870,38.391,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.1,osm_node
+280,2026-05-14T01:18:01.007Z,28.8732125,77.0739645,38.519,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.1,osm_node
+281,2026-05-14T01:18:10.959Z,28.8757691,77.0727043,38.829,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.1,osm_node
+282,2026-05-14T01:18:18.284Z,28.8776524,77.0717816,39.057,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.2,osm_node
+283,2026-05-14T01:18:32.384Z,28.8812728,77.0699918,39.495,interpolation,,112.0,0,Narela → Sonipat Junction,0.0,interpolation
+284,2026-05-14T01:18:46.484Z,28.8848931,77.0682020,39.934,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.1,osm_node
+285,2026-05-14T01:19:01.534Z,28.8887595,77.0662966,40.402,interpolation,,112.0,0,Narela → Sonipat Junction,0.0,interpolation
+286,2026-05-14T01:19:16.585Z,28.8926259,77.0643913,40.870,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.3,osm_node
+287,2026-05-14T01:19:26.247Z,28.8949768,77.0632473,41.155,railway_geometry,,99.7,0,Narela → Sonipat Junction,0.0,osm_node
+288,2026-05-14T01:19:26.670Z,28.8950732,77.0631999,41.166,railway_geometry,,99.0,0,Narela → Sonipat Junction,0.0,osm_node
+289,2026-05-14T01:19:49.242Z,28.8991862,77.0611630,41.665,station_approach,,60.0,0,Narela → Sonipat Junction,0.4,osm_node
+290,2026-05-14T01:19:57.032Z,28.9002609,77.0606414,41.795,station_approach,,60.0,0,Narela → Sonipat Junction,0.4,osm_node
+291,2026-05-14T01:19:59.124Z,28.9005487,77.0604991,41.829,station_approach,,60.0,0,Narela → Sonipat Junction,0.0,osm_node
+292,2026-05-14T01:20:27.769Z,28.9039968,77.0587957,42.247,intermediate_station_pass,Barota,45.0,0,Narela → Sonipat Junction,0.0,station_projection
+293,2026-05-14T01:20:41.397Z,28.9054030,77.0581011,42.417,station_exit,,45.0,0,Narela → Sonipat Junction,0.2,osm_node
+294,2026-05-14T01:21:00.859Z,28.9077500,77.0569551,42.701,station_exit,,60.0,0,Narela → Sonipat Junction,0.0,osm_node
+295,2026-05-14T01:21:06.874Z,28.9085790,77.0565504,42.802,station_exit,,60.0,0,Narela → Sonipat Junction,2.0,osm_node
+296,2026-05-14T01:21:12.261Z,28.9093097,77.0561579,42.891,station_exit,,60.0,0,Narela → Sonipat Junction,1.3,osm_node
+297,2026-05-14T01:21:18.182Z,28.9101042,77.0557060,42.990,station_exit,,60.0,0,Narela → Sonipat Junction,1.4,osm_node
+298,2026-05-14T01:21:24.700Z,28.9109891,77.0552331,43.099,station_exit,,60.0,0,Narela → Sonipat Junction,1.2,osm_node
+299,2026-05-14T01:21:30.182Z,28.9117852,77.0548313,43.195,station_exit,,67.1,0,Narela → Sonipat Junction,0.0,osm_node
+300,2026-05-14T01:21:31.009Z,28.9119130,77.0547667,43.211,station_exit,,68.2,0,Narela → Sonipat Junction,0.2,osm_node
+301,2026-05-14T01:21:34.015Z,28.9123952,77.0545249,43.270,railway_geometry,,72.1,0,Narela → Sonipat Junction,0.4,osm_node
+302,2026-05-14T01:21:36.622Z,28.9128364,77.0543078,43.323,railway_geometry,,75.5,0,Narela → Sonipat Junction,0.0,osm_node
+303,2026-05-14T01:21:39.510Z,28.9133488,77.0540557,43.385,railway_geometry,,79.2,0,Narela → Sonipat Junction,0.2,osm_node
+304,2026-05-14T01:21:43.928Z,28.9141817,77.0536498,43.486,railway_geometry,,84.9,0,Narela → Sonipat Junction,1.5,osm_node
+305,2026-05-14T01:21:46.747Z,28.9147498,77.0533932,43.554,railway_geometry,,88.6,0,Narela → Sonipat Junction,1.3,osm_node
+306,2026-05-14T01:21:49.556Z,28.9153448,77.0531424,43.624,railway_geometry,,92.2,0,Narela → Sonipat Junction,1.4,osm_node
+307,2026-05-14T01:21:51.897Z,28.9158542,77.0529108,43.685,railway_geometry,,95.2,0,Narela → Sonipat Junction,1.1,osm_node
+308,2026-05-14T01:21:55.661Z,28.9167143,77.0525424,43.787,railway_geometry,,100.1,0,Narela → Sonipat Junction,2.7,osm_node
+309,2026-05-14T01:22:11.326Z,28.9205267,77.0506674,44.249,interpolation,,112.0,0,Narela → Sonipat Junction,0.0,interpolation
+310,2026-05-14T01:22:26.161Z,28.9243390,77.0487924,44.710,interpolation,,112.0,0,Narela → Sonipat Junction,0.0,interpolation
+311,2026-05-14T01:22:40.996Z,28.9281514,77.0469174,45.172,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.0,osm_node
+312,2026-05-14T01:22:53.550Z,28.9313786,77.0453331,45.562,interpolation,,112.0,0,Narela → Sonipat Junction,0.0,interpolation
+313,2026-05-14T01:23:06.949Z,28.9346059,77.0437488,45.953,railway_geometry,,97.9,0,Narela → Sonipat Junction,0.0,osm_node
+314,2026-05-14T01:23:09.786Z,28.9352273,77.0434439,46.028,railway_geometry,,93.0,0,Narela → Sonipat Junction,0.0,osm_node
+315,2026-05-14T01:23:21.416Z,28.9374409,77.0423578,46.296,station_approach,,72.9,0,Narela → Sonipat Junction,0.0,osm_node
+316,2026-05-14T01:23:21.921Z,28.9375250,77.0423166,46.306,station_approach,,72.0,0,Narela → Sonipat Junction,0.0,osm_node
+317,2026-05-14T01:23:28.317Z,28.9385820,77.0417979,46.434,station_approach,,72.0,0,Narela → Sonipat Junction,0.0,osm_node
+318,2026-05-14T01:23:33.061Z,28.9393657,77.0414124,46.529,station_approach,,72.0,0,Narela → Sonipat Junction,0.0,osm_node
+319,2026-05-14T01:23:35.403Z,28.9397526,77.0412221,46.576,station_approach,,72.0,0,Narela → Sonipat Junction,0.0,osm_node
+320,2026-05-14T01:23:57.033Z,28.9433260,77.0394643,47.008,station_approach,,72.0,0,Narela → Sonipat Junction,0.1,osm_node
+321,2026-05-14T01:24:06.759Z,28.9449336,77.0386757,47.203,intermediate_station_pass,Harana Kalan,72.0,0,Narela → Sonipat Junction,0.0,station_projection
+322,2026-05-14T01:24:09.097Z,28.9453200,77.0384862,47.250,station_exit,,72.0,0,Narela → Sonipat Junction,0.1,osm_node
+323,2026-05-14T01:24:16.612Z,28.9465613,77.0378750,47.400,station_exit,,72.0,0,Narela → Sonipat Junction,0.1,osm_node
+324,2026-05-14T01:24:22.288Z,28.9474996,77.0374152,47.514,station_exit,,72.0,0,Narela → Sonipat Junction,0.0,osm_node
+325,2026-05-14T01:24:22.666Z,28.9475622,77.0373845,47.521,station_exit,,72.0,0,Narela → Sonipat Junction,0.0,osm_node
+326,2026-05-14T01:24:45.964Z,28.9514134,77.0354973,47.987,station_exit,,72.0,0,Narela → Sonipat Junction,0.2,osm_node
+327,2026-05-14T01:25:01.251Z,28.9542846,77.0340787,48.335,railway_geometry,,91.8,0,Narela → Sonipat Junction,0.3,osm_node
+328,2026-05-14T01:25:11.379Z,28.9565745,77.0329643,48.612,railway_geometry,,104.9,0,Narela → Sonipat Junction,0.3,osm_node
+329,2026-05-14T01:25:22.740Z,28.9594003,77.0315685,48.954,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.0,osm_node
+330,2026-05-14T01:25:34.492Z,28.9624193,77.0300789,49.320,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.2,osm_node
+331,2026-05-14T01:25:45.628Z,28.9652842,77.0286791,49.666,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.2,osm_node
+332,2026-05-14T01:25:59.261Z,28.9687851,77.0269489,50.090,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.3,osm_node
+333,2026-05-14T01:26:06.194Z,28.9705690,77.0260781,50.306,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.1,osm_node
+334,2026-05-14T01:26:13.749Z,28.9725124,77.0251270,50.541,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.2,osm_node
+335,2026-05-14T01:26:21.427Z,28.9744836,77.0241511,50.780,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.3,osm_node
+336,2026-05-14T01:26:28.602Z,28.9763302,77.0232512,51.003,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.1,osm_node
+337,2026-05-14T01:26:33.088Z,28.9774839,77.0226858,51.143,railway_geometry,,112.0,0,Narela → Sonipat Junction,0.5,osm_node
+338,2026-05-14T01:26:37.977Z,28.9786968,77.0220762,51.290,railway_geometry,,105.0,0,Narela → Sonipat Junction,0.4,osm_node
+339,2026-05-14T01:26:45.435Z,28.9803825,77.0212454,51.494,railway_geometry,,92.1,0,Narela → Sonipat Junction,0.3,osm_node
+340,2026-05-14T01:26:50.251Z,28.9813560,77.0207726,51.612,station_approach,,83.8,0,Narela → Sonipat Junction,0.5,osm_node
+341,2026-05-14T01:26:57.059Z,28.9825700,77.0201672,51.759,station_approach,,72.0,0,Narela → Sonipat Junction,0.6,osm_node
+342,2026-05-14T01:27:04.367Z,28.9837805,77.0195811,51.905,station_approach,,72.0,0,Narela → Sonipat Junction,5.9,osm_node
+343,2026-05-14T01:27:06.540Z,28.9841227,77.0193654,51.949,station_approach,,72.0,0,Narela → Sonipat Junction,3.1,osm_node
+344,2026-05-14T01:27:07.824Z,28.9843307,77.0192507,51.974,station_approach,,72.0,0,Narela → Sonipat Junction,2.6,osm_node
+345,2026-05-14T01:27:10.999Z,28.9848557,77.0189939,52.038,station_approach,,72.0,0,Narela → Sonipat Junction,5.9,osm_node
+346,2026-05-14T01:27:13.969Z,28.9853228,77.0186975,52.097,station_approach,,72.0,0,Narela → Sonipat Junction,2.5,osm_node
+347,2026-05-14T01:27:15.866Z,28.9856137,77.0184936,52.135,station_approach,,72.0,0,Narela → Sonipat Junction,5.2,osm_node
+348,2026-05-14T01:27:18.369Z,28.9860173,77.0182656,52.185,station_approach,,72.0,0,Narela → Sonipat Junction,1.2,osm_node
+349,2026-05-14T01:27:21.126Z,28.9864663,77.0180252,52.240,station_approach,,72.0,0,Narela → Sonipat Junction,1.4,osm_node
+350,2026-05-14T01:27:26.809Z,28.9873814,77.0175043,52.354,station_approach,,72.0,0,Narela → Sonipat Junction,0.9,osm_node
+351,2026-05-14T01:27:29.681Z,28.9878403,77.0172330,52.411,station_approach,,72.0,0,Narela → Sonipat Junction,3.1,osm_node
+352,2026-05-14T01:27:39.023Z,28.9893723,77.0164444,52.598,station_pass_primary,Sonipat Junction,72.0,0,Narela → Sonipat Junction,1.6,osm_node
+353,2026-05-14T01:27:45.735Z,28.9904867,77.0159134,52.732,station_exit,,72.0,0,Sonipat Junction → Ganaur,1.1,osm_node
+354,2026-05-14T01:27:51.021Z,28.9913572,77.0154762,52.838,station_exit,,72.0,0,Sonipat Junction → Ganaur,3.8,osm_node
+355,2026-05-14T01:27:52.977Z,28.9916880,77.0153394,52.877,station_exit,,72.0,0,Sonipat Junction → Ganaur,3.4,osm_node
+356,2026-05-14T01:27:56.295Z,28.9922604,77.0151462,52.944,station_exit,,72.0,0,Sonipat Junction → Ganaur,2.9,osm_node
+357,2026-05-14T01:27:58.188Z,28.9925818,77.0150175,52.981,station_exit,,72.0,0,Sonipat Junction → Ganaur,3.2,osm_node
+358,2026-05-14T01:28:02.849Z,28.9933560,77.0146501,53.075,station_exit,,72.0,0,Sonipat Junction → Ganaur,4.0,osm_node
+359,2026-05-14T01:28:08.136Z,28.9942576,77.0143043,53.180,station_exit,,72.0,0,Sonipat Junction → Ganaur,4.0,osm_node
+360,2026-05-14T01:28:10.349Z,28.9946252,77.0141297,53.225,station_exit,,72.0,0,Sonipat Junction → Ganaur,4.7,osm_node
+361,2026-05-14T01:28:13.200Z,28.9951132,77.0139499,53.282,station_exit,,72.0,0,Sonipat Junction → Ganaur,5.6,osm_node
+362,2026-05-14T01:28:15.812Z,28.9955440,77.0137357,53.334,station_exit,,72.0,0,Sonipat Junction → Ganaur,4.5,osm_node
+363,2026-05-14T01:28:19.030Z,28.9960911,77.0135197,53.398,station_exit,,72.0,0,Sonipat Junction → Ganaur,4.0,osm_node
+364,2026-05-14T01:28:32.921Z,28.9986781,77.0122627,53.711,railway_geometry,,90.0,0,Sonipat Junction → Ganaur,0.4,osm_node
+365,2026-05-14T01:28:37.465Z,28.9996459,77.0117823,53.828,railway_geometry,,95.9,0,Sonipat Junction → Ganaur,0.4,osm_node
+366,2026-05-14T01:28:44.846Z,29.0013539,77.0109509,54.035,railway_geometry,,105.5,0,Sonipat Junction → Ganaur,0.2,osm_node
+367,2026-05-14T01:28:51.330Z,29.0029851,77.0101474,54.232,railway_geometry,,113.9,0,Sonipat Junction → Ganaur,0.2,osm_node
+368,2026-05-14T01:28:55.834Z,29.0041905,77.0095492,54.378,railway_geometry,,119.7,0,Sonipat Junction → Ganaur,0.5,osm_node
+369,2026-05-14T01:28:57.725Z,29.0047119,77.0092970,54.441,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,1.1,osm_node
+370,2026-05-14T01:28:59.537Z,29.0052163,77.0090664,54.502,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,5.5,osm_node
+371,2026-05-14T01:29:00.654Z,29.0055377,77.0089588,54.539,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.8,osm_node
+372,2026-05-14T01:29:02.099Z,29.0059549,77.0088259,54.587,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,3.9,osm_node
+373,2026-05-14T01:29:03.543Z,29.0063789,77.0087262,54.635,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,2.5,osm_node
+374,2026-05-14T01:29:04.976Z,29.0068029,77.0086480,54.683,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,2.3,osm_node
+375,2026-05-14T01:29:06.360Z,29.0072150,77.0085913,54.729,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,4.7,osm_node
+376,2026-05-14T01:29:08.141Z,29.0077484,77.0085679,54.788,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,1.9,osm_node
+377,2026-05-14T01:29:09.196Z,29.0080647,77.0085659,54.824,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,4.1,osm_node
+378,2026-05-14T01:29:10.488Z,29.0084511,77.0085952,54.867,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,1.2,osm_node
+379,2026-05-14T01:29:11.215Z,29.0086682,77.0086167,54.891,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,2.4,osm_node
+380,2026-05-14T01:29:12.238Z,29.0089725,77.0086617,54.925,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,1.2,osm_node
+381,2026-05-14T01:29:13.392Z,29.0093145,77.0087203,54.963,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,2.8,osm_node
+382,2026-05-14T01:29:14.666Z,29.0096889,77.0088064,55.006,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,2.4,osm_node
+383,2026-05-14T01:29:17.014Z,29.0103727,77.0089979,55.084,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.1,osm_node
+384,2026-05-14T01:29:21.237Z,29.0116020,77.0093440,55.225,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.3,osm_node
+385,2026-05-14T01:29:27.640Z,29.0134681,77.0098569,55.438,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.0,osm_node
+386,2026-05-14T01:29:41.023Z,29.0173695,77.0109257,55.884,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,1.8,osm_node
+387,2026-05-14T01:29:43.638Z,29.0181258,77.0111618,55.972,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,1.6,osm_node
+388,2026-05-14T01:29:54.586Z,29.0213145,77.0120505,56.337,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.2,osm_node
+389,2026-05-14T01:30:01.358Z,29.0232847,77.0126100,56.562,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.0,osm_node
+390,2026-05-14T01:30:08.031Z,29.0252266,77.0131597,56.785,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,3.9,osm_node
+391,2026-05-14T01:30:10.599Z,29.0259844,77.0133132,56.870,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,4.6,osm_node
+392,2026-05-14T01:30:12.361Z,29.0265104,77.0133701,56.929,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,1.6,osm_node
+393,2026-05-14T01:30:14.344Z,29.0271036,77.0134147,56.995,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,3.5,osm_node
+394,2026-05-14T01:30:15.803Z,29.0275409,77.0134172,57.044,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,3.0,osm_node
+395,2026-05-14T01:30:17.618Z,29.0280843,77.0133875,57.104,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.1,osm_node
+396,2026-05-14T01:30:18.500Z,29.0283484,77.0133726,57.134,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.2,osm_node
+397,2026-05-14T01:30:21.327Z,29.0291949,77.0133280,57.228,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,3.9,osm_node
+398,2026-05-14T01:30:25.126Z,29.0303336,77.0133577,57.355,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.0,osm_node
+399,2026-05-14T01:30:31.475Z,29.0322364,77.0134073,57.566,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,2.4,osm_node
+400,2026-05-14T01:30:36.199Z,29.0336522,77.0133776,57.724,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.6,osm_node
+401,2026-05-14T01:30:40.269Z,29.0348723,77.0133656,57.859,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,2.9,osm_node
+402,2026-05-14T01:30:43.245Z,29.0357628,77.0133058,57.958,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,2.1,osm_node
+403,2026-05-14T01:30:51.296Z,29.0381759,77.0132467,58.227,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.2,osm_node
+404,2026-05-14T01:30:58.194Z,29.0402431,77.0131872,58.457,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.7,osm_node
+405,2026-05-14T01:31:04.730Z,29.0422021,77.0131575,58.675,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,1.0,osm_node
+406,2026-05-14T01:31:13.745Z,29.0449034,77.0130634,58.975,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.7,osm_node
+407,2026-05-14T01:31:18.678Z,29.0463818,77.0130337,59.140,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.4,osm_node
+408,2026-05-14T01:31:23.278Z,29.0477605,77.0129941,59.293,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.5,osm_node
+409,2026-05-14T01:31:27.965Z,29.0491652,77.0129669,59.449,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.2,osm_node
+410,2026-05-14T01:31:33.398Z,29.0507423,77.0129289,59.625,railway_geometry,,112.5,0,Sonipat Junction → Ganaur,2.0,osm_node
+411,2026-05-14T01:31:34.883Z,29.0511543,77.0129025,59.670,railway_geometry,,109.9,0,Sonipat Junction → Ganaur,1.9,osm_node
+412,2026-05-14T01:31:46.819Z,29.0541228,77.0128223,60.001,railway_geometry,,89.3,0,Sonipat Junction → Ganaur,0.2,osm_node
+413,2026-05-14T01:31:56.814Z,29.0561356,77.0127753,60.224,station_approach,,72.0,0,Sonipat Junction → Ganaur,0.8,osm_node
+414,2026-05-14T01:32:05.747Z,29.0577415,77.0127134,60.403,station_approach,,72.0,0,Sonipat Junction → Ganaur,0.7,osm_node
+415,2026-05-14T01:32:06.817Z,29.0579338,77.0127088,60.425,station_approach,,72.0,0,Sonipat Junction → Ganaur,0.0,osm_node
+416,2026-05-14T01:32:37.180Z,29.0633940,77.0125790,61.032,railway_geometry,,72.0,0,Sonipat Junction → Ganaur,0.0,osm_node
+417,2026-05-14T01:32:37.236Z,29.0634040,77.0125788,61.033,intermediate_station_pass,Sandal Kalan,72.0,0,Sonipat Junction → Ganaur,0.0,station_projection
+418,2026-05-14T01:32:55.931Z,29.0667659,77.0124989,61.407,station_exit,,72.0,0,Sonipat Junction → Ganaur,0.0,osm_node
+419,2026-05-14T01:33:01.230Z,29.0677187,77.0124762,61.513,station_exit,,72.0,0,Sonipat Junction → Ganaur,0.1,osm_node
+420,2026-05-14T01:33:20.583Z,29.0711987,77.0123830,61.900,station_exit,,72.0,0,Sonipat Junction → Ganaur,0.0,osm_node
+421,2026-05-14T01:33:35.181Z,29.0741685,77.0123034,62.230,interpolation,,90.9,0,Sonipat Junction → Ganaur,0.0,interpolation
+422,2026-05-14T01:33:47.227Z,29.0771384,77.0122239,62.561,railway_geometry,,106.5,0,Sonipat Junction → Ganaur,1.3,osm_node
+423,2026-05-14T01:33:53.217Z,29.0787766,77.0122220,62.743,railway_geometry,,112.4,0,Sonipat Junction → Ganaur,1.2,osm_node
+424,2026-05-14T01:34:01.906Z,29.0810528,77.0121660,62.996,railway_geometry,,97.4,0,Sonipat Junction → Ganaur,0.0,osm_node
+425,2026-05-14T01:34:16.597Z,29.0841603,77.0120892,63.341,station_approach,,72.0,0,Sonipat Junction → Ganaur,0.0,osm_node
+426,2026-05-14T01:34:34.980Z,29.0874660,77.0120090,63.709,station_approach,,72.0,0,Sonipat Junction → Ganaur,0.0,interpolation
+427,2026-05-14T01:34:53.362Z,29.0907716,77.0119288,64.077,railway_geometry,,72.0,0,Sonipat Junction → Ganaur,0.0,osm_node
+428,2026-05-14T01:34:53.417Z,29.0907815,77.0119286,64.078,intermediate_station_pass,Rajlu Garhi,72.0,0,Sonipat Junction → Ganaur,0.0,station_projection
+429,2026-05-14T01:34:57.473Z,29.0915107,77.0119101,64.159,station_exit,,72.0,0,Sonipat Junction → Ganaur,0.5,osm_node
+430,2026-05-14T01:35:02.027Z,29.0923298,77.0118968,64.250,station_exit,,72.0,0,Sonipat Junction → Ganaur,0.0,osm_node
+431,2026-05-14T01:35:04.220Z,29.0927243,77.0118905,64.294,station_exit,,72.0,0,Sonipat Junction → Ganaur,0.0,osm_node
+432,2026-05-14T01:35:04.810Z,29.0928303,77.0118875,64.306,station_exit,,72.0,0,Sonipat Junction → Ganaur,0.0,osm_node
+433,2026-05-14T01:35:25.499Z,29.0965501,77.0117691,64.720,station_exit,,72.0,0,Sonipat Junction → Ganaur,0.8,osm_node
+434,2026-05-14T01:35:38.637Z,29.0991902,77.0116418,65.013,station_exit,,89.0,0,Sonipat Junction → Ganaur,1.1,osm_node
+435,2026-05-14T01:35:42.349Z,29.1000379,77.0116188,65.108,railway_geometry,,93.8,0,Sonipat Junction → Ganaur,0.0,osm_node
+436,2026-05-14T01:35:53.773Z,29.1029263,77.0115403,65.429,railway_geometry,,108.6,0,Sonipat Junction → Ganaur,0.1,osm_node
+437,2026-05-14T01:36:05.791Z,29.1063572,77.0114413,65.810,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.3,osm_node
+438,2026-05-14T01:36:16.169Z,29.1094679,77.0113719,66.156,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.2,osm_node
+439,2026-05-14T01:36:21.576Z,29.1110885,77.0113408,66.337,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.6,osm_node
+440,2026-05-14T01:36:30.655Z,29.1138090,77.0112538,66.639,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.2,osm_node
+441,2026-05-14T01:36:40.714Z,29.1168236,77.0111668,66.975,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.5,osm_node
+442,2026-05-14T01:36:41.612Z,29.1170926,77.0111618,67.005,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.0,osm_node
+443,2026-05-14T01:36:41.952Z,29.1171947,77.0111599,67.016,railway_geometry,,120.0,0,Sonipat Junction → Ganaur,0.0,osm_node
+444,2026-05-14T01:36:51.140Z,29.1198089,77.0111109,67.307,railway_geometry,,107.8,0,Sonipat Junction → Ganaur,0.0,osm_node
+445,2026-05-14T01:36:51.798Z,29.1199852,77.0111076,67.326,railway_geometry,,106.7,0,Sonipat Junction → Ganaur,0.3,osm_node
+446,2026-05-14T01:37:11.872Z,29.1244643,77.0109955,67.824,station_approach,,72.0,0,Sonipat Junction → Ganaur,0.1,osm_node
+447,2026-05-14T01:37:13.231Z,29.1247088,77.0109889,67.852,station_approach,,72.0,0,Sonipat Junction → Ganaur,4.9,osm_node
+448,2026-05-14T01:37:15.959Z,29.1251984,77.0110233,67.906,station_approach,,72.0,0,Sonipat Junction → Ganaur,4.8,osm_node
+449,2026-05-14T01:37:22.294Z,29.1263377,77.0109940,68.033,station_approach,,72.0,0,Sonipat Junction → Ganaur,0.0,osm_node
+450,2026-05-14T01:37:22.803Z,29.1264292,77.0109917,68.043,station_approach,,72.0,0,Sonipat Junction → Ganaur,0.0,osm_node
+451,2026-05-14T01:37:34.388Z,29.1285124,77.0109383,68.275,station_approach,,72.0,0,Sonipat Junction → Ganaur,0.3,osm_node
+452,2026-05-14T01:37:50.927Z,29.1314860,77.0108467,68.605,station_pass_primary,Ganaur,72.0,0,Sonipat Junction → Ganaur,0.6,osm_node
+453,2026-05-14T01:38:07.110Z,29.1343963,77.0107898,68.929,station_exit,,72.0,0,Ganaur → Samalkha,0.6,osm_node
+454,2026-05-14T01:38:13.390Z,29.1355254,77.0107531,69.055,station_exit,,72.0,0,Ganaur → Samalkha,0.6,osm_node
+455,2026-05-14T01:38:34.427Z,29.1400248,77.0106564,69.555,station_exit,,99.3,0,Ganaur → Samalkha,0.5,osm_node
+456,2026-05-14T01:38:49.163Z,29.1440292,77.0105324,70.001,railway_geometry,,118.4,0,Ganaur → Samalkha,0.3,osm_node
+457,2026-05-14T01:38:59.660Z,29.1471535,77.0104547,70.348,interpolation,,120.0,0,Ganaur → Samalkha,0.0,interpolation
+458,2026-05-14T01:39:10.085Z,29.1502779,77.0103770,70.696,railway_geometry,,120.0,0,Ganaur → Samalkha,0.0,osm_node
+459,2026-05-14T01:39:29.127Z,29.1559850,77.0102345,71.330,railway_geometry,,120.0,0,Ganaur → Samalkha,0.2,osm_node
+460,2026-05-14T01:39:38.508Z,29.1587964,77.0101531,71.643,railway_geometry,,120.0,0,Ganaur → Samalkha,0.5,osm_node
+461,2026-05-14T01:39:48.932Z,29.1619208,77.0100923,71.991,railway_geometry,,120.0,0,Ganaur → Samalkha,0.3,osm_node
+462,2026-05-14T01:39:57.113Z,29.1643725,77.0100323,72.263,railway_geometry,,120.0,0,Ganaur → Samalkha,2.0,osm_node
+463,2026-05-14T01:39:58.762Z,29.1648662,77.0100004,72.318,railway_geometry,,120.0,0,Ganaur → Samalkha,0.5,osm_node
+464,2026-05-14T01:40:07.431Z,29.1674593,77.0098045,72.607,railway_geometry,,120.0,0,Ganaur → Samalkha,0.8,osm_node
+465,2026-05-14T01:40:22.027Z,29.1718207,77.0094031,73.094,interpolation,,120.0,0,Ganaur → Samalkha,0.0,interpolation
+466,2026-05-14T01:40:37.455Z,29.1761821,77.0090017,73.580,railway_geometry,,107.1,0,Ganaur → Samalkha,0.0,osm_node
+467,2026-05-14T01:40:57.744Z,29.1807055,77.0085882,74.085,station_approach,,72.0,0,Ganaur → Samalkha,0.3,osm_node
+468,2026-05-14T01:41:01.401Z,29.1813615,77.0085327,74.158,station_approach,,72.0,0,Ganaur → Samalkha,0.0,osm_node
+469,2026-05-14T01:41:02.604Z,29.1815773,77.0085144,74.182,station_approach,,72.0,0,Ganaur → Samalkha,0.3,osm_node
+470,2026-05-14T01:41:21.554Z,29.1849751,77.0082062,74.561,railway_geometry,,72.0,0,Ganaur → Samalkha,0.0,osm_node
+471,2026-05-14T01:41:22.866Z,29.1852103,77.0081850,74.587,intermediate_station_pass,Bhodwal Majri,72.0,0,Ganaur → Samalkha,0.0,station_projection
+472,2026-05-14T01:41:45.255Z,29.1892248,77.0078230,75.035,station_exit,,72.0,0,Ganaur → Samalkha,0.0,osm_node
+473,2026-05-14T01:41:56.665Z,29.1912708,77.0076384,75.263,station_exit,,72.0,0,Ganaur → Samalkha,0.1,osm_node
+474,2026-05-14T01:42:15.108Z,29.1951263,77.0072857,75.693,railway_geometry,,95.9,0,Ganaur → Samalkha,0.0,osm_node
+475,2026-05-14T01:42:15.740Z,29.1952780,77.0072718,75.710,railway_geometry,,96.7,0,Ganaur → Samalkha,0.0,osm_node
+476,2026-05-14T01:42:30.061Z,29.1990582,77.0069265,76.132,railway_geometry,,115.3,0,Ganaur → Samalkha,0.2,osm_node
+477,2026-05-14T01:42:44.848Z,29.2033910,77.0065444,76.615,railway_geometry,,120.0,0,Ganaur → Samalkha,0.2,osm_node
+478,2026-05-14T01:42:57.835Z,29.2072715,77.0061860,77.048,railway_geometry,,120.0,0,Ganaur → Samalkha,0.3,osm_node
+479,2026-05-14T01:42:59.613Z,29.2078029,77.0061403,77.107,railway_geometry,,120.0,0,Ganaur → Samalkha,0.0,osm_node
+480,2026-05-14T01:43:00.320Z,29.2080144,77.0061222,77.131,railway_geometry,,120.0,0,Ganaur → Samalkha,0.0,osm_node
+481,2026-05-14T01:43:05.276Z,29.2094960,77.0059949,77.296,railway_geometry,,120.0,0,Ganaur → Samalkha,0.2,osm_node
+482,2026-05-14T01:43:24.357Z,29.2151986,77.0054873,77.932,railway_geometry,,120.0,0,Ganaur → Samalkha,0.2,osm_node
+483,2026-05-14T01:43:34.859Z,29.2183369,77.0051979,78.282,interpolation,,120.0,0,Ganaur → Samalkha,0.0,interpolation
+484,2026-05-14T01:43:45.362Z,29.2214752,77.0049084,78.632,railway_geometry,,120.0,0,Ganaur → Samalkha,0.1,osm_node
+485,2026-05-14T01:43:56.627Z,29.2248407,77.0045916,79.008,railway_geometry,,120.0,0,Ganaur → Samalkha,0.0,osm_node
+486,2026-05-14T01:43:56.957Z,29.2249395,77.0045827,79.019,railway_geometry,,120.0,0,Ganaur → Samalkha,0.0,osm_node
+487,2026-05-14T01:44:06.775Z,29.2278742,77.0043275,79.346,railway_geometry,,120.0,0,Ganaur → Samalkha,0.3,osm_node
+488,2026-05-14T01:44:21.578Z,29.2320123,77.0039445,79.808,interpolation,,104.5,0,Ganaur → Samalkha,0.0,interpolation
+489,2026-05-14T01:44:40.406Z,29.2361505,77.0035615,80.269,station_approach,,72.0,0,Ganaur → Samalkha,0.0,osm_node
+490,2026-05-14T01:44:43.170Z,29.2366460,77.0035158,80.325,station_approach,,72.0,0,Ganaur → Samalkha,0.0,osm_node
+491,2026-05-14T01:45:10.334Z,29.2415160,77.0030663,80.868,station_pass_primary,Samalkha,72.0,0,Ganaur → Samalkha,0.3,osm_node
+492,2026-05-14T01:45:25.382Z,29.2442149,77.0028317,81.169,station_exit,,72.0,0,Samalkha → Panipat Junction,0.6,osm_node
+493,2026-05-14T01:45:28.400Z,29.2447566,77.0027910,81.229,station_exit,,72.0,0,Samalkha → Panipat Junction,0.9,osm_node
+494,2026-05-14T01:45:33.396Z,29.2456521,77.0027068,81.329,station_exit,,72.0,0,Samalkha → Panipat Junction,0.3,osm_node
+495,2026-05-14T01:45:46.953Z,29.2480835,77.0024948,81.600,station_exit,,72.0,0,Samalkha → Panipat Junction,0.8,osm_node
+496,2026-05-14T01:45:55.707Z,29.2497752,77.0023195,81.789,station_exit,,83.3,0,Samalkha → Panipat Junction,1.0,osm_node
+497,2026-05-14T01:46:04.505Z,29.2517271,77.0021547,82.007,railway_geometry,,94.7,0,Samalkha → Panipat Junction,0.8,osm_node
+498,2026-05-14T01:46:13.145Z,29.2538845,77.0019375,82.248,railway_geometry,,105.9,0,Samalkha → Panipat Junction,0.9,osm_node
+499,2026-05-14T01:46:20.434Z,29.2558911,77.0017727,82.471,railway_geometry,,115.0,0,Samalkha → Panipat Junction,1.0,osm_node
+500,2026-05-14T01:46:27.295Z,29.2578543,77.0015738,82.690,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.8,osm_node
+501,2026-05-14T01:46:34.434Z,29.2598997,77.0013985,82.918,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.0,osm_node
+502,2026-05-14T01:46:39.634Z,29.2613894,77.0012710,83.085,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.0,osm_node
+503,2026-05-14T01:46:42.227Z,29.2621321,77.0012075,83.167,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.9,osm_node
+504,2026-05-14T01:46:44.349Z,29.2627393,77.0011447,83.235,railway_geometry,,115.0,0,Samalkha → Panipat Junction,3.7,osm_node
+505,2026-05-14T01:46:46.158Z,29.2632529,77.0010531,83.293,railway_geometry,,115.0,0,Samalkha → Panipat Junction,2.6,osm_node
+506,2026-05-14T01:46:48.080Z,29.2637939,77.0009275,83.354,railway_geometry,,115.0,0,Samalkha → Panipat Junction,4.4,osm_node
+507,2026-05-14T01:46:49.508Z,29.2641888,77.0007993,83.400,railway_geometry,,115.0,0,Samalkha → Panipat Junction,2.7,osm_node
+508,2026-05-14T01:46:52.214Z,29.2649261,77.0005167,83.486,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.0,osm_node
+509,2026-05-14T01:47:07.545Z,29.2691023,76.9989129,83.976,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.7,osm_node
+510,2026-05-14T01:47:13.091Z,29.2706066,76.9983116,84.153,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.3,osm_node
+511,2026-05-14T01:47:23.218Z,29.2733584,76.9972292,84.477,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.5,osm_node
+512,2026-05-14T01:47:34.083Z,29.2763199,76.9960987,84.824,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.2,osm_node
+513,2026-05-14T01:47:39.435Z,29.2777772,76.9955363,84.995,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.7,osm_node
+514,2026-05-14T01:47:45.017Z,29.2792910,76.9949294,85.173,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.7,osm_node
+515,2026-05-14T01:47:47.063Z,29.2798479,76.9947147,85.238,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.0,osm_node
+516,2026-05-14T01:47:51.045Z,29.2809322,76.9942966,85.366,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.6,osm_node
+517,2026-05-14T01:47:56.786Z,29.2825008,76.9937120,85.549,railway_geometry,,115.0,0,Samalkha → Panipat Junction,1.1,osm_node
+518,2026-05-14T01:48:02.732Z,29.2841146,76.9930700,85.739,railway_geometry,,115.0,0,Samalkha → Panipat Junction,1.1,osm_node
+519,2026-05-14T01:48:07.512Z,29.2854201,76.9925815,85.892,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.6,osm_node
+520,2026-05-14T01:48:17.351Z,29.2880973,76.9915417,86.206,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.5,osm_node
+521,2026-05-14T01:48:22.283Z,29.2894350,76.9910070,86.364,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.7,osm_node
+522,2026-05-14T01:48:31.055Z,29.2918248,76.9900893,86.644,railway_geometry,,115.0,0,Samalkha → Panipat Junction,1.7,osm_node
+523,2026-05-14T01:48:39.989Z,29.2942812,76.9892370,86.929,railway_geometry,,115.0,0,Samalkha → Panipat Junction,2.1,osm_node
+524,2026-05-14T01:48:44.041Z,29.2953825,76.9888042,87.059,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.0,osm_node
+525,2026-05-14T01:48:46.074Z,29.2959351,76.9885876,87.124,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.0,osm_node
+526,2026-05-14T01:48:56.665Z,29.2988151,76.9874618,87.462,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.1,osm_node
+527,2026-05-14T01:49:06.662Z,29.3015314,76.9863923,87.781,railway_geometry,,115.0,0,Samalkha → Panipat Junction,0.5,osm_node
+528,2026-05-14T01:49:15.153Z,29.3038454,76.9855080,88.052,railway_geometry,,115.0,0,Samalkha → Panipat Junction,1.4,osm_node
+529,2026-05-14T01:49:31.248Z,29.3078421,76.9838578,88.525,railway_geometry,,96.3,0,Samalkha → Panipat Junction,1.3,osm_node
+530,2026-05-14T01:49:37.771Z,29.3092431,76.9833207,88.689,railway_geometry,,85.0,0,Samalkha → Panipat Junction,1.2,osm_node
+531,2026-05-14T01:49:39.568Z,29.3096008,76.9831927,88.731,station_approach,,81.9,0,Samalkha → Panipat Junction,0.0,osm_node
+532,2026-05-14T01:49:45.305Z,29.3106535,76.9828160,88.853,station_approach,,72.0,0,Samalkha → Panipat Junction,1.4,osm_node
+533,2026-05-14T01:50:02.534Z,29.3135890,76.9816772,89.198,station_approach,,72.0,0,Samalkha → Panipat Junction,0.0,osm_node
+534,2026-05-14T01:50:28.524Z,29.3180172,76.9799594,89.718,intermediate_station_pass,Diwana,72.0,0,Samalkha → Panipat Junction,0.0,osm_node
+535,2026-05-14T01:50:49.339Z,29.3215630,76.9785812,90.134,station_exit,,72.0,0,Samalkha → Panipat Junction,0.0,osm_node
+536,2026-05-14T01:50:54.282Z,29.3224050,76.9782539,90.233,station_exit,,72.0,0,Samalkha → Panipat Junction,0.0,osm_node
+537,2026-05-14T01:51:07.607Z,29.3246748,76.9773713,90.499,station_exit,,72.0,0,Samalkha → Panipat Junction,0.1,osm_node
+538,2026-05-14T01:51:21.334Z,29.3273041,76.9763569,90.808,railway_geometry,,89.8,0,Samalkha → Panipat Junction,0.1,osm_node
+539,2026-05-14T01:51:34.124Z,29.3302718,76.9752023,91.156,railway_geometry,,106.4,0,Samalkha → Panipat Junction,0.1,osm_node
+540,2026-05-14T01:51:43.836Z,29.3327801,76.9742324,91.451,railway_geometry,,111.8,0,Samalkha → Panipat Junction,0.1,osm_node
+541,2026-05-14T01:51:53.021Z,29.3351840,76.9732967,91.733,railway_geometry,,109.4,0,Samalkha → Panipat Junction,0.1,osm_node
+542,2026-05-14T01:51:56.580Z,29.3361020,76.9729414,91.841,railway_geometry,,108.5,0,Samalkha → Panipat Junction,0.1,osm_node
+543,2026-05-14T01:52:02.994Z,29.3377354,76.9723063,92.032,railway_geometry,,106.8,0,Samalkha → Panipat Junction,0.1,osm_node
+544,2026-05-14T01:52:15.374Z,29.3408176,76.9711123,92.394,railway_geometry,,103.6,0,Samalkha → Panipat Junction,0.1,osm_node
+545,2026-05-14T01:52:25.659Z,29.3433063,76.9701510,92.686,railway_geometry,,100.9,0,Samalkha → Panipat Junction,0.0,osm_node
+546,2026-05-14T01:52:39.580Z,29.3465696,76.9688873,93.069,railway_geometry,,97.2,0,Samalkha → Panipat Junction,0.1,osm_node
+547,2026-05-14T01:52:51.830Z,29.3493399,76.9678080,93.394,railway_geometry,,94.0,0,Samalkha → Panipat Junction,0.0,osm_node
+548,2026-05-14T01:52:56.961Z,29.3504727,76.9673668,93.527,railway_geometry,,92.6,0,Samalkha → Panipat Junction,0.0,osm_node
+549,2026-05-14T01:53:01.420Z,29.3514437,76.9669886,93.642,railway_geometry,,91.5,0,Samalkha → Panipat Junction,0.2,osm_node
+550,2026-05-14T01:53:17.614Z,29.3548714,76.9656715,94.043,railway_geometry,,87.2,0,Samalkha → Panipat Junction,0.1,osm_node
+551,2026-05-14T01:53:20.745Z,29.3555155,76.9654251,94.119,railway_geometry,,86.4,0,Samalkha → Panipat Junction,3.4,osm_node
+552,2026-05-14T01:53:23.359Z,29.3560582,76.9652575,94.181,railway_geometry,,85.7,0,Samalkha → Panipat Junction,4.9,osm_node
+553,2026-05-14T01:53:26.515Z,29.3567202,76.9651207,94.256,railway_geometry,,84.9,0,Samalkha → Panipat Junction,3.5,osm_node
+554,2026-05-14T01:53:29.352Z,29.3573150,76.9650403,94.323,railway_geometry,,84.2,0,Samalkha → Panipat Junction,5.2,osm_node
+555,2026-05-14T01:53:40.293Z,29.3595751,76.9649718,94.574,railway_geometry,,81.3,0,Samalkha → Panipat Junction,0.7,osm_node
+556,2026-05-14T01:53:48.725Z,29.3612626,76.9648985,94.762,railway_geometry,,79.1,0,Samalkha → Panipat Junction,0.5,osm_node
+557,2026-05-14T01:54:04.256Z,29.3642500,76.9648011,95.094,railway_geometry,,75.0,0,Samalkha → Panipat Junction,0.0,osm_node
+558,2026-05-14T01:54:04.782Z,29.3643484,76.9647979,95.105,railway_geometry,,74.9,0,Samalkha → Panipat Junction,0.0,osm_node
+559,2026-05-14T01:54:25.761Z,29.3681252,76.9646646,95.525,railway_geometry,,69.3,0,Samalkha → Panipat Junction,0.0,osm_node
+560,2026-05-14T01:54:41.701Z,29.3708022,76.9645682,95.823,railway_geometry,,65.2,0,Samalkha → Panipat Junction,0.2,osm_node
+561,2026-05-14T01:54:49.367Z,29.3720303,76.9645293,95.960,railway_geometry,,63.2,0,Samalkha → Panipat Junction,0.3,osm_node
+562,2026-05-14T01:55:18.953Z,29.3764088,76.9643658,96.447,railway_geometry,,55.4,0,Samalkha → Panipat Junction,0.2,osm_node
+563,2026-05-14T01:55:52.221Z,29.3806477,76.9642243,96.919,railway_geometry,,46.7,0,Samalkha → Panipat Junction,0.2,osm_node
+564,2026-05-14T01:55:56.845Z,29.3811794,76.9642045,96.978,railway_geometry,,45.4,0,Samalkha → Panipat Junction,0.0,osm_node
+565,2026-05-14T01:56:07.217Z,29.3823211,76.9641621,97.105,station_approach,,42.7,0,Samalkha → Panipat Junction,4.4,osm_node
+566,2026-05-14T01:56:12.889Z,29.3829124,76.9640874,97.171,station_approach,,41.2,0,Samalkha → Panipat Junction,4.6,osm_node
+567,2026-05-14T01:56:24.738Z,29.3840865,76.9640481,97.301,station_approach,,38.1,0,Samalkha → Panipat Junction,0.7,osm_node
+568,2026-05-14T01:56:34.817Z,29.3850125,76.9640050,97.405,station_approach,,35.5,0,Samalkha → Panipat Junction,1.7,osm_node
+569,2026-05-14T01:56:38.385Z,29.3853238,76.9639800,97.439,station_approach,,34.5,0,Samalkha → Panipat Junction,1.2,osm_node
+570,2026-05-14T01:56:49.201Z,29.3862152,76.9638860,97.539,station_approach,,31.7,0,Samalkha → Panipat Junction,1.5,osm_node
+571,2026-05-14T01:56:54.686Z,29.3866389,76.9638541,97.586,station_approach,,30.3,0,Samalkha → Panipat Junction,2.4,osm_node
+572,2026-05-14T01:56:59.777Z,29.3870153,76.9638436,97.628,station_approach,,28.9,0,Samalkha → Panipat Junction,0.4,osm_node
+573,2026-05-14T01:57:30.749Z,29.3889387,76.9637762,97.842,station_approach,,20.8,0,Samalkha → Panipat Junction,0.0,osm_node
+574,2026-05-14T01:58:50.045Z,29.3909986,76.9637041,98.071,station_halt,Panipat Junction,0.0,45,Samalkha → Panipat Junction,4.8,osm_node
+575,2026-05-14T01:59:35.045Z,29.3909986,76.9637041,98.071,station_halt_dwell,Panipat Junction,0.0,45,Samalkha → Panipat Junction,4.8,station_dwell
+576,2026-05-14T01:59:59.209Z,29.3912590,76.9637201,98.100,railway_geometry,,8.0,0,Panipat Junction → Karnal,0.3,osm_node
+577,2026-05-14T02:00:17.660Z,29.3917608,76.9637540,98.156,station_exit,,13.8,0,Panipat Junction → Karnal,2.1,osm_node
+578,2026-05-14T02:00:31.163Z,29.3922956,76.9637679,98.215,station_exit,,18.0,0,Panipat Junction → Karnal,3.3,osm_node
+579,2026-05-14T02:00:41.095Z,29.3927789,76.9637483,98.269,station_exit,,21.0,0,Panipat Junction → Karnal,0.0,osm_node
+580,2026-05-14T02:00:52.622Z,29.3934355,76.9637217,98.342,station_exit,,24.6,0,Panipat Junction → Karnal,0.2,osm_node
+581,2026-05-14T02:01:28.235Z,29.3961141,76.9636214,98.640,station_exit,,35.6,0,Panipat Junction → Karnal,0.0,osm_node
+582,2026-05-14T02:01:31.143Z,29.3963762,76.9636115,98.669,station_exit,,36.5,0,Panipat Junction → Karnal,0.0,osm_node
+583,2026-05-14T02:01:33.548Z,29.3965979,76.9636032,98.694,station_exit,,37.3,0,Panipat Junction → Karnal,3.5,osm_node
+584,2026-05-14T02:01:41.433Z,29.3973562,76.9636284,98.778,station_exit,,39.7,0,Panipat Junction → Karnal,3.4,osm_node
+585,2026-05-14T02:01:48.757Z,29.3981037,76.9636027,98.862,station_exit,,42.0,0,Panipat Junction → Karnal,0.2,osm_node
+586,2026-05-14T02:01:50.685Z,29.3983073,76.9635950,98.884,station_exit,,42.6,0,Panipat Junction → Karnal,0.0,osm_node
+587,2026-05-14T02:02:11.385Z,29.4006751,76.9635055,99.148,railway_geometry,,49.0,0,Panipat Junction → Karnal,0.1,osm_node
+588,2026-05-14T02:02:22.992Z,29.4021480,76.9634530,99.311,railway_geometry,,52.6,0,Panipat Junction → Karnal,0.0,osm_node
+589,2026-05-14T02:02:24.110Z,29.4022954,76.9634477,99.328,railway_geometry,,53.0,0,Panipat Junction → Karnal,0.0,osm_node
+590,2026-05-14T02:02:35.157Z,29.4038036,76.9633939,99.496,railway_geometry,,56.4,0,Panipat Junction → Karnal,0.0,osm_node
+591,2026-05-14T02:02:52.638Z,29.4063835,76.9633043,99.783,railway_geometry,,61.8,0,Panipat Junction → Karnal,0.3,osm_node
+592,2026-05-14T02:03:01.757Z,29.4078227,76.9632445,99.943,railway_geometry,,64.6,0,Panipat Junction → Karnal,0.4,osm_node
+593,2026-05-14T02:03:06.152Z,29.4085396,76.9632206,100.023,railway_geometry,,66.0,0,Panipat Junction → Karnal,0.9,osm_node
+594,2026-05-14T02:03:11.415Z,29.4094181,76.9632066,100.120,railway_geometry,,67.6,0,Panipat Junction → Karnal,1.5,osm_node
+595,2026-05-14T02:03:14.719Z,29.4099805,76.9632146,100.183,railway_geometry,,68.7,0,Panipat Junction → Karnal,3.2,osm_node
+596,2026-05-14T02:03:17.352Z,29.4104336,76.9632504,100.233,railway_geometry,,69.5,0,Panipat Junction → Karnal,0.3,osm_node
+597,2026-05-14T02:03:20.914Z,29.4110550,76.9633036,100.303,railway_geometry,,70.6,0,Panipat Junction → Karnal,0.5,osm_node
+598,2026-05-14T02:03:30.218Z,29.4127253,76.9634300,100.489,railway_geometry,,73.5,0,Panipat Junction → Karnal,0.3,osm_node
+599,2026-05-14T02:03:37.908Z,29.4141559,76.9635459,100.648,railway_geometry,,75.8,0,Panipat Junction → Karnal,0.0,osm_node
+600,2026-05-14T02:03:42.263Z,29.4149864,76.9636132,100.741,railway_geometry,,77.2,0,Panipat Junction → Karnal,0.0,osm_node
+601,2026-05-14T02:03:52.518Z,29.4169998,76.9637761,100.965,railway_geometry,,80.4,0,Panipat Junction → Karnal,0.0,osm_node
+602,2026-05-14T02:03:58.742Z,29.4182613,76.9638781,101.106,railway_geometry,,82.3,0,Panipat Junction → Karnal,0.1,osm_node
+603,2026-05-14T02:04:00.342Z,29.4185905,76.9639041,101.142,railway_geometry,,82.8,0,Panipat Junction → Karnal,0.0,osm_node
+604,2026-05-14T02:04:00.854Z,29.4186963,76.9639124,101.154,railway_geometry,,83.0,0,Panipat Junction → Karnal,0.0,osm_node
+605,2026-05-14T02:04:18.272Z,29.4224148,76.9642051,101.569,railway_geometry,,88.4,0,Panipat Junction → Karnal,0.0,osm_node
+606,2026-05-14T02:04:34.557Z,29.4261033,76.9644979,101.980,railway_geometry,,93.4,0,Panipat Junction → Karnal,0.0,osm_node
+607,2026-05-14T02:04:57.592Z,29.4316706,76.9649409,102.600,railway_geometry,,100.5,0,Panipat Junction → Karnal,0.0,osm_node
+608,2026-05-14T02:05:08.328Z,29.4344051,76.9651603,102.905,railway_geometry,,103.9,0,Panipat Junction → Karnal,0.1,osm_node
+609,2026-05-14T02:05:13.940Z,29.4358703,76.9652752,103.068,railway_geometry,,105.6,0,Panipat Junction → Karnal,0.0,osm_node
+610,2026-05-14T02:05:27.947Z,29.4395649,76.9655648,103.480,railway_geometry,,106.0,0,Panipat Junction → Karnal,0.1,osm_node
+611,2026-05-14T02:05:37.284Z,29.4418447,76.9657461,103.734,station_approach,,89.9,0,Panipat Junction → Karnal,0.0,osm_node
+612,2026-05-14T02:05:47.648Z,29.4439357,76.9659116,103.967,station_approach,,72.0,0,Panipat Junction → Karnal,0.0,osm_node
+613,2026-05-14T02:05:50.379Z,29.4444256,76.9659504,104.022,station_approach,,72.0,0,Panipat Junction → Karnal,0.1,osm_node
+614,2026-05-14T02:06:00.747Z,29.4462860,76.9660998,104.229,station_approach,,72.0,0,Panipat Junction → Karnal,0.0,osm_node
+615,2026-05-14T02:06:05.259Z,29.4470956,76.9661646,104.320,station_approach,,72.0,0,Panipat Junction → Karnal,0.0,osm_node
+616,2026-05-14T02:06:06.995Z,29.4474070,76.9661895,104.354,station_approach,,72.0,0,Panipat Junction → Karnal,0.1,osm_node
+617,2026-05-14T02:06:21.432Z,29.4499978,76.9663914,104.643,intermediate_station_pass,Babarpur,72.0,0,Panipat Junction → Karnal,0.0,station_projection
+618,2026-05-14T02:06:22.816Z,29.4502461,76.9664107,104.671,railway_geometry,,72.0,0,Panipat Junction → Karnal,0.1,osm_node
+619,2026-05-14T02:06:48.417Z,29.4548396,76.9667803,105.183,station_exit,,72.0,0,Panipat Junction → Karnal,0.0,osm_node
+620,2026-05-14T02:06:49.119Z,29.4549656,76.9667904,105.197,station_exit,,72.0,0,Panipat Junction → Karnal,0.0,osm_node
+621,2026-05-14T02:06:56.641Z,29.4563152,76.9668980,105.347,station_exit,,72.0,0,Panipat Junction → Karnal,0.3,osm_node
+622,2026-05-14T02:07:13.036Z,29.4596900,76.9671859,105.724,railway_geometry,,93.2,0,Panipat Junction → Karnal,0.4,osm_node
+623,2026-05-14T02:07:21.156Z,29.4616837,76.9673393,105.946,railway_geometry,,103.8,0,Panipat Junction → Karnal,0.2,osm_node
+624,2026-05-14T02:07:31.836Z,29.4646299,76.9675765,106.274,railway_geometry,,117.6,0,Panipat Junction → Karnal,0.0,osm_node
+625,2026-05-14T02:07:39.414Z,29.4669206,76.9677616,106.530,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.1,osm_node
+626,2026-05-14T02:07:49.283Z,29.4699951,76.9680040,106.872,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.1,osm_node
+627,2026-05-14T02:07:56.364Z,29.4722009,76.9681815,107.118,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.1,osm_node
+628,2026-05-14T02:08:07.706Z,29.4757340,76.9684619,107.512,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.0,osm_node
+629,2026-05-14T02:08:12.765Z,29.4773101,76.9685861,107.688,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.0,osm_node
+630,2026-05-14T02:08:20.938Z,29.4798561,76.9687868,107.971,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.1,osm_node
+631,2026-05-14T02:08:36.356Z,29.4841726,76.9691144,108.452,railway_geometry,,99.6,0,Panipat Junction → Karnal,0.2,osm_node
+632,2026-05-14T02:08:42.571Z,29.4856323,76.9692297,108.615,railway_geometry,,88.9,0,Panipat Junction → Karnal,0.0,osm_node
+633,2026-05-14T02:08:43.759Z,29.4858925,76.9692502,108.644,railway_geometry,,86.8,0,Panipat Junction → Karnal,0.0,osm_node
+634,2026-05-14T02:08:47.137Z,29.4865989,76.9693060,108.723,railway_geometry,,81.0,0,Panipat Junction → Karnal,2.1,osm_node
+635,2026-05-14T02:08:49.501Z,29.4870650,76.9693229,108.775,station_approach,,76.9,0,Panipat Junction → Karnal,4.2,osm_node
+636,2026-05-14T02:08:52.340Z,29.4875924,76.9692976,108.833,station_approach,,72.0,0,Panipat Junction → Karnal,3.0,osm_node
+637,2026-05-14T02:08:56.820Z,29.4883946,76.9692102,108.923,station_approach,,72.0,0,Panipat Junction → Karnal,0.6,osm_node
+638,2026-05-14T02:09:17.561Z,29.4921049,76.9687631,109.338,station_approach,,72.0,0,Panipat Junction → Karnal,0.0,osm_node
+639,2026-05-14T02:09:23.616Z,29.4931881,76.9686333,109.459,station_approach,,72.0,0,Panipat Junction → Karnal,0.0,osm_node
+640,2026-05-14T02:09:37.294Z,29.4956351,76.9683401,109.732,intermediate_station_pass,Kohand,72.0,0,Panipat Junction → Karnal,0.0,station_projection
+641,2026-05-14T02:09:42.806Z,29.4966210,76.9682220,109.843,station_exit,,72.0,0,Panipat Junction → Karnal,0.1,osm_node
+642,2026-05-14T02:09:58.604Z,29.4994468,76.9678782,110.159,station_exit,,72.0,0,Panipat Junction → Karnal,0.2,osm_node
+643,2026-05-14T02:10:09.833Z,29.5014558,76.9676408,110.383,station_exit,,72.0,0,Panipat Junction → Karnal,0.0,osm_node
+644,2026-05-14T02:10:22.061Z,29.5036437,76.9673822,110.628,station_exit,,72.0,0,Panipat Junction → Karnal,0.2,osm_node
+645,2026-05-14T02:10:43.043Z,29.5081053,76.9668382,111.127,railway_geometry,,99.2,0,Panipat Junction → Karnal,0.1,osm_node
+646,2026-05-14T02:10:57.834Z,29.5121031,76.9663619,111.574,railway_geometry,,118.4,0,Panipat Junction → Karnal,0.0,osm_node
+647,2026-05-14T02:11:10.920Z,29.5160593,76.9658872,112.016,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.2,osm_node
+648,2026-05-14T02:11:13.949Z,29.5169998,76.9657699,112.121,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.4,osm_node
+649,2026-05-14T02:11:23.600Z,29.5199980,76.9654222,112.456,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.2,osm_node
+650,2026-05-14T02:11:27.563Z,29.5212291,76.9652756,112.594,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.1,osm_node
+651,2026-05-14T02:11:29.498Z,29.5218299,76.9652023,112.661,railway_geometry,,125.0,0,Panipat Junction → Karnal,4.1,osm_node
+652,2026-05-14T02:11:31.321Z,29.5223989,76.9651798,112.724,railway_geometry,,125.0,0,Panipat Junction → Karnal,1.0,osm_node
+653,2026-05-14T02:11:33.183Z,29.5229801,76.9651685,112.789,railway_geometry,,125.0,0,Panipat Junction → Karnal,1.0,osm_node
+654,2026-05-14T02:11:42.238Z,29.5258076,76.9651685,113.103,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.1,osm_node
+655,2026-05-14T02:11:57.056Z,29.5300891,76.9651734,113.579,railway_geometry,,106.3,0,Panipat Junction → Karnal,0.0,osm_node
+656,2026-05-14T02:12:03.765Z,29.5317736,76.9651740,113.767,railway_geometry,,94.7,0,Panipat Junction → Karnal,0.0,osm_node
+657,2026-05-14T02:12:04.568Z,29.5319624,76.9651740,113.788,station_approach,,93.3,0,Panipat Junction → Karnal,0.0,osm_node
+658,2026-05-14T02:12:06.199Z,29.5323368,76.9651741,113.829,station_approach,,90.5,0,Panipat Junction → Karnal,0.0,osm_node
+659,2026-05-14T02:12:16.914Z,29.5345120,76.9651766,114.071,station_approach,,72.0,0,Panipat Junction → Karnal,0.0,osm_node
+660,2026-05-14T02:12:23.966Z,29.5357803,76.9651781,114.212,station_approach,,72.0,0,Panipat Junction → Karnal,0.1,osm_node
+661,2026-05-14T02:12:29.674Z,29.5368070,76.9651781,114.326,station_approach,,72.0,0,Panipat Junction → Karnal,0.0,osm_node
+662,2026-05-14T02:12:46.918Z,29.5399087,76.9651781,114.671,station_approach,,72.0,0,Panipat Junction → Karnal,0.0,interpolation
+663,2026-05-14T02:12:52.301Z,29.5408768,76.9651781,114.779,intermediate_station_pass,Gharaunda,72.0,0,Panipat Junction → Karnal,0.0,station_projection
+664,2026-05-14T02:13:04.163Z,29.5430103,76.9651781,115.016,station_exit,,72.0,0,Panipat Junction → Karnal,0.0,osm_node
+665,2026-05-14T02:13:11.607Z,29.5443492,76.9651794,115.165,station_exit,,72.0,0,Panipat Junction → Karnal,0.0,osm_node
+666,2026-05-14T02:13:16.086Z,29.5451549,76.9651801,115.255,station_exit,,72.0,0,Panipat Junction → Karnal,0.1,osm_node
+667,2026-05-14T02:13:20.885Z,29.5460181,76.9651820,115.351,station_exit,,72.0,0,Panipat Junction → Karnal,0.0,osm_node
+668,2026-05-14T02:13:27.988Z,29.5472956,76.9651847,115.493,station_exit,,72.0,0,Panipat Junction → Karnal,0.1,osm_node
+669,2026-05-14T02:13:36.984Z,29.5490446,76.9651847,115.687,station_exit,,83.7,0,Panipat Junction → Karnal,0.0,osm_node
+670,2026-05-14T02:13:37.147Z,29.5490788,76.9651847,115.691,station_exit,,83.9,0,Panipat Junction → Karnal,0.0,osm_node
+671,2026-05-14T02:13:38.036Z,29.5492663,76.9651847,115.712,station_exit,,85.0,0,Panipat Junction → Karnal,0.0,osm_node
+672,2026-05-14T02:13:47.984Z,29.5515395,76.9651847,115.965,railway_geometry,,97.9,0,Panipat Junction → Karnal,0.0,osm_node
+673,2026-05-14T02:14:01.669Z,29.5551900,76.9651875,116.370,railway_geometry,,115.7,0,Panipat Junction → Karnal,0.0,osm_node
+674,2026-05-14T02:14:11.603Z,29.5581760,76.9651875,116.702,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.0,osm_node
+675,2026-05-14T02:14:25.294Z,29.5624513,76.9651875,117.178,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.1,osm_node
+676,2026-05-14T02:14:38.224Z,29.5664887,76.9651960,117.627,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.1,osm_node
+677,2026-05-14T02:14:49.096Z,29.5698838,76.9651995,118.004,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.0,osm_node
+678,2026-05-14T02:14:56.829Z,29.5722985,76.9652043,118.273,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.2,osm_node
+679,2026-05-14T02:15:07.457Z,29.5756173,76.9651986,118.642,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.2,osm_node
+680,2026-05-14T02:15:21.249Z,29.5799238,76.9652043,119.121,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.1,osm_node
+681,2026-05-14T02:15:34.372Z,29.5840218,76.9652015,119.576,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.1,osm_node
+682,2026-05-14T02:15:47.612Z,29.5881563,76.9652071,120.036,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.0,osm_node
+683,2026-05-14T02:16:00.185Z,29.5920824,76.9652155,120.473,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.1,osm_node
+684,2026-05-14T02:16:02.545Z,29.5928192,76.9652155,120.555,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.0,osm_node
+685,2026-05-14T02:16:07.641Z,29.5944105,76.9652155,120.732,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.0,osm_node
+686,2026-05-14T02:16:22.266Z,29.5989302,76.9652139,121.234,railway_geometry,,122.4,0,Panipat Junction → Karnal,0.2,osm_node
+687,2026-05-14T02:16:35.804Z,29.6026745,76.9652252,121.650,railway_geometry,,99.0,0,Panipat Junction → Karnal,0.2,osm_node
+688,2026-05-14T02:16:42.361Z,29.6042036,76.9652224,121.820,railway_geometry,,87.7,0,Panipat Junction → Karnal,0.1,osm_node
+689,2026-05-14T02:16:46.734Z,29.6051202,76.9652224,121.922,station_approach,,80.1,0,Panipat Junction → Karnal,0.0,osm_node
+690,2026-05-14T02:16:51.440Z,29.6060144,76.9652224,122.022,station_approach,,72.0,0,Panipat Junction → Karnal,0.1,osm_node
+691,2026-05-14T02:16:54.617Z,29.6065859,76.9652240,122.085,station_approach,,72.0,0,Panipat Junction → Karnal,0.0,osm_node
+692,2026-05-14T02:16:56.556Z,29.6069346,76.9652250,122.124,station_approach,,72.0,0,Panipat Junction → Karnal,0.4,osm_node
+693,2026-05-14T02:17:02.731Z,29.6080452,76.9652190,122.248,station_approach,,72.0,0,Panipat Junction → Karnal,0.3,osm_node
+694,2026-05-14T02:17:15.205Z,29.6102889,76.9652210,122.497,station_approach,,72.0,0,Panipat Junction → Karnal,0.0,osm_node
+695,2026-05-14T02:17:27.352Z,29.6124737,76.9652250,122.740,station_approach,,72.0,0,Panipat Junction → Karnal,0.1,osm_node
+696,2026-05-14T02:17:32.570Z,29.6134123,76.9652245,122.844,intermediate_station_pass,Bazida Jatan,72.0,0,Panipat Junction → Karnal,0.0,station_projection
+697,2026-05-14T02:17:32.929Z,29.6134768,76.9652245,122.852,railway_geometry,,72.0,0,Panipat Junction → Karnal,0.0,osm_node
+698,2026-05-14T02:17:46.120Z,29.6158493,76.9652039,123.115,station_exit,,72.0,0,Panipat Junction → Karnal,0.5,osm_node
+699,2026-05-14T02:17:48.107Z,29.6162067,76.9652046,123.155,station_exit,,72.0,0,Panipat Junction → Karnal,0.1,osm_node
+700,2026-05-14T02:17:56.967Z,29.6178004,76.9652121,123.332,station_exit,,72.0,0,Panipat Junction → Karnal,5.1,osm_node
+701,2026-05-14T02:18:00.836Z,29.6184938,76.9651444,123.410,station_exit,,72.0,0,Panipat Junction → Karnal,4.1,osm_node
+702,2026-05-14T02:18:04.063Z,29.6190671,76.9650402,123.474,station_exit,,72.0,0,Panipat Junction → Karnal,5.8,osm_node
+703,2026-05-14T02:18:06.416Z,29.6194762,76.9649161,123.521,station_exit,,72.0,0,Panipat Junction → Karnal,1.6,osm_node
+704,2026-05-14T02:18:09.468Z,29.6200030,76.9647386,123.582,station_exit,,72.0,0,Panipat Junction → Karnal,3.8,osm_node
+705,2026-05-14T02:18:12.557Z,29.6205248,76.9645188,123.644,station_exit,,72.0,0,Panipat Junction → Karnal,3.6,osm_node
+706,2026-05-14T02:18:16.693Z,29.6212059,76.9641749,123.727,station_exit,,72.0,0,Panipat Junction → Karnal,1.5,osm_node
+707,2026-05-14T02:18:29.697Z,29.6235701,76.9628954,124.017,railway_geometry,,88.9,0,Panipat Junction → Karnal,0.1,osm_node
+708,2026-05-14T02:18:39.499Z,29.6256819,76.9617597,124.277,railway_geometry,,101.6,0,Panipat Junction → Karnal,0.4,osm_node
+709,2026-05-14T02:18:49.976Z,29.6282591,76.9603984,124.592,railway_geometry,,115.1,0,Panipat Junction → Karnal,0.4,osm_node
+710,2026-05-14T02:18:57.176Z,29.6302116,76.9593500,124.832,railway_geometry,,124.5,0,Panipat Junction → Karnal,0.2,osm_node
+711,2026-05-14T02:19:05.842Z,29.6326617,76.9580436,125.132,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.1,osm_node
+712,2026-05-14T02:19:09.940Z,29.6338217,76.9574220,125.274,railway_geometry,,125.0,0,Panipat Junction → Karnal,0.6,osm_node
+713,2026-05-14T02:19:12.428Z,29.6345271,76.9570540,125.360,railway_geometry,,124.3,0,Panipat Junction → Karnal,0.0,osm_node
+714,2026-05-14T02:19:14.803Z,29.6351970,76.9567046,125.442,railway_geometry,,123.6,0,Panipat Junction → Karnal,3.2,osm_node
+715,2026-05-14T02:19:16.157Z,29.6355861,76.9565310,125.488,railway_geometry,,123.2,0,Panipat Junction → Karnal,0.0,osm_node
+716,2026-05-14T02:19:16.280Z,29.6356214,76.9565153,125.493,railway_geometry,,123.1,0,Panipat Junction → Karnal,0.0,osm_node
+717,2026-05-14T02:19:17.888Z,29.6360874,76.9563280,125.548,railway_geometry,,122.6,0,Panipat Junction → Karnal,4.1,osm_node
+718,2026-05-14T02:19:19.690Z,29.6366191,76.9561626,125.609,railway_geometry,,122.1,0,Panipat Junction → Karnal,4.6,osm_node
+719,2026-05-14T02:19:20.305Z,29.6368032,76.9561231,125.630,railway_geometry,,121.9,0,Panipat Junction → Karnal,0.0,osm_node
+720,2026-05-14T02:19:21.492Z,29.6371578,76.9560470,125.670,railway_geometry,,121.5,0,Panipat Junction → Karnal,3.0,osm_node
+721,2026-05-14T02:19:23.448Z,29.6377450,76.9559573,125.736,railway_geometry,,120.9,0,Panipat Junction → Karnal,5.7,osm_node
+722,2026-05-14T02:19:23.939Z,29.6378930,76.9559519,125.752,railway_geometry,,120.7,0,Panipat Junction → Karnal,0.0,osm_node
+723,2026-05-14T02:19:25.242Z,29.6382854,76.9559374,125.796,railway_geometry,,120.3,0,Panipat Junction → Karnal,2.5,osm_node
+724,2026-05-14T02:19:26.807Z,29.6387548,76.9559434,125.848,railway_geometry,,119.9,0,Panipat Junction → Karnal,3.5,osm_node
+725,2026-05-14T02:19:28.254Z,29.6391861,76.9559792,125.896,railway_geometry,,119.4,0,Panipat Junction → Karnal,4.2,osm_node
+726,2026-05-14T02:19:29.535Z,29.6395637,76.9560430,125.938,railway_geometry,,119.0,0,Panipat Junction → Karnal,1.0,osm_node
+727,2026-05-14T02:19:30.759Z,29.6399222,76.9561108,125.979,railway_geometry,,118.6,0,Panipat Junction → Karnal,3.6,osm_node
+728,2026-05-14T02:19:32.117Z,29.6403137,76.9562144,126.024,railway_geometry,,118.2,0,Panipat Junction → Karnal,2.0,osm_node
+729,2026-05-14T02:19:33.528Z,29.6407155,76.9563379,126.070,railway_geometry,,117.8,0,Panipat Junction → Karnal,2.5,osm_node
+730,2026-05-14T02:19:40.625Z,29.6426883,76.9570534,126.300,railway_geometry,,115.6,0,Panipat Junction → Karnal,0.4,osm_node
+731,2026-05-14T02:19:50.624Z,29.6453989,76.9580598,126.616,railway_geometry,,112.5,0,Panipat Junction → Karnal,0.1,osm_node
+732,2026-05-14T02:19:54.477Z,29.6464231,76.9584423,126.736,railway_geometry,,111.3,0,Panipat Junction → Karnal,0.0,osm_node
+733,2026-05-14T02:20:00.439Z,29.6479865,76.9590263,126.919,railway_geometry,,109.4,0,Panipat Junction → Karnal,0.2,osm_node
+734,2026-05-14T02:20:08.462Z,29.6500509,76.9597895,127.160,railway_geometry,,106.9,0,Panipat Junction → Karnal,0.0,osm_node
+735,2026-05-14T02:20:18.858Z,29.6526556,76.9607521,127.464,railway_geometry,,103.7,0,Panipat Junction → Karnal,0.2,osm_node
+736,2026-05-14T02:20:28.374Z,29.6549676,76.9616150,127.735,railway_geometry,,100.8,0,Panipat Junction → Karnal,0.0,osm_node
+737,2026-05-14T02:20:39.083Z,29.6574895,76.9625568,128.029,railway_geometry,,97.5,0,Panipat Junction → Karnal,0.0,osm_node
+738,2026-05-14T02:20:41.132Z,29.6579624,76.9627333,128.085,railway_geometry,,96.8,0,Panipat Junction → Karnal,0.0,osm_node
+739,2026-05-14T02:20:55.246Z,29.6611362,76.9639181,128.456,railway_geometry,,92.4,0,Panipat Junction → Karnal,0.1,osm_node
+740,2026-05-14T02:21:10.581Z,29.6644202,76.9651356,128.839,railway_geometry,,87.7,0,Panipat Junction → Karnal,0.0,osm_node
+741,2026-05-14T02:21:26.672Z,29.6676797,76.9663446,129.220,railway_geometry,,82.7,0,Panipat Junction → Karnal,1.9,osm_node
+742,2026-05-14T02:21:28.735Z,29.6680879,76.9664790,129.267,railway_geometry,,82.1,0,Panipat Junction → Karnal,2.6,osm_node
+743,2026-05-14T02:21:31.669Z,29.6686697,76.9666384,129.334,railway_geometry,,81.1,0,Panipat Junction → Karnal,4.6,osm_node
+744,2026-05-14T02:21:35.203Z,29.6693729,76.9667641,129.413,railway_geometry,,80.1,0,Panipat Junction → Karnal,2.0,osm_node
+745,2026-05-14T02:21:37.437Z,29.6698144,76.9668253,129.462,railway_geometry,,79.4,0,Panipat Junction → Karnal,1.6,osm_node
+746,2026-05-14T02:21:38.397Z,29.6700036,76.9668455,129.484,railway_geometry,,79.1,0,Panipat Junction → Karnal,0.0,osm_node
+747,2026-05-14T02:21:41.990Z,29.6707052,76.9669202,129.562,railway_geometry,,78.0,0,Panipat Junction → Karnal,0.2,osm_node
+748,2026-05-14T02:21:58.501Z,29.6738008,76.9672600,129.908,interpolation,,72.8,0,Panipat Junction → Karnal,0.0,interpolation
+749,2026-05-14T02:22:16.264Z,29.6768965,76.9675999,130.253,railway_geometry,,67.3,0,Panipat Junction → Karnal,0.0,osm_node
+750,2026-05-14T02:22:30.936Z,29.6792699,76.9678604,130.519,railway_geometry,,62.8,0,Panipat Junction → Karnal,0.0,osm_node
+751,2026-05-14T02:23:00.142Z,29.6835005,76.9683254,130.991,interpolation,,53.7,0,Panipat Junction → Karnal,0.0,interpolation
+752,2026-05-14T02:23:35.395Z,29.6877311,76.9687903,131.464,station_approach,,42.8,0,Panipat Junction → Karnal,0.1,osm_node
+753,2026-05-14T02:24:06.397Z,29.6906594,76.9691159,131.791,station_approach,,33.2,0,Panipat Junction → Karnal,0.1,osm_node
+754,2026-05-14T02:24:10.238Z,29.6909706,76.9691501,131.826,station_approach,,32.0,0,Panipat Junction → Karnal,0.0,osm_node
+755,2026-05-14T02:25:53.426Z,29.6950751,76.9696015,132.284,station_halt,Karnal,0.0,30,Panipat Junction → Karnal,0.0,osm_node
+756,2026-05-14T02:26:23.426Z,29.6950751,76.9696015,132.284,station_halt_dwell,Karnal,0.0,30,Panipat Junction → Karnal,0.0,station_dwell
+757,2026-05-14T02:27:44.280Z,29.6975951,76.9698786,132.566,station_exit,,25.1,0,Karnal → Kurukshetra Junction,0.1,osm_node
+758,2026-05-14T02:28:06.300Z,29.6991544,76.9700525,132.740,station_exit,,31.9,0,Karnal → Kurukshetra Junction,0.0,osm_node
+759,2026-05-14T02:28:16.957Z,29.7000433,76.9701516,132.839,station_exit,,35.2,0,Karnal → Kurukshetra Junction,0.1,osm_node
+760,2026-05-14T02:28:24.784Z,29.7007520,76.9702295,132.918,station_exit,,37.6,0,Karnal → Kurukshetra Junction,0.0,osm_node
+761,2026-05-14T02:29:01.045Z,29.7046515,76.9706581,133.354,railway_geometry,,48.9,0,Karnal → Kurukshetra Junction,0.1,osm_node
+762,2026-05-14T02:29:23.495Z,29.7075742,76.9709748,133.680,railway_geometry,,55.8,0,Karnal → Kurukshetra Junction,0.1,osm_node
+763,2026-05-14T02:29:44.400Z,29.7106446,76.9713167,134.023,interpolation,,62.3,0,Karnal → Kurukshetra Junction,0.0,interpolation
+764,2026-05-14T02:30:03.327Z,29.7137149,76.9716586,134.366,railway_geometry,,68.2,0,Karnal → Kurukshetra Junction,0.0,osm_node
+765,2026-05-14T02:30:22.381Z,29.7170845,76.9720356,134.743,railway_geometry,,74.1,0,Karnal → Kurukshetra Junction,0.0,osm_node
+766,2026-05-14T02:30:32.130Z,29.7189168,76.9722406,134.947,railway_geometry,,77.1,0,Karnal → Kurukshetra Junction,1.6,osm_node
+767,2026-05-14T02:30:37.041Z,29.7198698,76.9723173,135.054,railway_geometry,,78.6,0,Karnal → Kurukshetra Junction,2.6,osm_node
+768,2026-05-14T02:30:40.176Z,29.7204892,76.9723353,135.122,railway_geometry,,79.6,0,Karnal → Kurukshetra Junction,5.3,osm_node
+769,2026-05-14T02:30:43.693Z,29.7211918,76.9722814,135.201,railway_geometry,,80.7,0,Karnal → Kurukshetra Junction,4.5,osm_node
+770,2026-05-14T02:30:46.359Z,29.7217262,76.9721915,135.261,railway_geometry,,81.5,0,Karnal → Kurukshetra Junction,3.7,osm_node
+771,2026-05-14T02:30:49.502Z,29.7223560,76.9720377,135.332,railway_geometry,,82.5,0,Karnal → Kurukshetra Junction,5.2,osm_node
+772,2026-05-14T02:30:52.194Z,29.7228886,76.9718479,135.394,railway_geometry,,83.3,0,Karnal → Kurukshetra Junction,3.9,osm_node
+773,2026-05-14T02:30:55.990Z,29.7236312,76.9715182,135.483,railway_geometry,,84.5,0,Karnal → Kurukshetra Junction,6.4,osm_node
+774,2026-05-14T02:30:58.865Z,29.7241725,76.9711946,135.551,railway_geometry,,85.4,0,Karnal → Kurukshetra Junction,4.7,osm_node
+775,2026-05-14T02:31:03.654Z,29.7250451,76.9705633,135.665,railway_geometry,,86.9,0,Karnal → Kurukshetra Junction,7.7,osm_node
+776,2026-05-14T02:31:06.966Z,29.7256003,76.9700299,135.746,railway_geometry,,87.9,0,Karnal → Kurukshetra Junction,3.6,osm_node
+777,2026-05-14T02:31:11.518Z,29.7263324,76.9692328,135.858,railway_geometry,,89.3,0,Karnal → Kurukshetra Junction,4.2,osm_node
+778,2026-05-14T02:31:15.754Z,29.7269745,76.9684231,135.964,railway_geometry,,90.6,0,Karnal → Kurukshetra Junction,0.0,osm_node
+779,2026-05-14T02:31:18.788Z,29.7274401,76.9678360,136.040,railway_geometry,,91.6,0,Karnal → Kurukshetra Junction,0.0,osm_node
+780,2026-05-14T02:31:20.082Z,29.7276401,76.9675837,136.073,railway_geometry,,92.0,0,Karnal → Kurukshetra Junction,0.5,osm_node
+781,2026-05-14T02:31:26.917Z,29.7287208,76.9662431,136.250,railway_geometry,,94.1,0,Karnal → Kurukshetra Junction,0.1,osm_node
+782,2026-05-14T02:31:30.641Z,29.7293185,76.9654984,136.348,railway_geometry,,95.2,0,Karnal → Kurukshetra Junction,1.8,osm_node
+783,2026-05-14T02:31:34.137Z,29.7299049,76.9648112,136.441,railway_geometry,,96.3,0,Karnal → Kurukshetra Junction,4.5,osm_node
+784,2026-05-14T02:31:36.088Z,29.7302605,76.9644556,136.493,railway_geometry,,96.9,0,Karnal → Kurukshetra Junction,2.6,osm_node
+785,2026-05-14T02:31:38.502Z,29.7307202,76.9640360,136.559,railway_geometry,,97.7,0,Karnal → Kurukshetra Junction,5.0,osm_node
+786,2026-05-14T02:31:40.599Z,29.7311487,76.9637104,136.616,railway_geometry,,98.3,0,Karnal → Kurukshetra Junction,2.9,osm_node
+787,2026-05-14T02:31:42.634Z,29.7315807,76.9634167,136.671,railway_geometry,,99.0,0,Karnal → Kurukshetra Junction,2.6,osm_node
+788,2026-05-14T02:31:43.903Z,29.7318583,76.9632469,136.706,railway_geometry,,99.4,0,Karnal → Kurukshetra Junction,3.4,osm_node
+789,2026-05-14T02:31:45.964Z,29.7323249,76.9630012,136.763,railway_geometry,,100.0,0,Karnal → Kurukshetra Junction,3.1,osm_node
+790,2026-05-14T02:31:48.269Z,29.7328627,76.9627574,136.828,railway_geometry,,100.7,0,Karnal → Kurukshetra Junction,2.7,osm_node
+791,2026-05-14T02:31:51.573Z,29.7336537,76.9624478,136.921,railway_geometry,,101.7,0,Karnal → Kurukshetra Junction,1.4,osm_node
+792,2026-05-14T02:32:08.804Z,29.7379423,76.9609009,137.420,railway_geometry,,107.1,0,Karnal → Kurukshetra Junction,0.0,osm_node
+793,2026-05-14T02:32:23.110Z,29.7414500,76.9596333,137.829,railway_geometry,,98.7,0,Karnal → Kurukshetra Junction,0.1,osm_node
+794,2026-05-14T02:32:38.544Z,29.7445876,76.9584925,138.195,station_approach,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+795,2026-05-14T02:32:39.373Z,29.7447298,76.9584409,138.212,station_approach,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+796,2026-05-14T02:32:40.242Z,29.7448788,76.9583868,138.229,station_approach,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+797,2026-05-14T02:32:50.395Z,29.7466205,76.9577544,138.432,station_approach,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+798,2026-05-14T02:33:21.891Z,29.7520228,76.9557901,139.062,railway_geometry,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+799,2026-05-14T02:33:22.124Z,29.7520627,76.9557757,139.067,intermediate_station_pass,Bhaini Khurd,72.0,0,Karnal → Kurukshetra Junction,0.0,station_projection
+800,2026-05-14T02:33:33.204Z,29.7539641,76.9550880,139.288,station_exit,,72.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+801,2026-05-14T02:33:39.184Z,29.7549899,76.9547155,139.408,station_exit,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+802,2026-05-14T02:33:43.805Z,29.7557827,76.9544276,139.500,station_exit,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+803,2026-05-14T02:34:06.516Z,29.7604748,76.9527241,140.047,station_exit,,101.4,0,Karnal → Kurukshetra Junction,0.1,osm_node
+804,2026-05-14T02:34:09.188Z,29.7611311,76.9524839,140.124,railway_geometry,,104.9,0,Karnal → Kurukshetra Junction,0.0,osm_node
+805,2026-05-14T02:34:10.027Z,29.7613417,76.9524068,140.148,railway_geometry,,106.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+806,2026-05-14T02:34:18.860Z,29.7636910,76.9515468,140.422,railway_geometry,,117.4,0,Karnal → Kurukshetra Junction,0.1,osm_node
+807,2026-05-14T02:34:28.477Z,29.7664681,76.9505377,140.746,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+808,2026-05-14T02:34:30.735Z,29.7671405,76.9502933,140.825,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+809,2026-05-14T02:34:42.688Z,29.7707027,76.9490088,141.240,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+810,2026-05-14T02:34:54.438Z,29.7742035,76.9477437,141.648,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.2,osm_node
+811,2026-05-14T02:35:04.548Z,29.7772123,76.9466419,141.999,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.8,osm_node
+812,2026-05-14T02:35:05.583Z,29.7775216,76.9465338,142.035,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.6,osm_node
+813,2026-05-14T02:35:22.857Z,29.7826680,76.9446723,142.634,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+814,2026-05-14T02:35:35.422Z,29.7862960,76.9433487,143.058,railway_geometry,,117.5,0,Karnal → Kurukshetra Junction,0.2,osm_node
+815,2026-05-14T02:35:49.802Z,29.7898965,76.9420471,143.477,station_approach,,92.6,0,Karnal → Kurukshetra Junction,0.2,osm_node
+816,2026-05-14T02:36:01.738Z,29.7922360,76.9411916,143.750,station_approach,,72.0,0,Karnal → Kurukshetra Junction,0.8,osm_node
+817,2026-05-14T02:36:03.524Z,29.7925407,76.9410746,143.786,station_approach,,72.0,0,Karnal → Kurukshetra Junction,3.0,osm_node
+818,2026-05-14T02:36:05.773Z,29.7929172,76.9409040,143.831,station_approach,,72.0,0,Karnal → Kurukshetra Junction,2.5,osm_node
+819,2026-05-14T02:36:09.337Z,29.7935031,76.9406041,143.902,station_approach,,72.0,0,Karnal → Kurukshetra Junction,0.6,osm_node
+820,2026-05-14T02:36:13.470Z,29.7941793,76.9402483,143.985,station_approach,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+821,2026-05-14T02:36:36.082Z,29.7978787,76.9383011,144.437,railway_geometry,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+822,2026-05-14T02:36:36.174Z,29.7978937,76.9382932,144.439,intermediate_station_pass,Taraori,72.0,0,Karnal → Kurukshetra Junction,0.0,station_projection
+823,2026-05-14T02:37:07.163Z,29.8029638,76.9356245,145.059,station_exit,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+824,2026-05-14T02:37:08.233Z,29.8031387,76.9355324,145.080,station_exit,,72.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+825,2026-05-14T02:37:23.815Z,29.8060479,76.9340078,145.435,station_exit,,92.2,0,Karnal → Kurukshetra Junction,0.0,osm_node
+826,2026-05-14T02:37:32.686Z,29.8080233,76.9329719,145.677,railway_geometry,,103.7,0,Karnal → Kurukshetra Junction,1.8,osm_node
+827,2026-05-14T02:37:34.011Z,29.8083427,76.9328184,145.715,railway_geometry,,105.4,0,Karnal → Kurukshetra Junction,1.7,osm_node
+828,2026-05-14T02:37:35.350Z,29.8086748,76.9326721,145.755,railway_geometry,,107.1,0,Karnal → Kurukshetra Junction,1.3,osm_node
+829,2026-05-14T02:37:36.449Z,29.8089539,76.9325575,145.788,railway_geometry,,108.6,0,Karnal → Kurukshetra Junction,2.1,osm_node
+830,2026-05-14T02:37:37.916Z,29.8093367,76.9324186,145.832,railway_geometry,,110.5,0,Karnal → Kurukshetra Junction,1.6,osm_node
+831,2026-05-14T02:37:41.208Z,29.8102271,76.9321261,145.935,railway_geometry,,114.7,0,Karnal → Kurukshetra Junction,0.4,osm_node
+832,2026-05-14T02:37:54.553Z,29.8140784,76.9308976,146.380,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+833,2026-05-14T02:38:04.121Z,29.8169567,76.9299738,146.712,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+834,2026-05-14T02:38:14.582Z,29.8200292,76.9289916,147.066,railway_geometry,,119.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+835,2026-05-14T02:38:16.112Z,29.8204627,76.9288530,147.116,railway_geometry,,116.4,0,Karnal → Kurukshetra Junction,0.0,osm_node
+836,2026-05-14T02:38:26.725Z,29.8232015,76.9279775,147.432,railway_geometry,,98.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+837,2026-05-14T02:38:41.792Z,29.8262835,76.9269848,147.788,station_approach,,72.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+838,2026-05-14T02:38:45.299Z,29.8268913,76.9267900,147.858,station_approach,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+839,2026-05-14T02:39:06.800Z,29.8306171,76.9255957,148.288,station_approach,,72.0,0,Karnal → Kurukshetra Junction,0.0,interpolation
+840,2026-05-14T02:39:14.255Z,29.8319090,76.9251815,148.438,intermediate_station_pass,Nilokheri,72.0,0,Karnal → Kurukshetra Junction,0.0,station_projection
+841,2026-05-14T02:39:28.300Z,29.8343428,76.9244014,148.718,station_exit,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+842,2026-05-14T02:39:32.461Z,29.8350639,76.9241702,148.802,station_exit,,72.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+843,2026-05-14T02:39:33.648Z,29.8352697,76.9241048,148.825,station_exit,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+844,2026-05-14T02:39:37.374Z,29.8359157,76.9238994,148.900,station_exit,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+845,2026-05-14T02:39:46.138Z,29.8374353,76.9234163,149.075,station_exit,,72.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+846,2026-05-14T02:39:56.522Z,29.8392346,76.9228386,149.283,station_exit,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+847,2026-05-14T02:40:15.263Z,29.8430295,76.9216199,149.721,railway_geometry,,96.3,0,Karnal → Kurukshetra Junction,0.0,osm_node
+848,2026-05-14T02:40:28.142Z,29.8462727,76.9205798,150.095,railway_geometry,,113.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+849,2026-05-14T02:40:39.223Z,29.8494464,76.9195633,150.461,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+850,2026-05-14T02:40:49.803Z,29.8526302,76.9185467,150.829,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+851,2026-05-14T02:40:51.935Z,29.8532722,76.9183432,150.903,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+852,2026-05-14T02:40:52.221Z,29.8533583,76.9183159,150.913,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+853,2026-05-14T02:40:53.056Z,29.8536099,76.9182361,150.942,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.2,osm_node
+854,2026-05-14T02:41:07.237Z,29.8578759,76.9168672,151.434,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+855,2026-05-14T02:41:14.265Z,29.8599891,76.9161842,151.678,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+856,2026-05-14T02:41:14.357Z,29.8600167,76.9161753,151.681,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+857,2026-05-14T02:41:15.598Z,29.8603897,76.9160548,151.724,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+858,2026-05-14T02:41:17.553Z,29.8609778,76.9158648,151.792,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+859,2026-05-14T02:41:29.549Z,29.8645873,76.9147103,152.209,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+860,2026-05-14T02:41:37.625Z,29.8670158,76.9139266,152.489,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.3,osm_node
+861,2026-05-14T02:41:44.376Z,29.8690486,76.9132820,152.724,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.2,osm_node
+862,2026-05-14T02:41:56.854Z,29.8728017,76.9120747,153.157,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+863,2026-05-14T02:42:09.158Z,29.8765035,76.9108889,153.584,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.3,osm_node
+864,2026-05-14T02:42:20.412Z,29.8798946,76.9098253,153.975,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.3,osm_node
+865,2026-05-14T02:42:23.739Z,29.8808957,76.9095043,154.091,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+866,2026-05-14T02:42:32.766Z,29.8836099,76.9086276,154.404,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+867,2026-05-14T02:42:44.377Z,29.8871027,76.9075051,154.807,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+868,2026-05-14T02:42:55.764Z,29.8905260,76.9063968,155.202,railway_geometry,,125.0,0,Karnal → Kurukshetra Junction,0.2,osm_node
+869,2026-05-14T02:43:14.274Z,29.8955935,76.9047755,155.787,railway_geometry,,102.4,0,Karnal → Kurukshetra Junction,0.2,osm_node
+870,2026-05-14T02:43:31.895Z,29.8992899,76.9035778,156.214,station_approach,,72.0,0,Karnal → Kurukshetra Junction,3.5,osm_node
+871,2026-05-14T02:43:34.651Z,29.8997582,76.9033902,156.269,station_approach,,72.0,0,Karnal → Kurukshetra Junction,4.9,osm_node
+872,2026-05-14T02:43:37.124Z,29.9001642,76.9031807,156.319,station_approach,,72.0,0,Karnal → Kurukshetra Junction,2.1,osm_node
+873,2026-05-14T02:43:39.259Z,29.9005089,76.9029854,156.361,station_approach,,72.0,0,Karnal → Kurukshetra Junction,4.4,osm_node
+874,2026-05-14T02:43:42.054Z,29.9009417,76.9026905,156.417,station_approach,,72.0,0,Karnal → Kurukshetra Junction,1.8,osm_node
+875,2026-05-14T02:43:46.937Z,29.9016833,76.9021476,156.515,station_approach,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+876,2026-05-14T02:44:07.304Z,29.9047758,76.8998821,156.922,intermediate_station_pass,Amin,72.0,0,Karnal → Kurukshetra Junction,0.0,station_projection
+877,2026-05-14T02:44:07.605Z,29.9048214,76.8998487,156.928,railway_geometry,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+878,2026-05-14T02:44:28.698Z,29.9080240,76.8975025,157.350,station_exit,,72.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+879,2026-05-14T02:44:31.974Z,29.9085216,76.8971381,157.416,station_exit,,72.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+880,2026-05-14T02:44:48.123Z,29.9109711,76.8953375,157.739,station_exit,,72.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+881,2026-05-14T02:44:51.658Z,29.9115066,76.8949420,157.809,station_exit,,72.0,0,Karnal → Kurukshetra Junction,0.1,osm_node
+882,2026-05-14T02:45:09.793Z,29.9147048,76.8925865,158.231,railway_geometry,,95.5,0,Karnal → Kurukshetra Junction,0.1,osm_node
+883,2026-05-14T02:45:23.824Z,29.9177927,76.8903063,158.639,railway_geometry,,113.7,0,Karnal → Kurukshetra Junction,0.3,osm_node
+884,2026-05-14T02:45:36.477Z,29.9209192,76.8880238,159.050,railway_geometry,,120.4,0,Karnal → Kurukshetra Junction,0.1,osm_node
+885,2026-05-14T02:45:48.535Z,29.9239335,76.8858143,159.447,railway_geometry,,116.7,0,Karnal → Kurukshetra Junction,0.1,osm_node
+886,2026-05-14T02:45:52.510Z,29.9249055,76.8850992,159.576,railway_geometry,,115.5,0,Karnal → Kurukshetra Junction,0.0,osm_node
+887,2026-05-14T02:45:58.064Z,29.9262462,76.8841130,159.752,railway_geometry,,113.7,0,Karnal → Kurukshetra Junction,0.0,osm_node
+888,2026-05-14T02:46:11.286Z,29.9293573,76.8818260,160.163,railway_geometry,,109.6,0,Karnal → Kurukshetra Junction,0.1,osm_node
+889,2026-05-14T02:46:28.202Z,29.9331749,76.8790288,160.665,railway_geometry,,104.4,0,Karnal → Kurukshetra Junction,0.2,osm_node
+890,2026-05-14T02:46:34.419Z,29.9345280,76.8780300,160.844,railway_geometry,,102.5,0,Karnal → Kurukshetra Junction,0.0,osm_node
+891,2026-05-14T02:46:36.099Z,29.9348893,76.8777633,160.892,railway_geometry,,101.9,0,Karnal → Kurukshetra Junction,0.2,osm_node
+892,2026-05-14T02:46:49.775Z,29.9377672,76.8756517,161.271,railway_geometry,,97.7,0,Karnal → Kurukshetra Junction,0.2,osm_node
+893,2026-05-14T02:47:04.419Z,29.9407083,76.8734811,161.659,railway_geometry,,93.2,0,Karnal → Kurukshetra Junction,0.3,osm_node
+894,2026-05-14T02:47:20.236Z,29.9437377,76.8712706,162.058,railway_geometry,,88.3,0,Karnal → Kurukshetra Junction,0.1,osm_node
+895,2026-05-14T02:47:28.279Z,29.9452132,76.8701883,162.252,railway_geometry,,85.8,0,Karnal → Kurukshetra Junction,0.4,osm_node
+896,2026-05-14T02:47:35.851Z,29.9465571,76.8691861,162.430,railway_geometry,,83.4,0,Karnal → Kurukshetra Junction,0.5,osm_node
+897,2026-05-14T02:47:52.598Z,29.9494117,76.8670949,162.806,railway_geometry,,78.2,0,Karnal → Kurukshetra Junction,0.0,osm_node
+898,2026-05-14T02:48:14.499Z,29.9528669,76.8645601,163.261,railway_geometry,,71.4,0,Karnal → Kurukshetra Junction,0.1,osm_node
+899,2026-05-14T02:48:23.100Z,29.9541363,76.8636243,163.429,railway_geometry,,68.8,0,Karnal → Kurukshetra Junction,0.0,osm_node
+900,2026-05-14T02:48:34.986Z,29.9558110,76.8623896,163.650,railway_geometry,,65.1,0,Karnal → Kurukshetra Junction,0.2,osm_node
+901,2026-05-14T02:48:41.559Z,29.9566992,76.8617388,163.767,railway_geometry,,63.0,0,Karnal → Kurukshetra Junction,0.0,osm_node
+902,2026-05-14T02:48:50.771Z,29.9578963,76.8608618,163.924,railway_geometry,,60.2,0,Karnal → Kurukshetra Junction,0.2,osm_node
+903,2026-05-14T02:49:03.522Z,29.9594662,76.8597225,164.131,railway_geometry,,56.2,0,Karnal → Kurukshetra Junction,0.3,osm_node
+904,2026-05-14T02:49:13.242Z,29.9605872,76.8588987,164.278,railway_geometry,,53.2,0,Karnal → Kurukshetra Junction,0.0,osm_node
+905,2026-05-14T02:49:16.913Z,29.9609945,76.8585994,164.332,railway_geometry,,52.1,0,Karnal → Kurukshetra Junction,0.0,osm_node
+906,2026-05-14T02:49:30.895Z,29.9624646,76.8575171,164.526,railway_geometry,,47.8,0,Karnal → Kurukshetra Junction,0.1,osm_node
+907,2026-05-14T02:49:45.305Z,29.9638451,76.8564985,164.708,station_approach,,43.3,0,Karnal → Kurukshetra Junction,0.0,osm_node
+908,2026-05-14T02:49:51.147Z,29.9643663,76.8561140,164.777,station_approach,,41.5,0,Karnal → Kurukshetra Junction,6.9,osm_node
+909,2026-05-14T02:49:53.673Z,29.9645999,76.8559844,164.806,station_approach,,40.7,0,Karnal → Kurukshetra Junction,2.7,osm_node
+910,2026-05-14T02:49:56.799Z,29.9648761,76.8558120,164.841,station_approach,,39.7,0,Karnal → Kurukshetra Junction,4.1,osm_node
+911,2026-05-14T02:50:08.560Z,29.9658156,76.8551223,164.964,station_approach,,36.1,0,Karnal → Kurukshetra Junction,6.6,osm_node
+912,2026-05-14T02:50:15.686Z,29.9663756,76.8548084,165.034,station_approach,,33.9,0,Karnal → Kurukshetra Junction,0.4,osm_node
+913,2026-05-14T02:50:19.634Z,29.9666717,76.8546455,165.070,station_approach,,32.6,0,Karnal → Kurukshetra Junction,6.8,osm_node
+914,2026-05-14T02:50:45.593Z,29.9682404,76.8535010,165.276,station_approach,,24.6,0,Karnal → Kurukshetra Junction,0.5,osm_node
+915,2026-05-14T02:51:12.882Z,29.9694075,76.8526333,165.431,station_approach,,16.1,0,Karnal → Kurukshetra Junction,0.7,osm_node
+916,2026-05-14T02:52:04.922Z,29.9702956,76.8519895,165.547,station_halt,Kurukshetra Junction,0.0,20,Karnal → Kurukshetra Junction,3.7,osm_node
+917,2026-05-14T02:52:24.922Z,29.9702956,76.8519895,165.547,station_halt_dwell,Kurukshetra Junction,0.0,20,Karnal → Kurukshetra Junction,3.7,station_dwell
+918,2026-05-14T02:53:11.078Z,29.9709119,76.8514756,165.632,station_exit,,13.2,0,Kurukshetra Junction → Shahbad Markanda,3.5,osm_node
+919,2026-05-14T02:53:22.864Z,29.9712504,76.8511550,165.681,station_exit,,16.6,0,Kurukshetra Junction → Shahbad Markanda,2.1,osm_node
+920,2026-05-14T02:53:34.767Z,29.9716821,76.8507752,165.741,station_exit,,20.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+921,2026-05-14T02:53:36.770Z,29.9717690,76.8507151,165.752,station_exit,,20.5,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+922,2026-05-14T02:53:43.363Z,29.9720834,76.8505283,165.792,station_exit,,22.4,0,Kurukshetra Junction → Shahbad Markanda,0.3,osm_node
+923,2026-05-14T02:53:51.809Z,29.9725275,76.8502673,165.847,station_exit,,24.8,0,Kurukshetra Junction → Shahbad Markanda,2.1,osm_node
+924,2026-05-14T02:53:57.306Z,29.9728465,76.8500965,165.886,station_exit,,26.4,0,Kurukshetra Junction → Shahbad Markanda,0.4,osm_node
+925,2026-05-14T02:54:04.589Z,29.9733009,76.8498580,165.942,station_exit,,28.5,0,Kurukshetra Junction → Shahbad Markanda,2.0,osm_node
+926,2026-05-14T02:54:10.127Z,29.9736750,76.8496792,165.987,station_exit,,30.1,0,Kurukshetra Junction → Shahbad Markanda,2.2,osm_node
+927,2026-05-14T02:54:14.781Z,29.9740100,76.8495361,166.026,station_exit,,31.4,0,Kurukshetra Junction → Shahbad Markanda,1.0,osm_node
+928,2026-05-14T02:54:23.805Z,29.9747054,76.8492553,166.108,station_exit,,34.0,0,Kurukshetra Junction → Shahbad Markanda,2.3,osm_node
+929,2026-05-14T02:54:30.690Z,29.9752803,76.8490526,166.175,station_exit,,35.9,0,Kurukshetra Junction → Shahbad Markanda,1.8,osm_node
+930,2026-05-14T02:54:34.860Z,29.9756475,76.8489374,166.217,station_exit,,37.1,0,Kurukshetra Junction → Shahbad Markanda,1.7,osm_node
+931,2026-05-14T02:54:40.404Z,29.9761581,76.8487957,166.276,station_exit,,38.7,0,Kurukshetra Junction → Shahbad Markanda,2.2,osm_node
+932,2026-05-14T02:54:45.838Z,29.9766836,76.8486738,166.335,station_exit,,40.3,0,Kurukshetra Junction → Shahbad Markanda,1.8,osm_node
+933,2026-05-14T02:54:51.319Z,29.9772378,76.8485665,166.398,station_exit,,41.8,0,Kurukshetra Junction → Shahbad Markanda,1.8,osm_node
+934,2026-05-14T02:54:59.931Z,29.9781558,76.8484234,166.501,station_exit,,44.3,0,Kurukshetra Junction → Shahbad Markanda,0.2,osm_node
+935,2026-05-14T02:55:01.202Z,29.9782958,76.8484022,166.517,station_exit,,44.7,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+936,2026-05-14T02:55:07.076Z,29.9789578,76.8483029,166.591,railway_geometry,,46.3,0,Kurukshetra Junction → Shahbad Markanda,0.4,osm_node
+937,2026-05-14T02:55:16.612Z,29.9800835,76.8481254,166.717,railway_geometry,,49.1,0,Kurukshetra Junction → Shahbad Markanda,0.2,osm_node
+938,2026-05-14T02:55:29.646Z,29.9817266,76.8478714,166.902,railway_geometry,,52.8,0,Kurukshetra Junction → Shahbad Markanda,0.2,osm_node
+939,2026-05-14T02:55:35.293Z,29.9824763,76.8477590,166.986,railway_geometry,,54.4,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+940,2026-05-14T02:55:44.489Z,29.9837452,76.8475679,167.128,railway_geometry,,57.0,0,Kurukshetra Junction → Shahbad Markanda,0.2,osm_node
+941,2026-05-14T02:55:56.438Z,29.9854827,76.8472991,167.323,railway_geometry,,60.4,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+942,2026-05-14T02:56:24.049Z,29.9898852,76.8466306,167.817,railway_geometry,,68.3,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+943,2026-05-14T02:56:47.149Z,29.9939823,76.8460018,168.276,railway_geometry,,74.9,0,Kurukshetra Junction → Shahbad Markanda,0.2,osm_node
+944,2026-05-14T02:57:02.840Z,29.9969793,76.8455311,168.612,railway_geometry,,79.4,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+945,2026-05-14T02:57:08.099Z,29.9980228,76.8453673,168.730,railway_geometry,,80.9,0,Kurukshetra Junction → Shahbad Markanda,0.3,osm_node
+946,2026-05-14T02:57:29.645Z,30.0025047,76.8446874,169.232,railway_geometry,,87.1,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+947,2026-05-14T02:57:53.607Z,30.0078739,76.8438633,169.835,railway_geometry,,93.9,0,Kurukshetra Junction → Shahbad Markanda,0.2,osm_node
+948,2026-05-14T02:58:13.996Z,30.0120639,76.8432336,170.304,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+949,2026-05-14T02:58:28.098Z,30.0145785,76.8428500,170.586,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+950,2026-05-14T02:58:49.076Z,30.0183185,76.8422729,171.006,interpolation,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,interpolation
+951,2026-05-14T02:58:50.317Z,30.0185397,76.8422387,171.031,intermediate_station_pass,Dhoda Kheri,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,station_projection
+952,2026-05-14T02:59:10.055Z,30.0220585,76.8416957,171.426,station_exit,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+953,2026-05-14T02:59:20.620Z,30.0239426,76.8414096,171.637,station_exit,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+954,2026-05-14T02:59:23.520Z,30.0244598,76.8413311,171.695,station_exit,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+955,2026-05-14T02:59:26.402Z,30.0249738,76.8412531,171.752,station_exit,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+956,2026-05-14T02:59:49.627Z,30.0299807,76.8404894,172.314,railway_geometry,,102.1,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+957,2026-05-14T03:00:04.336Z,30.0340247,76.8398606,172.768,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+958,2026-05-14T03:00:14.592Z,30.0370728,76.8393960,173.110,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.6,osm_node
+959,2026-05-14T03:00:17.905Z,30.0380586,76.8392572,173.220,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,1.0,osm_node
+960,2026-05-14T03:00:19.484Z,30.0385295,76.8392006,173.273,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,2.1,osm_node
+961,2026-05-14T03:00:20.705Z,30.0388948,76.8391722,173.313,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,2.7,osm_node
+962,2026-05-14T03:00:21.892Z,30.0392504,76.8391637,173.353,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,2.6,osm_node
+963,2026-05-14T03:00:23.258Z,30.0396599,76.8391751,173.399,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,3.2,osm_node
+964,2026-05-14T03:00:24.883Z,30.0401454,76.8392204,173.453,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,2.9,osm_node
+965,2026-05-14T03:00:27.078Z,30.0407977,76.8393195,173.526,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,1.9,osm_node
+966,2026-05-14T03:00:35.376Z,30.0432523,76.8397869,173.802,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+967,2026-05-14T03:00:47.409Z,30.0468126,76.8404554,174.204,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.2,osm_node
+968,2026-05-14T03:00:49.129Z,30.0473212,76.8405530,174.261,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+969,2026-05-14T03:00:58.096Z,30.0499732,76.8410616,174.560,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+970,2026-05-14T03:01:13.796Z,30.0543863,76.8419139,175.057,railway_geometry,,108.2,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+971,2026-05-14T03:01:34.727Z,30.0590323,76.8428090,175.581,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.3,osm_node
+972,2026-05-14T03:01:50.810Z,30.0618881,76.8433425,175.903,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+973,2026-05-14T03:02:00.625Z,30.0636303,76.8436710,176.099,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.2,osm_node
+974,2026-05-14T03:02:01.900Z,30.0638566,76.8437144,176.125,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+975,2026-05-14T03:02:16.508Z,30.0664485,76.8442119,176.417,intermediate_station_pass,Dhirpur,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,station_projection
+976,2026-05-14T03:02:23.138Z,30.0676250,76.8444377,176.549,station_exit,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,interpolation
+977,2026-05-14T03:02:44.376Z,30.0713933,76.8451610,176.974,station_exit,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+978,2026-05-14T03:02:50.557Z,30.0724900,76.8453715,177.098,station_exit,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+979,2026-05-14T03:03:05.698Z,30.0755434,76.8459511,177.442,railway_geometry,,91.6,0,Kurukshetra Junction → Shahbad Markanda,0.2,osm_node
+980,2026-05-14T03:03:17.418Z,30.0784085,76.8465059,177.765,railway_geometry,,106.8,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+981,2026-05-14T03:03:32.085Z,30.0825076,76.8472911,178.227,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+982,2026-05-14T03:03:33.044Z,30.0827911,76.8473456,178.259,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+983,2026-05-14T03:03:42.225Z,30.0855060,76.8478680,178.565,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+984,2026-05-14T03:03:51.291Z,30.0881871,76.8483827,178.867,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+985,2026-05-14T03:04:01.452Z,30.0911923,76.8489576,179.206,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+986,2026-05-14T03:04:11.524Z,30.0941713,76.8495244,179.541,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+987,2026-05-14T03:04:21.139Z,30.0970151,76.8500692,179.862,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+988,2026-05-14T03:04:29.240Z,30.0994100,76.8505339,180.132,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+989,2026-05-14T03:04:42.423Z,30.1032365,76.8512700,180.563,railway_geometry,,115.6,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+990,2026-05-14T03:04:54.022Z,30.1062533,76.8518549,180.903,railway_geometry,,95.5,0,Kurukshetra Junction → Shahbad Markanda,0.2,osm_node
+991,2026-05-14T03:05:07.649Z,30.1090673,76.8523897,181.221,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.2,osm_node
+992,2026-05-14T03:05:17.173Z,30.1107567,76.8527181,181.411,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+993,2026-05-14T03:05:18.479Z,30.1109884,76.8527626,181.437,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+994,2026-05-14T03:05:40.318Z,30.1148635,76.8535058,181.874,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,interpolation
+995,2026-05-14T03:05:43.508Z,30.1154294,76.8536144,181.938,intermediate_station_pass,Dhola Mazra,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,station_projection
+996,2026-05-14T03:06:02.157Z,30.1187385,76.8542490,182.311,station_exit,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+997,2026-05-14T03:06:06.143Z,30.1194458,76.8543846,182.390,station_exit,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+998,2026-05-14T03:06:09.961Z,30.1201232,76.8545154,182.467,station_exit,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+999,2026-05-14T03:06:23.183Z,30.1224690,76.8549681,182.731,station_exit,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+1000,2026-05-14T03:06:44.409Z,30.1269540,76.8558340,183.237,railway_geometry,,99.5,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+1001,2026-05-14T03:06:59.355Z,30.1309743,76.8566158,183.690,railway_geometry,,118.9,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+1002,2026-05-14T03:07:14.446Z,30.1354165,76.8574666,184.191,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+1003,2026-05-14T03:07:26.884Z,30.1390948,76.8581730,184.605,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+1004,2026-05-14T03:07:40.382Z,30.1430862,76.8589403,185.055,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+1005,2026-05-14T03:07:47.114Z,30.1450771,76.8593230,185.280,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+1006,2026-05-14T03:08:00.055Z,30.1489034,76.8600631,185.711,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+1007,2026-05-14T03:08:08.784Z,30.1514843,76.8605608,186.002,railway_geometry,,120.0,0,Kurukshetra Junction → Shahbad Markanda,0.1,osm_node
+1008,2026-05-14T03:08:18.215Z,30.1540894,76.8610673,186.296,railway_geometry,,104.2,0,Kurukshetra Junction → Shahbad Markanda,1.9,osm_node
+1009,2026-05-14T03:08:28.498Z,30.1564898,76.8616317,186.568,railway_geometry,,86.5,0,Kurukshetra Junction → Shahbad Markanda,0.4,osm_node
+1010,2026-05-14T03:08:31.346Z,30.1570763,76.8617649,186.635,station_approach,,81.6,0,Kurukshetra Junction → Shahbad Markanda,1.6,osm_node
+1011,2026-05-14T03:08:33.129Z,30.1574278,76.8618332,186.674,station_approach,,78.5,0,Kurukshetra Junction → Shahbad Markanda,1.7,osm_node
+1012,2026-05-14T03:08:36.873Z,30.1581249,76.8619436,186.753,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,2.0,osm_node
+1013,2026-05-14T03:08:41.327Z,30.1589220,76.8620365,186.842,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,3.0,osm_node
+1014,2026-05-14T03:08:48.126Z,30.1601434,76.8621049,186.978,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,2.2,osm_node
+1015,2026-05-14T03:08:51.302Z,30.1607147,76.8621119,187.041,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,9.3,osm_node
+1016,2026-05-14T03:08:53.488Z,30.1611033,76.8620428,187.085,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,6.2,osm_node
+1017,2026-05-14T03:08:55.407Z,30.1614482,76.8620252,187.123,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.4,osm_node
+1018,2026-05-14T03:08:56.945Z,30.1617245,76.8620132,187.154,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,2.6,osm_node
+1019,2026-05-14T03:08:58.195Z,30.1619486,76.8619917,187.179,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.0,osm_node
+1020,2026-05-14T03:09:01.239Z,30.1624943,76.8619393,187.240,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,1.6,osm_node
+1021,2026-05-14T03:09:04.901Z,30.1631489,76.8618552,187.313,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,1.1,osm_node
+1022,2026-05-14T03:09:10.517Z,30.1641505,76.8617045,187.425,station_approach,,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.6,osm_node
+1023,2026-05-14T03:09:18.770Z,30.1656204,76.8614642,187.591,station_pass_primary,Shahbad Markanda,72.0,0,Kurukshetra Junction → Shahbad Markanda,0.4,osm_node
+1024,2026-05-14T03:09:47.379Z,30.1707207,76.8606754,188.163,station_exit,,72.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1025,2026-05-14T03:09:51.922Z,30.1715306,76.8605501,188.254,station_exit,,72.0,0,Shahbad Markanda → Ambala Cantt Junction,0.1,osm_node
+1026,2026-05-14T03:10:06.625Z,30.1744980,76.8600841,188.587,station_exit,,91.1,0,Shahbad Markanda → Ambala Cantt Junction,2.6,osm_node
+1027,2026-05-14T03:10:09.772Z,30.1752179,76.8599329,188.668,railway_geometry,,95.1,0,Shahbad Markanda → Ambala Cantt Junction,0.3,osm_node
+1028,2026-05-14T03:10:15.423Z,30.1765914,76.8596529,188.823,railway_geometry,,102.5,0,Shahbad Markanda → Ambala Cantt Junction,1.0,osm_node
+1029,2026-05-14T03:10:21.975Z,30.1783162,76.8593356,189.017,railway_geometry,,110.9,0,Shahbad Markanda → Ambala Cantt Junction,1.4,osm_node
+1030,2026-05-14T03:10:33.564Z,30.1815580,76.8588325,189.381,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.6,osm_node
+1031,2026-05-14T03:10:37.875Z,30.1827870,76.8586564,189.519,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,2.0,osm_node
+1032,2026-05-14T03:10:41.771Z,30.1839019,76.8585425,189.643,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.1,osm_node
+1033,2026-05-14T03:10:45.963Z,30.1851019,76.8584222,189.777,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,2.3,osm_node
+1034,2026-05-14T03:10:49.918Z,30.1862288,76.8582561,189.903,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.2,osm_node
+1035,2026-05-14T03:11:06.860Z,30.1910544,76.8575206,190.445,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.2,osm_node
+1036,2026-05-14T03:11:23.884Z,30.1959012,76.8567643,190.988,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1037,2026-05-14T03:11:40.317Z,30.2005800,76.8560366,191.513,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,1.3,osm_node
+1038,2026-05-14T03:11:41.588Z,30.2009408,76.8559711,191.554,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,1.4,osm_node
+1039,2026-05-14T03:11:51.469Z,30.2037548,76.8555390,191.870,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1040,2026-05-14T03:12:04.704Z,30.2075241,76.8549623,192.292,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.3,osm_node
+1041,2026-05-14T03:12:13.144Z,30.2099261,76.8545798,192.562,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1042,2026-05-14T03:12:15.033Z,30.2104638,76.8544941,192.622,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1043,2026-05-14T03:12:17.211Z,30.2110837,76.8543954,192.692,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.1,osm_node
+1044,2026-05-14T03:12:29.015Z,30.2144425,76.8538567,193.069,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,2.4,osm_node
+1045,2026-05-14T03:12:33.108Z,30.2155997,76.8536141,193.200,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.5,osm_node
+1046,2026-05-14T03:12:37.801Z,30.2169281,76.8533492,193.350,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,2.3,osm_node
+1047,2026-05-14T03:12:41.844Z,30.2180799,76.8531738,193.479,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1048,2026-05-14T03:12:43.967Z,30.2186844,76.8530817,193.547,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1049,2026-05-14T03:12:45.431Z,30.2191013,76.8530182,193.593,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.2,osm_node
+1050,2026-05-14T03:12:54.100Z,30.2215696,76.8526331,193.870,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.1,osm_node
+1051,2026-05-14T03:13:08.638Z,30.2257075,76.8519785,194.335,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,1.9,osm_node
+1052,2026-05-14T03:13:12.846Z,30.2268993,76.8517439,194.469,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,2.7,osm_node
+1053,2026-05-14T03:13:15.400Z,30.2276161,76.8515619,194.551,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,1.0,osm_node
+1054,2026-05-14T03:13:31.197Z,30.2320320,76.8503507,195.055,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.1,osm_node
+1055,2026-05-14T03:13:37.115Z,30.2336857,76.8498937,195.244,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.1,osm_node
+1056,2026-05-14T03:13:39.964Z,30.2344819,76.8496751,195.335,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1057,2026-05-14T03:13:51.341Z,30.2376623,76.8488019,195.699,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,2.4,osm_node
+1058,2026-05-14T03:13:55.038Z,30.2386845,76.8484693,195.817,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.1,osm_node
+1059,2026-05-14T03:13:59.513Z,30.2399214,76.8480633,195.960,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,1.8,osm_node
+1060,2026-05-14T03:14:03.246Z,30.2409618,76.8477622,196.079,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.1,osm_node
+1061,2026-05-14T03:14:05.436Z,30.2415727,76.8475872,196.149,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,2.2,osm_node
+1062,2026-05-14T03:14:09.757Z,30.2427884,76.8472966,196.287,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,4.5,osm_node
+1063,2026-05-14T03:14:11.943Z,30.2434114,76.8472056,196.357,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,5.0,osm_node
+1064,2026-05-14T03:14:14.461Z,30.2441342,76.8471741,196.437,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,4.9,osm_node
+1065,2026-05-14T03:14:16.453Z,30.2447057,76.8472056,196.501,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,5.3,osm_node
+1066,2026-05-14T03:14:18.292Z,30.2452229,76.8472896,196.559,railway_geometry,,112.3,0,Shahbad Markanda → Ambala Cantt Junction,2.6,osm_node
+1067,2026-05-14T03:14:20.798Z,30.2459003,76.8474366,196.636,railway_geometry,,108.0,0,Shahbad Markanda → Ambala Cantt Junction,3.1,osm_node
+1068,2026-05-14T03:14:27.857Z,30.2476452,76.8479302,196.835,station_approach,,95.8,0,Shahbad Markanda → Ambala Cantt Junction,0.1,osm_node
+1069,2026-05-14T03:14:41.603Z,30.2504424,76.8487249,197.156,station_approach,,72.0,0,Shahbad Markanda → Ambala Cantt Junction,0.1,osm_node
+1070,2026-05-14T03:14:42.772Z,30.2506467,76.8487824,197.179,station_approach,,72.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1071,2026-05-14T03:15:11.043Z,30.2555876,76.8501737,197.744,intermediate_station_pass,Mohri,72.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,station_projection
+1072,2026-05-14T03:15:11.511Z,30.2556694,76.8501967,197.754,railway_geometry,,72.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1073,2026-05-14T03:15:23.978Z,30.2578476,76.8508130,198.003,station_exit,,72.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1074,2026-05-14T03:15:30.368Z,30.2589641,76.8511290,198.131,station_exit,,72.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1075,2026-05-14T03:15:31.476Z,30.2591576,76.8511837,198.153,station_exit,,72.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1076,2026-05-14T03:15:33.725Z,30.2595507,76.8512949,198.198,station_exit,,72.0,0,Shahbad Markanda → Ambala Cantt Junction,0.4,osm_node
+1077,2026-05-14T03:15:46.155Z,30.2617262,76.8518911,198.447,station_exit,,72.0,0,Shahbad Markanda → Ambala Cantt Junction,1.1,osm_node
+1078,2026-05-14T03:15:49.524Z,30.2623184,76.8520396,198.514,station_exit,,72.0,0,Shahbad Markanda → Ambala Cantt Junction,3.5,osm_node
+1079,2026-05-14T03:15:52.578Z,30.2628614,76.8521361,198.575,station_exit,,72.0,0,Shahbad Markanda → Ambala Cantt Junction,3.1,osm_node
+1080,2026-05-14T03:15:55.373Z,30.2633617,76.8521931,198.631,station_exit,,72.0,0,Shahbad Markanda → Ambala Cantt Junction,3.0,osm_node
+1081,2026-05-14T03:15:58.868Z,30.2640095,76.8522277,198.703,station_exit,,76.5,0,Shahbad Markanda → Ambala Cantt Junction,1.4,osm_node
+1082,2026-05-14T03:16:06.377Z,30.2655360,76.8522649,198.873,railway_geometry,,86.3,0,Shahbad Markanda → Ambala Cantt Junction,0.3,osm_node
+1083,2026-05-14T03:16:12.135Z,30.2668300,76.8523032,199.017,railway_geometry,,93.7,0,Shahbad Markanda → Ambala Cantt Junction,0.9,osm_node
+1084,2026-05-14T03:16:19.585Z,30.2686640,76.8523235,199.221,railway_geometry,,103.4,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1085,2026-05-14T03:16:19.964Z,30.2687620,76.8523256,199.232,railway_geometry,,103.9,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1086,2026-05-14T03:16:20.309Z,30.2688517,76.8523275,199.242,railway_geometry,,104.3,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1087,2026-05-14T03:16:28.075Z,30.2709730,76.8523718,199.478,railway_geometry,,114.4,0,Shahbad Markanda → Ambala Cantt Junction,0.5,osm_node
+1088,2026-05-14T03:16:33.413Z,30.2725018,76.8524181,199.648,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,2.0,osm_node
+1089,2026-05-14T03:16:35.627Z,30.2731377,76.8524120,199.718,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,3.9,osm_node
+1090,2026-05-14T03:16:38.405Z,30.2739334,76.8523416,199.807,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,1.0,osm_node
+1091,2026-05-14T03:16:45.141Z,30.2758602,76.8521334,200.022,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1092,2026-05-14T03:16:45.313Z,30.2759095,76.8521281,200.028,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1093,2026-05-14T03:16:48.559Z,30.2768381,76.8520278,200.131,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,2.5,osm_node
+1094,2026-05-14T03:16:50.476Z,30.2773836,76.8519413,200.193,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,1.9,osm_node
+1095,2026-05-14T03:16:52.059Z,30.2778318,76.8518528,200.243,railway_geometry,,115.0,0,Shahbad Markanda → Ambala Cantt Junction,4.6,osm_node
+1096,2026-05-14T03:16:53.927Z,30.2783513,76.8516999,200.303,railway_geometry,,114.7,0,Shahbad Markanda → Ambala Cantt Junction,4.2,osm_node
+1097,2026-05-14T03:16:55.925Z,30.2788933,76.8514907,200.366,railway_geometry,,114.2,0,Shahbad Markanda → Ambala Cantt Junction,0.2,osm_node
+1098,2026-05-14T03:17:01.678Z,30.2804411,76.8508993,200.548,railway_geometry,,112.7,0,Shahbad Markanda → Ambala Cantt Junction,0.4,osm_node
+1099,2026-05-14T03:17:07.245Z,30.2819229,76.8503461,200.721,railway_geometry,,111.2,0,Shahbad Markanda → Ambala Cantt Junction,1.0,osm_node
+1100,2026-05-14T03:17:15.130Z,30.2839762,76.8495334,200.962,railway_geometry,,109.1,0,Shahbad Markanda → Ambala Cantt Junction,2.3,osm_node
+1101,2026-05-14T03:17:17.996Z,30.2847024,76.8492075,201.049,railway_geometry,,108.4,0,Shahbad Markanda → Ambala Cantt Junction,0.7,osm_node
+1102,2026-05-14T03:17:22.575Z,30.2858575,76.8487086,201.186,railway_geometry,,107.2,0,Shahbad Markanda → Ambala Cantt Junction,1.6,osm_node
+1103,2026-05-14T03:17:27.340Z,30.2870579,76.8482339,201.327,railway_geometry,,105.9,0,Shahbad Markanda → Ambala Cantt Junction,0.6,osm_node
+1104,2026-05-14T03:17:34.025Z,30.2887237,76.8475962,201.522,railway_geometry,,104.2,0,Shahbad Markanda → Ambala Cantt Junction,0.1,osm_node
+1105,2026-05-14T03:17:43.798Z,30.2911104,76.8466889,201.801,railway_geometry,,101.6,0,Shahbad Markanda → Ambala Cantt Junction,0.4,osm_node
+1106,2026-05-14T03:17:51.337Z,30.2929151,76.8460190,202.012,railway_geometry,,99.6,0,Shahbad Markanda → Ambala Cantt Junction,0.3,osm_node
+1107,2026-05-14T03:17:57.906Z,30.2944558,76.8454357,202.192,railway_geometry,,97.9,0,Shahbad Markanda → Ambala Cantt Junction,0.2,osm_node
+1108,2026-05-14T03:18:07.453Z,30.2966497,76.8446153,202.448,railway_geometry,,95.4,0,Shahbad Markanda → Ambala Cantt Junction,0.6,osm_node
+1109,2026-05-14T03:18:13.812Z,30.2980740,76.8440621,202.616,railway_geometry,,93.7,0,Shahbad Markanda → Ambala Cantt Junction,1.4,osm_node
+1110,2026-05-14T03:18:16.665Z,30.2987097,76.8438344,202.690,railway_geometry,,93.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1111,2026-05-14T03:18:17.166Z,30.2988208,76.8437946,202.702,railway_geometry,,92.9,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1112,2026-05-14T03:18:19.487Z,30.2993315,76.8436035,202.762,railway_geometry,,92.2,0,Shahbad Markanda → Ambala Cantt Junction,2.4,osm_node
+1113,2026-05-14T03:18:22.519Z,30.3000019,76.8433882,202.839,railway_geometry,,91.5,0,Shahbad Markanda → Ambala Cantt Junction,0.7,osm_node
+1114,2026-05-14T03:18:25.925Z,30.3007505,76.8431589,202.926,railway_geometry,,90.6,0,Shahbad Markanda → Ambala Cantt Junction,1.5,osm_node
+1115,2026-05-14T03:18:32.451Z,30.3021538,76.8426822,203.088,railway_geometry,,88.8,0,Shahbad Markanda → Ambala Cantt Junction,1.4,osm_node
+1116,2026-05-14T03:18:41.016Z,30.3039410,76.8420183,203.297,railway_geometry,,86.6,0,Shahbad Markanda → Ambala Cantt Junction,0.6,osm_node
+1117,2026-05-14T03:18:48.444Z,30.3054485,76.8414369,203.474,railway_geometry,,84.7,0,Shahbad Markanda → Ambala Cantt Junction,0.6,osm_node
+1118,2026-05-14T03:18:57.952Z,30.3073346,76.8407349,203.694,railway_geometry,,82.2,0,Shahbad Markanda → Ambala Cantt Junction,0.7,osm_node
+1119,2026-05-14T03:19:06.190Z,30.3089167,76.8401213,203.879,railway_geometry,,80.0,0,Shahbad Markanda → Ambala Cantt Junction,0.3,osm_node
+1120,2026-05-14T03:19:17.146Z,30.3109590,76.8393428,204.118,railway_geometry,,77.1,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1121,2026-05-14T03:19:23.602Z,30.3121273,76.8388962,204.255,railway_geometry,,75.4,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1122,2026-05-14T03:19:33.873Z,30.3139321,76.8382062,204.467,railway_geometry,,72.7,0,Shahbad Markanda → Ambala Cantt Junction,0.4,osm_node
+1123,2026-05-14T03:19:46.809Z,30.3161167,76.8373895,204.722,railway_geometry,,69.3,0,Shahbad Markanda → Ambala Cantt Junction,0.5,osm_node
+1124,2026-05-14T03:20:04.337Z,30.3189028,76.8363189,205.048,railway_geometry,,64.7,0,Shahbad Markanda → Ambala Cantt Junction,0.3,osm_node
+1125,2026-05-14T03:20:10.942Z,30.3199047,76.8359407,205.165,railway_geometry,,63.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1126,2026-05-14T03:20:11.488Z,30.3199868,76.8359115,205.175,railway_geometry,,62.9,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1127,2026-05-14T03:20:12.535Z,30.3201437,76.8358557,205.193,railway_geometry,,62.6,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1128,2026-05-14T03:20:13.892Z,30.3203458,76.8357838,205.217,railway_geometry,,62.2,0,Shahbad Markanda → Ambala Cantt Junction,4.6,osm_node
+1129,2026-05-14T03:20:16.226Z,30.3206983,76.8356933,205.257,railway_geometry,,61.6,0,Shahbad Markanda → Ambala Cantt Junction,5.3,osm_node
+1130,2026-05-14T03:20:19.040Z,30.3211255,76.8356309,205.305,railway_geometry,,60.9,0,Shahbad Markanda → Ambala Cantt Junction,1.7,osm_node
+1131,2026-05-14T03:20:27.736Z,30.3224174,76.8354881,205.449,railway_geometry,,58.6,0,Shahbad Markanda → Ambala Cantt Junction,1.7,osm_node
+1132,2026-05-14T03:20:36.453Z,30.3236659,76.8353936,205.588,railway_geometry,,56.3,0,Shahbad Markanda → Ambala Cantt Junction,0.8,osm_node
+1133,2026-05-14T03:20:59.442Z,30.3267168,76.8351119,205.928,railway_geometry,,50.3,0,Shahbad Markanda → Ambala Cantt Junction,0.2,osm_node
+1134,2026-05-14T03:21:22.309Z,30.3294098,76.8348766,206.229,railway_geometry,,44.3,0,Shahbad Markanda → Ambala Cantt Junction,0.3,osm_node
+1135,2026-05-14T03:21:27.243Z,30.3299462,76.8348335,206.289,station_approach,,43.0,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1136,2026-05-14T03:21:47.001Z,30.3319350,76.8346740,206.510,station_approach,,37.8,0,Shahbad Markanda → Ambala Cantt Junction,1.4,osm_node
+1137,2026-05-14T03:21:50.270Z,30.3322389,76.8346408,206.544,station_approach,,36.9,0,Shahbad Markanda → Ambala Cantt Junction,6.3,osm_node
+1138,2026-05-14T03:21:54.276Z,30.3325957,76.8345553,206.585,station_approach,,35.9,0,Shahbad Markanda → Ambala Cantt Junction,3.8,osm_node
+1139,2026-05-14T03:21:57.323Z,30.3328561,76.8344718,206.615,station_approach,,35.1,0,Shahbad Markanda → Ambala Cantt Junction,6.2,osm_node
+1140,2026-05-14T03:22:02.663Z,30.3332824,76.8342757,206.666,station_approach,,33.7,0,Shahbad Markanda → Ambala Cantt Junction,5.9,osm_node
+1141,2026-05-14T03:22:11.485Z,30.3339180,76.8338914,206.745,station_approach,,31.4,0,Shahbad Markanda → Ambala Cantt Junction,7.1,osm_node
+1142,2026-05-14T03:22:15.640Z,30.3341813,76.8336807,206.781,station_approach,,30.3,0,Shahbad Markanda → Ambala Cantt Junction,2.8,osm_node
+1143,2026-05-14T03:22:22.855Z,30.3346012,76.8333084,206.840,station_approach,,28.4,0,Shahbad Markanda → Ambala Cantt Junction,2.8,osm_node
+1144,2026-05-14T03:22:31.829Z,30.3350672,76.8328522,206.908,station_approach,,26.0,0,Shahbad Markanda → Ambala Cantt Junction,9.1,osm_node
+1145,2026-05-14T03:22:37.097Z,30.3352849,76.8325595,206.945,station_approach,,24.7,0,Shahbad Markanda → Ambala Cantt Junction,5.1,osm_node
+1146,2026-05-14T03:22:44.829Z,30.3355512,76.8321298,206.996,station_approach,,22.6,0,Shahbad Markanda → Ambala Cantt Junction,0.0,osm_node
+1147,2026-05-14T03:22:56.823Z,30.3359188,76.8315360,207.066,station_approach,,19.5,0,Shahbad Markanda → Ambala Cantt Junction,1.8,osm_node
+1148,2026-05-14T03:23:07.378Z,30.3361843,76.8310768,207.119,station_approach,,16.7,0,Shahbad Markanda → Ambala Cantt Junction,7.9,osm_node
+1149,2026-05-14T03:23:15.714Z,30.3363265,76.8307380,207.155,station_approach,,14.5,0,Shahbad Markanda → Ambala Cantt Junction,6.4,osm_node
+1150,2026-05-14T03:23:32.006Z,30.3365958,76.8302445,207.211,station_approach,,10.2,0,Shahbad Markanda → Ambala Cantt Junction,4.0,osm_node
+1151,2026-05-14T03:24:11.046Z,30.3368916,76.8297781,207.266,station_halt,Ambala Cantt Junction,0.0,90,Shahbad Markanda → Ambala Cantt Junction,1.1,osm_node
+1152,2026-05-14T03:25:41.046Z,30.3368916,76.8297781,207.266,station_halt_dwell,Ambala Cantt Junction,0.0,90,Shahbad Markanda → Ambala Cantt Junction,1.1,station_dwell
+1153,2026-05-14T03:27:19.082Z,30.3388201,76.8266129,207.638,station_exit,,27.3,0,Ambala Cantt Junction → Dappar,3.6,osm_node
+1154,2026-05-14T03:27:24.779Z,30.3390706,76.8262517,207.683,station_exit,,28.9,0,Ambala Cantt Junction → Dappar,2.8,osm_node
+1155,2026-05-14T03:27:31.489Z,30.3394024,76.8258182,207.738,station_exit,,30.8,0,Ambala Cantt Junction → Dappar,1.9,osm_node
+1156,2026-05-14T03:27:38.521Z,30.3397860,76.8253493,207.800,station_exit,,32.7,0,Ambala Cantt Junction → Dappar,1.3,osm_node
+1157,2026-05-14T03:27:50.112Z,30.3404539,76.8244959,207.911,station_exit,,36.0,0,Ambala Cantt Junction → Dappar,0.4,osm_node
+1158,2026-05-14T03:27:56.337Z,30.3408353,76.8240012,207.975,station_exit,,37.7,0,Ambala Cantt Junction → Dappar,6.6,osm_node
+1159,2026-05-14T03:27:59.151Z,30.3409896,76.8237477,208.004,station_exit,,38.5,0,Ambala Cantt Junction → Dappar,1.0,osm_node
+1160,2026-05-14T03:28:02.215Z,30.3411653,76.8234693,208.037,station_exit,,39.3,0,Ambala Cantt Junction → Dappar,1.6,osm_node
+1161,2026-05-14T03:28:08.916Z,30.3415481,76.8228266,208.112,station_exit,,41.2,0,Ambala Cantt Junction → Dappar,7.8,osm_node
+1162,2026-05-14T03:28:12.007Z,30.3417649,76.8225517,208.148,station_exit,,42.1,0,Ambala Cantt Junction → Dappar,8.0,osm_node
+1163,2026-05-14T03:28:13.733Z,30.3418679,76.8223774,208.168,station_exit,,42.5,0,Ambala Cantt Junction → Dappar,6.8,osm_node
+1164,2026-05-14T03:28:17.109Z,30.3421069,76.8220613,208.209,station_exit,,43.5,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1165,2026-05-14T03:28:17.759Z,30.3421474,76.8219942,208.217,station_exit,,43.7,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1166,2026-05-14T03:28:23.290Z,30.3425334,76.8214411,208.285,railway_geometry,,45.2,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1167,2026-05-14T03:28:23.662Z,30.3425576,76.8214013,208.289,railway_geometry,,45.3,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1168,2026-05-14T03:28:27.197Z,30.3428241,76.8210490,208.334,railway_geometry,,46.3,0,Ambala Cantt Junction → Dappar,6.1,osm_node
+1169,2026-05-14T03:28:30.071Z,30.3430168,76.8207312,208.372,railway_geometry,,47.1,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1170,2026-05-14T03:28:32.798Z,30.3432028,76.8204247,208.408,railway_geometry,,47.8,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1171,2026-05-14T03:28:35.383Z,30.3433817,76.8201296,208.442,junction_deviation,,48.6,0,Ambala Cantt Junction → Dappar,7.4,osm_node
+1172,2026-05-14T03:28:38.134Z,30.3436087,76.8198420,208.480,railway_geometry,,49.3,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1173,2026-05-14T03:28:38.440Z,30.3436343,76.8198099,208.484,railway_geometry,,49.4,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1174,2026-05-14T03:28:43.568Z,30.3440149,76.8192105,208.555,railway_geometry,,50.8,0,Ambala Cantt Junction → Dappar,2.8,osm_node
+1175,2026-05-14T03:28:48.185Z,30.3443900,76.8186771,208.621,railway_geometry,,52.1,0,Ambala Cantt Junction → Dappar,1.2,osm_node
+1176,2026-05-14T03:28:52.250Z,30.3447191,76.8181883,208.681,railway_geometry,,53.3,0,Ambala Cantt Junction → Dappar,0.6,osm_node
+1177,2026-05-14T03:28:58.292Z,30.3452286,76.8174489,208.772,railway_geometry,,54.9,0,Ambala Cantt Junction → Dappar,1.5,osm_node
+1178,2026-05-14T03:29:07.006Z,30.3459669,76.8163199,208.908,railway_geometry,,57.4,0,Ambala Cantt Junction → Dappar,1.9,osm_node
+1179,2026-05-14T03:29:30.445Z,30.3480186,76.8129624,209.302,railway_geometry,,63.9,0,Ambala Cantt Junction → Dappar,0.9,osm_node
+1180,2026-05-14T03:29:33.650Z,30.3483230,76.8124807,209.360,railway_geometry,,64.8,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1181,2026-05-14T03:29:34.823Z,30.3484355,76.8123028,209.381,railway_geometry,,65.1,0,Ambala Cantt Junction → Dappar,2.0,osm_node
+1182,2026-05-14T03:29:37.256Z,30.3486596,76.8119218,209.425,railway_geometry,,65.8,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1183,2026-05-14T03:29:37.398Z,30.3486711,76.8118983,209.428,railway_geometry,,65.8,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1184,2026-05-14T03:29:40.498Z,30.3489811,76.8114245,209.485,railway_geometry,,66.7,0,Ambala Cantt Junction → Dappar,6.4,osm_node
+1185,2026-05-14T03:29:41.750Z,30.3490881,76.8112162,209.508,railway_geometry,,67.0,0,Ambala Cantt Junction → Dappar,2.6,osm_node
+1186,2026-05-14T03:29:42.657Z,30.3491599,76.8110606,209.525,railway_geometry,,67.3,0,Ambala Cantt Junction → Dappar,0.3,osm_node
+1187,2026-05-14T03:29:45.000Z,30.3493448,76.8106551,209.569,railway_geometry,,68.0,0,Ambala Cantt Junction → Dappar,2.7,osm_node
+1188,2026-05-14T03:29:50.366Z,30.3498134,76.8097363,209.671,railway_geometry,,69.4,0,Ambala Cantt Junction → Dappar,2.6,osm_node
+1189,2026-05-14T03:29:57.147Z,30.3504655,76.8085796,209.804,railway_geometry,,71.3,0,Ambala Cantt Junction → Dappar,0.6,osm_node
+1190,2026-05-14T03:30:00.068Z,30.3507561,76.8080749,209.862,railway_geometry,,72.2,0,Ambala Cantt Junction → Dappar,2.7,osm_node
+1191,2026-05-14T03:30:03.361Z,30.3511110,76.8075182,209.928,railway_geometry,,73.1,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1192,2026-05-14T03:30:04.484Z,30.3512291,76.8073233,209.951,railway_geometry,,73.4,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1193,2026-05-14T03:30:11.942Z,30.3520254,76.8060080,210.105,railway_geometry,,75.5,0,Ambala Cantt Junction → Dappar,0.8,osm_node
+1194,2026-05-14T03:30:15.735Z,30.3524305,76.8053183,210.186,railway_geometry,,76.5,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1195,2026-05-14T03:30:16.394Z,30.3525070,76.8052021,210.200,railway_geometry,,76.7,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1196,2026-05-14T03:30:27.618Z,30.3537799,76.8031309,210.444,railway_geometry,,79.8,0,Ambala Cantt Junction → Dappar,2.8,osm_node
+1197,2026-05-14T03:30:30.215Z,30.3541017,76.8026572,210.501,railway_geometry,,80.5,0,Ambala Cantt Junction → Dappar,1.6,osm_node
+1198,2026-05-14T03:30:32.923Z,30.3544525,76.8021700,210.562,railway_geometry,,81.3,0,Ambala Cantt Junction → Dappar,5.2,osm_node
+1199,2026-05-14T03:30:35.336Z,30.3548005,76.8017668,210.617,railway_geometry,,82.0,0,Ambala Cantt Junction → Dappar,5.0,osm_node
+1200,2026-05-14T03:30:38.330Z,30.3552727,76.8013081,210.686,railway_geometry,,82.8,0,Ambala Cantt Junction → Dappar,3.1,osm_node
+1201,2026-05-14T03:30:41.351Z,30.3557749,76.8008709,210.755,railway_geometry,,83.6,0,Ambala Cantt Junction → Dappar,3.3,osm_node
+1202,2026-05-14T03:30:43.405Z,30.3561337,76.8005946,210.803,railway_geometry,,84.2,0,Ambala Cantt Junction → Dappar,3.3,osm_node
+1203,2026-05-14T03:30:45.728Z,30.3565572,76.8003076,210.858,railway_geometry,,84.9,0,Ambala Cantt Junction → Dappar,4.1,osm_node
+1204,2026-05-14T03:30:48.140Z,30.3570178,76.8000448,210.915,railway_geometry,,85.5,0,Ambala Cantt Junction → Dappar,3.1,osm_node
+1205,2026-05-14T03:30:50.147Z,30.3574136,76.7998490,210.963,railway_geometry,,86.1,0,Ambala Cantt Junction → Dappar,2.1,osm_node
+1206,2026-05-14T03:30:52.247Z,30.3578364,76.7996603,211.013,railway_geometry,,86.7,0,Ambala Cantt Junction → Dappar,6.3,osm_node
+1207,2026-05-14T03:30:55.450Z,30.3585106,76.7994543,211.091,railway_geometry,,87.6,0,Ambala Cantt Junction → Dappar,3.5,osm_node
+1208,2026-05-14T03:30:57.319Z,30.3589128,76.7993618,211.136,railway_geometry,,88.1,0,Ambala Cantt Junction → Dappar,2.3,osm_node
+1209,2026-05-14T03:31:01.811Z,30.3598963,76.7991819,211.247,railway_geometry,,89.3,0,Ambala Cantt Junction → Dappar,0.2,osm_node
+1210,2026-05-14T03:31:06.106Z,30.3608501,76.7990120,211.354,railway_geometry,,90.5,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1211,2026-05-14T03:31:16.891Z,30.3632807,76.7985791,211.628,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1212,2026-05-14T03:31:28.797Z,30.3659855,76.7980991,211.932,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.9,osm_node
+1213,2026-05-14T03:31:29.669Z,30.3661841,76.7980675,211.954,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.3,osm_node
+1214,2026-05-14T03:31:35.097Z,30.3674192,76.7978646,212.093,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.2,osm_node
+1215,2026-05-14T03:31:36.952Z,30.3678425,76.7978057,212.140,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.9,osm_node
+1216,2026-05-14T03:31:42.312Z,30.3690630,76.7976122,212.277,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1217,2026-05-14T03:31:43.816Z,30.3694041,76.7975480,212.316,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.6,osm_node
+1218,2026-05-14T03:31:55.141Z,30.3719690,76.7970342,212.605,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.1,osm_node
+1219,2026-05-14T03:31:57.053Z,30.3724019,76.7969467,212.654,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,4.7,osm_node
+1220,2026-05-14T03:31:58.655Z,30.3727582,76.7968393,212.695,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.8,osm_node
+1221,2026-05-14T03:32:00.627Z,30.3731931,76.7966916,212.745,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.0,osm_node
+1222,2026-05-14T03:32:05.081Z,30.3741703,76.7963385,212.859,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.0,osm_node
+1223,2026-05-14T03:32:07.598Z,30.3747196,76.7961278,212.924,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.7,osm_node
+1224,2026-05-14T03:32:10.085Z,30.3752673,76.7959384,212.987,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.5,osm_node
+1225,2026-05-14T03:32:19.719Z,30.3773722,76.7951424,213.233,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.1,osm_node
+1226,2026-05-14T03:32:33.450Z,30.3803744,76.7940152,213.584,interpolation,,92.0,0,Ambala Cantt Junction → Dappar,0.0,interpolation
+1227,2026-05-14T03:32:47.181Z,30.3833765,76.7928879,213.935,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.1,osm_node
+1228,2026-05-14T03:32:52.252Z,30.3844849,76.7924697,214.065,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.1,osm_node
+1229,2026-05-14T03:33:05.479Z,30.3871929,76.7914568,214.381,railway_geometry,,80.2,0,Ambala Cantt Junction → Dappar,0.3,osm_node
+1230,2026-05-14T03:33:10.630Z,30.3881195,76.7911041,214.490,station_approach,,71.3,0,Ambala Cantt Junction → Dappar,0.4,osm_node
+1231,2026-05-14T03:33:12.640Z,30.3884509,76.7909750,214.528,station_approach,,67.9,0,Ambala Cantt Junction → Dappar,0.4,osm_node
+1232,2026-05-14T03:33:18.350Z,30.3893038,76.7906503,214.628,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,0.2,osm_node
+1233,2026-05-14T03:33:21.542Z,30.3897436,76.7904845,214.680,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,0.4,osm_node
+1234,2026-05-14T03:33:25.735Z,30.3903227,76.7902718,214.747,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,1.0,osm_node
+1235,2026-05-14T03:33:33.012Z,30.3913224,76.7898831,214.865,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,1.1,osm_node
+1236,2026-05-14T03:33:43.904Z,30.3928283,76.7893360,215.040,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,1.2,osm_node
+1237,2026-05-14T03:33:46.742Z,30.3932182,76.7891843,215.086,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,0.9,osm_node
+1238,2026-05-14T03:33:48.133Z,30.3934082,76.7891067,215.108,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,3.1,osm_node
+1239,2026-05-14T03:33:58.490Z,30.3948482,76.7886169,215.275,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,1.3,osm_node
+1240,2026-05-14T03:34:00.297Z,30.3950977,76.7885249,215.304,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,0.4,osm_node
+1241,2026-05-14T03:34:08.227Z,30.3961905,76.7881134,215.432,intermediate_station_pass,Dhulkot,58.0,0,Ambala Cantt Junction → Dappar,0.0,station_projection
+1242,2026-05-14T03:34:22.355Z,30.3981374,76.7873802,215.659,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,5.7,osm_node
+1243,2026-05-14T03:34:25.581Z,30.3985655,76.7871628,215.711,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,5.2,osm_node
+1244,2026-05-14T03:34:28.440Z,30.3989584,76.7870106,215.758,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1245,2026-05-14T03:34:29.362Z,30.3990833,76.7869556,215.772,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1246,2026-05-14T03:34:38.795Z,30.4003869,76.7864795,215.924,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,0.5,osm_node
+1247,2026-05-14T03:34:40.141Z,30.4005724,76.7864096,215.946,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,4.9,osm_node
+1248,2026-05-14T03:34:42.383Z,30.4008716,76.7862631,215.982,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,2.2,osm_node
+1249,2026-05-14T03:34:44.833Z,30.4011932,76.7860888,216.022,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,4.1,osm_node
+1250,2026-05-14T03:34:50.932Z,30.4019651,76.7855900,216.120,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,0.9,osm_node
+1251,2026-05-14T03:34:53.870Z,30.4023337,76.7853431,216.167,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,6.6,osm_node
+1252,2026-05-14T03:34:57.323Z,30.4027351,76.7849968,216.223,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,3.7,osm_node
+1253,2026-05-14T03:35:01.221Z,30.4031652,76.7845725,216.286,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,4.2,osm_node
+1254,2026-05-14T03:35:04.013Z,30.4034623,76.7842329,216.332,station_exit,,61.6,0,Ambala Cantt Junction → Dappar,0.5,osm_node
+1255,2026-05-14T03:35:08.607Z,30.4039855,76.7836240,216.414,station_exit,,67.6,0,Ambala Cantt Junction → Dappar,0.8,osm_node
+1256,2026-05-14T03:35:27.432Z,30.4065935,76.7804974,216.832,interpolation,,92.0,0,Ambala Cantt Junction → Dappar,0.0,interpolation
+1257,2026-05-14T03:35:43.758Z,30.4092014,76.7773707,217.249,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.3,osm_node
+1258,2026-05-14T03:35:45.350Z,30.4094617,76.7770725,217.289,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.3,osm_node
+1259,2026-05-14T03:35:46.942Z,30.4097279,76.7767814,217.330,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1260,2026-05-14T03:35:48.534Z,30.4099999,76.7764977,217.371,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.3,osm_node
+1261,2026-05-14T03:35:50.126Z,30.4102776,76.7762214,217.411,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1262,2026-05-14T03:35:51.718Z,30.4105608,76.7759528,217.452,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1263,2026-05-14T03:35:53.310Z,30.4108494,76.7756920,217.493,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.3,osm_node
+1264,2026-05-14T03:35:54.902Z,30.4111431,76.7754390,217.534,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1265,2026-05-14T03:35:56.494Z,30.4114419,76.7751942,217.574,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.3,osm_node
+1266,2026-05-14T03:35:58.104Z,30.4117491,76.7749548,217.615,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1267,2026-05-14T03:35:59.714Z,30.4120611,76.7747240,217.657,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1268,2026-05-14T03:36:01.325Z,30.4123777,76.7745018,217.698,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1269,2026-05-14T03:36:02.935Z,30.4126988,76.7742884,217.739,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1270,2026-05-14T03:36:04.545Z,30.4130242,76.7740839,217.780,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1271,2026-05-14T03:36:06.156Z,30.4133536,76.7738884,217.821,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1272,2026-05-14T03:36:07.766Z,30.4136870,76.7737020,217.862,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.3,osm_node
+1273,2026-05-14T03:36:09.376Z,30.4140240,76.7735248,217.903,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1274,2026-05-14T03:36:10.986Z,30.4143646,76.7733570,217.945,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1275,2026-05-14T03:36:12.597Z,30.4147086,76.7731986,217.986,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.3,osm_node
+1276,2026-05-14T03:36:14.207Z,30.4150557,76.7730496,218.027,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1277,2026-05-14T03:36:15.817Z,30.4154057,76.7729103,218.068,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1278,2026-05-14T03:36:17.428Z,30.4157585,76.7727806,218.109,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1279,2026-05-14T03:36:19.038Z,30.4161138,76.7726607,218.150,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1280,2026-05-14T03:36:20.648Z,30.4164715,76.7725506,218.192,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1281,2026-05-14T03:36:22.258Z,30.4168313,76.7724504,218.233,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1282,2026-05-14T03:36:23.868Z,30.4171931,76.7723601,218.274,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1283,2026-05-14T03:36:25.478Z,30.4175566,76.7722798,218.315,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.3,osm_node
+1284,2026-05-14T03:36:27.089Z,30.4179217,76.7722094,218.356,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1285,2026-05-14T03:36:28.590Z,30.4182632,76.7721533,218.394,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.2,osm_node
+1286,2026-05-14T03:36:30.091Z,30.4186058,76.7721057,218.433,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.3,osm_node
+1287,2026-05-14T03:36:31.592Z,30.4189492,76.7720668,218.471,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.2,osm_node
+1288,2026-05-14T03:36:33.093Z,30.4192932,76.7720364,218.510,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.2,osm_node
+1289,2026-05-14T03:36:34.594Z,30.4196377,76.7720147,218.548,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.2,osm_node
+1290,2026-05-14T03:36:36.097Z,30.4199828,76.7720017,218.586,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.2,osm_node
+1291,2026-05-14T03:36:37.599Z,30.4203280,76.7719973,218.625,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.2,osm_node
+1292,2026-05-14T03:36:39.101Z,30.4206732,76.7720015,218.663,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.3,osm_node
+1293,2026-05-14T03:36:40.603Z,30.4210183,76.7720145,218.701,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.2,osm_node
+1294,2026-05-14T03:36:42.106Z,30.4213631,76.7720361,218.740,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.2,osm_node
+1295,2026-05-14T03:36:43.737Z,30.4217369,76.7720687,218.782,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1296,2026-05-14T03:36:45.367Z,30.4221098,76.7721120,218.823,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1297,2026-05-14T03:36:46.998Z,30.4224817,76.7721659,218.865,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1298,2026-05-14T03:36:48.629Z,30.4228523,76.7722304,218.907,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1299,2026-05-14T03:36:50.260Z,30.4232215,76.7723055,218.948,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.3,osm_node
+1300,2026-05-14T03:36:51.747Z,30.4235568,76.7723831,218.986,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.3,osm_node
+1301,2026-05-14T03:36:53.236Z,30.4238907,76.7724695,219.024,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.3,osm_node
+1302,2026-05-14T03:36:54.724Z,30.4242228,76.7725645,219.062,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.3,osm_node
+1303,2026-05-14T03:36:56.212Z,30.4245528,76.7726681,219.100,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.6,osm_node
+1304,2026-05-14T03:36:58.780Z,30.4251182,76.7728648,219.166,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.8,osm_node
+1305,2026-05-14T03:37:14.910Z,30.4286328,76.7742320,219.578,interpolation,,92.0,0,Ambala Cantt Junction → Dappar,0.0,interpolation
+1306,2026-05-14T03:37:31.040Z,30.4321475,76.7755991,219.990,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.0,osm_node
+1307,2026-05-14T03:37:33.742Z,30.4327326,76.7758405,220.059,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.9,osm_node
+1308,2026-05-14T03:37:49.828Z,30.4362345,76.7772152,220.471,interpolation,,92.0,0,Ambala Cantt Junction → Dappar,0.0,interpolation
+1309,2026-05-14T03:38:05.914Z,30.4397363,76.7785898,220.882,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1310,2026-05-14T03:38:31.030Z,30.4452040,76.7807356,221.523,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.8,osm_node
+1311,2026-05-14T03:38:32.444Z,30.4455104,76.7808616,221.560,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.2,osm_node
+1312,2026-05-14T03:38:46.837Z,30.4486505,76.7820682,221.927,interpolation,,92.0,0,Ambala Cantt Junction → Dappar,0.0,interpolation
+1313,2026-05-14T03:39:01.231Z,30.4517907,76.7832748,222.295,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1314,2026-05-14T03:39:01.400Z,30.4518276,76.7832890,222.300,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1315,2026-05-14T03:39:21.245Z,30.4561488,76.7849815,222.807,interpolation,,92.0,0,Ambala Cantt Junction → Dappar,0.0,interpolation
+1316,2026-05-14T03:39:41.089Z,30.4604701,76.7866739,223.314,interpolation,,92.0,0,Ambala Cantt Junction → Dappar,0.0,interpolation
+1317,2026-05-14T03:40:00.934Z,30.4647913,76.7883664,223.821,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.1,osm_node
+1318,2026-05-14T03:40:16.003Z,30.4680712,76.7896562,224.206,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1319,2026-05-14T03:40:32.516Z,30.4713396,76.7909414,224.590,station_approach,,75.3,0,Ambala Cantt Junction → Dappar,0.2,osm_node
+1320,2026-05-14T03:40:42.533Z,30.4729210,76.7915564,224.775,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,0.1,osm_node
+1321,2026-05-14T03:40:56.120Z,30.4747863,76.7922864,224.994,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,0.3,osm_node
+1322,2026-05-14T03:41:04.702Z,30.4759626,76.7927542,225.132,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,0.2,osm_node
+1323,2026-05-14T03:41:25.896Z,30.4788709,76.7938983,225.474,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,0.0,interpolation
+1324,2026-05-14T03:41:32.397Z,30.4797629,76.7942492,225.579,intermediate_station_pass,Lalru,58.0,0,Ambala Cantt Junction → Dappar,0.0,station_projection
+1325,2026-05-14T03:41:47.091Z,30.4817792,76.7950424,225.815,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,0.1,osm_node
+1326,2026-05-14T03:41:51.219Z,30.4823452,76.7952667,225.882,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,2.6,osm_node
+1327,2026-05-14T03:41:53.122Z,30.4826019,76.7953838,225.913,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,0.9,osm_node
+1328,2026-05-14T03:41:55.329Z,30.4828975,76.7955252,225.948,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,0.1,osm_node
+1329,2026-05-14T03:41:58.383Z,30.4833064,76.7957213,225.997,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,0.2,osm_node
+1330,2026-05-14T03:42:01.756Z,30.4837575,76.7959397,226.052,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,1.1,osm_node
+1331,2026-05-14T03:42:15.046Z,30.4855200,76.7968395,226.266,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,0.6,osm_node
+1332,2026-05-14T03:42:20.151Z,30.4861939,76.7971933,226.348,station_exit,,58.0,0,Ambala Cantt Junction → Dappar,0.7,osm_node
+1333,2026-05-14T03:42:49.086Z,30.4911596,76.7997175,226.951,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.3,osm_node
+1334,2026-05-14T03:42:57.686Z,30.4929747,76.8006257,227.171,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1335,2026-05-14T03:42:57.798Z,30.4929982,76.8006375,227.173,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.0,osm_node
+1336,2026-05-14T03:43:04.929Z,30.4944959,76.8014100,227.356,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.3,osm_node
+1337,2026-05-14T03:43:08.055Z,30.4951511,76.8017520,227.436,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,2.6,osm_node
+1338,2026-05-14T03:43:10.337Z,30.4956388,76.8019760,227.494,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,3.8,osm_node
+1339,2026-05-14T03:43:12.539Z,30.4961205,76.8021558,227.550,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.4,osm_node
+1340,2026-05-14T03:43:13.813Z,30.4963998,76.8022578,227.583,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,3.3,osm_node
+1341,2026-05-14T03:43:15.047Z,30.4966749,76.8023384,227.614,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,3.8,osm_node
+1342,2026-05-14T03:43:16.777Z,30.4970658,76.8024218,227.659,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,3.8,osm_node
+1343,2026-05-14T03:43:18.718Z,30.4975090,76.8024813,227.708,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.2,osm_node
+1344,2026-05-14T03:43:20.037Z,30.4978103,76.8025206,227.742,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,4.0,osm_node
+1345,2026-05-14T03:43:22.450Z,30.4983644,76.8025472,227.804,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,3.9,osm_node
+1346,2026-05-14T03:43:24.144Z,30.4987536,76.8025351,227.847,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,3.0,osm_node
+1347,2026-05-14T03:43:26.227Z,30.4992307,76.8024911,227.900,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,2.7,osm_node
+1348,2026-05-14T03:43:27.893Z,30.4996106,76.8024354,227.943,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.4,osm_node
+1349,2026-05-14T03:43:29.654Z,30.5000125,76.8023797,227.988,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,2.3,osm_node
+1350,2026-05-14T03:43:32.579Z,30.5006762,76.8022556,228.062,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.4,osm_node
+1351,2026-05-14T03:43:35.343Z,30.5013041,76.8021437,228.133,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.4,osm_node
+1352,2026-05-14T03:43:36.732Z,30.5016207,76.8020966,228.168,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.7,osm_node
+1353,2026-05-14T03:43:38.284Z,30.5019757,76.8020559,228.208,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,2.7,osm_node
+1354,2026-05-14T03:43:39.760Z,30.5023145,76.8020360,228.246,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,2.0,osm_node
+1355,2026-05-14T03:43:41.522Z,30.5027193,76.8020288,228.291,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.1,osm_node
+1356,2026-05-14T03:43:43.095Z,30.5030809,76.8020306,228.331,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,2.8,osm_node
+1357,2026-05-14T03:43:44.803Z,30.5034728,76.8020547,228.375,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,4.1,osm_node
+1358,2026-05-14T03:43:46.225Z,30.5037972,76.8021018,228.411,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,3.0,osm_node
+1359,2026-05-14T03:43:48.047Z,30.5042095,76.8021871,228.458,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.6,osm_node
+1360,2026-05-14T03:43:49.143Z,30.5044561,76.8022465,228.486,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,0.7,osm_node
+1361,2026-05-14T03:43:50.180Z,30.5046889,76.8023059,228.512,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,3.9,osm_node
+1362,2026-05-14T03:43:51.584Z,30.5049985,76.8024113,228.548,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,2.2,osm_node
+1363,2026-05-14T03:43:53.055Z,30.5053190,76.8025359,228.586,railway_geometry,,92.0,0,Ambala Cantt Junction → Dappar,1.8,osm_node
+1364,2026-05-14T03:44:01.472Z,30.5070879,76.8032950,228.795,railway_geometry,,87.4,0,Ambala Cantt Junction → Dappar,0.1,osm_node
+1365,2026-05-14T03:44:05.805Z,30.5079364,76.8036618,228.896,railway_geometry,,79.9,0,Ambala Cantt Junction → Dappar,0.2,osm_node
+1366,2026-05-14T03:44:09.351Z,30.5085751,76.8039347,228.972,railway_geometry,,73.8,0,Ambala Cantt Junction → Dappar,0.7,osm_node
+1367,2026-05-14T03:44:11.138Z,30.5088765,76.8040681,229.008,station_approach,,70.7,0,Ambala Cantt Junction → Dappar,0.8,osm_node
+1368,2026-05-14T03:44:18.479Z,30.5099849,76.8045376,229.139,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,1.0,osm_node
+1369,2026-05-14T03:44:27.281Z,30.5111748,76.8050703,229.281,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,0.8,osm_node
+1370,2026-05-14T03:44:36.744Z,30.5124608,76.8056221,229.433,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,0.4,osm_node
+1371,2026-05-14T03:44:45.455Z,30.5136480,76.8061197,229.573,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,0.6,osm_node
+1372,2026-05-14T03:44:57.031Z,30.5152198,76.8067991,229.760,station_approach,,58.0,0,Ambala Cantt Junction → Dappar,0.6,osm_node
+1373,2026-05-14T03:45:10.595Z,30.5170691,76.8075710,229.978,station_pass_primary,Dappar,58.0,0,Ambala Cantt Junction → Dappar,0.7,osm_node
+1374,2026-05-14T03:45:22.861Z,30.5187343,76.8082919,230.176,station_exit,,58.0,0,Dappar → Ghagghar,0.1,osm_node
+1375,2026-05-14T03:45:39.668Z,30.5210177,76.8092743,230.447,station_exit,,58.0,0,Dappar → Ghagghar,0.9,osm_node
+1376,2026-05-14T03:45:44.860Z,30.5217190,76.8095904,230.530,station_exit,,58.0,0,Dappar → Ghagghar,0.6,osm_node
+1377,2026-05-14T03:45:56.222Z,30.5232598,76.8102631,230.713,station_exit,,58.0,0,Dappar → Ghagghar,0.7,osm_node
+1378,2026-05-14T03:46:05.955Z,30.5247298,76.8108819,230.887,station_exit,,70.6,0,Dappar → Ghagghar,0.6,osm_node
+1379,2026-05-14T03:46:15.899Z,30.5265220,76.8116623,231.100,railway_geometry,,83.5,0,Dappar → Ghagghar,0.4,osm_node
+1380,2026-05-14T03:46:28.387Z,30.5289895,76.8127137,231.392,railway_geometry,,85.0,0,Dappar → Ghagghar,0.1,osm_node
+1381,2026-05-14T03:46:42.811Z,30.5318636,76.8139422,231.733,railway_geometry,,85.0,0,Dappar → Ghagghar,0.5,osm_node
+1382,2026-05-14T03:46:54.608Z,30.5342062,76.8149722,232.012,railway_geometry,,85.0,0,Dappar → Ghagghar,0.3,osm_node
+1383,2026-05-14T03:47:08.681Z,30.5370062,76.8161845,232.344,railway_geometry,,85.0,0,Dappar → Ghagghar,0.1,osm_node
+1384,2026-05-14T03:47:21.583Z,30.5395751,76.8172896,232.648,railway_geometry,,85.0,0,Dappar → Ghagghar,0.2,osm_node
+1385,2026-05-14T03:47:34.235Z,30.5420977,76.8183625,232.947,railway_geometry,,85.0,0,Dappar → Ghagghar,0.5,osm_node
+1386,2026-05-14T03:47:48.763Z,30.5449853,76.8196231,233.290,railway_geometry,,85.0,0,Dappar → Ghagghar,0.7,osm_node
+1387,2026-05-14T03:47:59.549Z,30.5471382,76.8205297,233.545,railway_geometry,,85.0,0,Dappar → Ghagghar,0.7,osm_node
+1388,2026-05-14T03:48:04.405Z,30.5481035,76.8209510,233.660,railway_geometry,,85.0,0,Dappar → Ghagghar,0.0,osm_node
+1389,2026-05-14T03:48:06.289Z,30.5484779,76.8211144,233.704,railway_geometry,,85.0,0,Dappar → Ghagghar,0.5,osm_node
+1390,2026-05-14T03:48:14.940Z,30.5501919,76.8218815,233.908,railway_geometry,,85.0,0,Dappar → Ghagghar,1.3,osm_node
+1391,2026-05-14T03:48:28.627Z,30.5529267,76.8230241,234.231,railway_geometry,,85.0,0,Dappar → Ghagghar,0.8,osm_node
+1392,2026-05-14T03:48:39.085Z,30.5550055,76.8239307,234.478,railway_geometry,,85.0,0,Dappar → Ghagghar,0.3,osm_node
+1393,2026-05-14T03:48:53.703Z,30.5579065,76.8252128,234.824,railway_geometry,,85.0,0,Dappar → Ghagghar,0.7,osm_node
+1394,2026-05-14T03:49:08.466Z,30.5608491,76.8264681,235.172,railway_geometry,,85.0,0,Dappar → Ghagghar,0.1,osm_node
+1395,2026-05-14T03:49:21.660Z,30.5634774,76.8275946,235.484,railway_geometry,,85.0,0,Dappar → Ghagghar,0.1,osm_node
+1396,2026-05-14T03:49:36.210Z,30.5663735,76.8288445,235.827,railway_geometry,,85.0,0,Dappar → Ghagghar,0.2,osm_node
+1397,2026-05-14T03:49:49.943Z,30.5691033,76.8300354,236.151,railway_geometry,,85.0,0,Dappar → Ghagghar,0.5,osm_node
+1398,2026-05-14T03:49:58.882Z,30.5708862,76.8307918,236.363,railway_geometry,,85.0,0,Dappar → Ghagghar,0.4,osm_node
+1399,2026-05-14T03:50:13.674Z,30.5738283,76.8320686,236.712,railway_geometry,,85.0,0,Dappar → Ghagghar,0.1,osm_node
+1400,2026-05-14T03:50:26.646Z,30.5764100,76.8331843,237.018,railway_geometry,,85.0,0,Dappar → Ghagghar,0.4,osm_node
+1401,2026-05-14T03:50:39.161Z,30.5788948,76.8342787,237.314,railway_geometry,,85.0,0,Dappar → Ghagghar,0.3,osm_node
+1402,2026-05-14T03:50:54.000Z,30.5818459,76.8355608,237.664,railway_geometry,,85.0,0,Dappar → Ghagghar,0.7,osm_node
+1403,2026-05-14T03:51:07.318Z,30.5845059,76.8366766,237.978,railway_geometry,,85.0,0,Dappar → Ghagghar,0.9,osm_node
+1404,2026-05-14T03:51:17.320Z,30.5864917,76.8375510,238.214,railway_geometry,,85.0,0,Dappar → Ghagghar,0.1,osm_node
+1405,2026-05-14T03:51:24.962Z,30.5880105,76.8382146,238.395,railway_geometry,,85.0,0,Dappar → Ghagghar,0.0,osm_node
+1406,2026-05-14T03:51:27.636Z,30.5885421,76.8384468,238.458,railway_geometry,,85.0,0,Dappar → Ghagghar,0.1,osm_node
+1407,2026-05-14T03:51:40.473Z,30.5910912,76.8395680,238.761,railway_geometry,,85.0,0,Dappar → Ghagghar,0.5,osm_node
+1408,2026-05-14T03:51:49.857Z,30.5929613,76.8403673,238.983,railway_geometry,,85.0,0,Dappar → Ghagghar,0.1,osm_node
+1409,2026-05-14T03:52:01.992Z,30.5953808,76.8413972,239.269,railway_geometry,,85.0,0,Dappar → Ghagghar,0.0,osm_node
+1410,2026-05-14T03:52:03.447Z,30.5956708,76.8415206,239.304,railway_geometry,,85.0,0,Dappar → Ghagghar,0.5,osm_node
+1411,2026-05-14T03:52:24.842Z,30.5999230,76.8433785,239.809,railway_geometry,,85.0,0,Dappar → Ghagghar,1.2,osm_node
+1412,2026-05-14T03:52:35.867Z,30.6019820,76.8443356,240.055,railway_geometry,,76.0,0,Dappar → Ghagghar,0.5,osm_node
+1413,2026-05-14T03:52:46.304Z,30.6035988,76.8451054,240.250,station_approach,,58.0,0,Dappar → Ghagghar,1.5,osm_node
+1414,2026-05-14T03:52:58.304Z,30.6052241,76.8458230,240.443,station_approach,,58.0,0,Dappar → Ghagghar,0.3,osm_node
+1415,2026-05-14T03:53:36.754Z,30.6104436,76.8480861,241.062,station_pass_primary,Ghagghar,58.0,0,Dappar → Ghagghar,0.2,osm_node
+1416,2026-05-14T03:53:58.042Z,30.6133303,76.8493485,241.405,station_exit,,58.0,0,Ghagghar → Chandigarh Junction,0.0,osm_node
+1417,2026-05-14T03:54:06.344Z,30.6144564,76.8498399,241.539,station_exit,,58.0,0,Ghagghar → Chandigarh Junction,0.8,osm_node
+1418,2026-05-14T03:54:09.567Z,30.6148959,76.8500232,241.591,station_exit,,58.0,0,Ghagghar → Chandigarh Junction,3.7,osm_node
+1419,2026-05-14T03:54:11.856Z,30.6152146,76.8501300,241.628,station_exit,,58.0,0,Ghagghar → Chandigarh Junction,6.8,osm_node
+1420,2026-05-14T03:54:14.649Z,30.6156139,76.8502057,241.673,station_exit,,58.0,0,Ghagghar → Chandigarh Junction,2.9,osm_node
+1421,2026-05-14T03:54:18.634Z,30.6161878,76.8502798,241.737,station_exit,,58.0,0,Ghagghar → Chandigarh Junction,9.5,osm_node
+1422,2026-05-14T03:54:22.345Z,30.6167247,76.8502450,241.797,station_exit,,58.0,0,Ghagghar → Chandigarh Junction,0.9,osm_node
+1423,2026-05-14T03:54:25.216Z,30.6171396,76.8502106,241.843,station_exit,,58.0,0,Ghagghar → Chandigarh Junction,4.7,osm_node
+1424,2026-05-14T03:54:28.037Z,30.6175435,76.8501380,241.889,station_exit,,58.0,0,Ghagghar → Chandigarh Junction,6.4,osm_node
+1425,2026-05-14T03:54:31.999Z,30.6180974,76.8499629,241.953,station_exit,,58.0,0,Ghagghar → Chandigarh Junction,1.3,osm_node
+1426,2026-05-14T03:54:57.898Z,30.6221171,76.8488076,242.413,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,0.4,osm_node
+1427,2026-05-14T03:55:20.268Z,30.6259084,76.8476883,242.848,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,1.1,osm_node
+1428,2026-05-14T03:55:33.466Z,30.6281337,76.8469769,243.105,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,1.8,osm_node
+1429,2026-05-14T03:55:41.835Z,30.6295560,76.8465765,243.267,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,0.0,osm_node
+1430,2026-05-14T03:56:00.600Z,30.6327451,76.8456778,243.632,interpolation,,70.0,0,Ghagghar → Chandigarh Junction,0.0,interpolation
+1431,2026-05-14T03:56:19.366Z,30.6359341,76.8447791,243.997,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,1.8,osm_node
+1432,2026-05-14T03:56:21.096Z,30.6362258,76.8446857,244.031,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,0.9,osm_node
+1433,2026-05-14T03:56:27.138Z,30.6372485,76.8443777,244.148,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,0.5,osm_node
+1434,2026-05-14T03:56:48.937Z,30.6409467,76.8433034,244.572,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,0.2,osm_node
+1435,2026-05-14T03:57:04.955Z,30.6436617,76.8425028,244.883,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,2.4,osm_node
+1436,2026-05-14T03:57:07.241Z,30.6440529,76.8424072,244.928,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,2.3,osm_node
+1437,2026-05-14T03:57:09.850Z,30.6445028,76.8423191,244.979,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,0.2,osm_node
+1438,2026-05-14T03:57:11.453Z,30.6447790,76.8422636,245.010,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,3.5,osm_node
+1439,2026-05-14T03:57:12.929Z,30.6450356,76.8422308,245.039,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,4.2,osm_node
+1440,2026-05-14T03:57:14.383Z,30.6452897,76.8422200,245.067,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,2.9,osm_node
+1441,2026-05-14T03:57:17.293Z,30.6457985,76.8422282,245.123,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,3.4,osm_node
+1442,2026-05-14T03:57:44.099Z,30.6504733,76.8426295,245.645,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,0.3,osm_node
+1443,2026-05-14T03:58:11.880Z,30.6553159,76.8430796,246.185,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,0.6,osm_node
+1444,2026-05-14T03:58:14.268Z,30.6557325,76.8431132,246.231,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,0.4,osm_node
+1445,2026-05-14T03:58:15.698Z,30.6559820,76.8431312,246.259,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,4.7,osm_node
+1446,2026-05-14T03:58:16.863Z,30.6561857,76.8431264,246.282,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,3.5,osm_node
+1447,2026-05-14T03:58:18.568Z,30.6564829,76.8430982,246.315,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,5.0,osm_node
+1448,2026-05-14T03:58:19.980Z,30.6567262,76.8430499,246.342,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,1.2,osm_node
+1449,2026-05-14T03:58:21.339Z,30.6569596,76.8429979,246.369,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,4.8,osm_node
+1450,2026-05-14T03:58:23.464Z,30.6573174,76.8428810,246.410,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,1.4,osm_node
+1451,2026-05-14T03:58:25.053Z,30.6575831,76.8427862,246.441,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,4.3,osm_node
+1452,2026-05-14T03:58:26.845Z,30.6578749,76.8426535,246.476,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,2.7,osm_node
+1453,2026-05-14T03:58:28.787Z,30.6581850,76.8424927,246.514,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,4.6,osm_node
+1454,2026-05-14T03:58:45.182Z,30.6607016,76.8408962,246.832,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,0.0,osm_node
+1455,2026-05-14T03:58:45.901Z,30.6608118,76.8408258,246.846,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,0.0,osm_node
+1456,2026-05-14T03:59:00.373Z,30.6630348,76.8394196,247.128,railway_geometry,,70.0,0,Ghagghar → Chandigarh Junction,0.3,osm_node
+1457,2026-05-14T03:59:24.752Z,30.6666946,76.8370753,247.592,interpolation,,67.2,0,Ghagghar → Chandigarh Junction,0.0,interpolation
+1458,2026-05-14T03:59:50.372Z,30.6703543,76.8347311,248.057,interpolation,,63.4,0,Ghagghar → Chandigarh Junction,0.0,interpolation
+1459,2026-05-14T04:00:17.664Z,30.6740141,76.8323868,248.522,railway_geometry,,59.2,0,Ghagghar → Chandigarh Junction,0.7,osm_node
+1460,2026-05-14T04:00:20.112Z,30.6743325,76.8321886,248.562,railway_geometry,,58.9,0,Ghagghar → Chandigarh Junction,1.3,osm_node
+1461,2026-05-14T04:00:23.667Z,30.6747853,76.8318907,248.620,railway_geometry,,58.3,0,Ghagghar → Chandigarh Junction,4.4,osm_node
+1462,2026-05-14T04:00:26.832Z,30.6751664,76.8315929,248.671,railway_geometry,,57.8,0,Ghagghar → Chandigarh Junction,0.5,osm_node
+1463,2026-05-14T04:00:29.472Z,30.6754801,76.8313434,248.713,railway_geometry,,57.4,0,Ghagghar → Chandigarh Junction,3.6,osm_node
+1464,2026-05-14T04:00:31.908Z,30.6757546,76.8310940,248.752,railway_geometry,,57.1,0,Ghagghar → Chandigarh Junction,3.8,osm_node
+1465,2026-05-14T04:00:34.841Z,30.6760651,76.8307711,248.798,railway_geometry,,56.6,0,Ghagghar → Chandigarh Junction,2.5,osm_node
+1466,2026-05-14T04:00:37.596Z,30.6763429,76.8304557,248.841,railway_geometry,,56.2,0,Ghagghar → Chandigarh Junction,1.6,osm_node
+1467,2026-05-14T04:00:40.074Z,30.6765840,76.8301659,248.880,railway_geometry,,55.8,0,Ghagghar → Chandigarh Junction,0.2,osm_node
+1468,2026-05-14T04:01:02.605Z,30.6786951,76.8276117,249.219,interpolation,,52.4,0,Ghagghar → Chandigarh Junction,0.0,interpolation
+1469,2026-05-14T04:01:26.705Z,30.6808061,76.8250575,249.557,railway_geometry,,48.8,0,Ghagghar → Chandigarh Junction,0.1,osm_node
+1470,2026-05-14T04:01:52.250Z,30.6828826,76.8225566,249.890,railway_geometry,,44.9,0,Ghagghar → Chandigarh Junction,0.0,osm_node
+1471,2026-05-14T04:01:53.048Z,30.6829453,76.8224825,249.900,railway_geometry,,44.8,0,Ghagghar → Chandigarh Junction,0.0,osm_node
+1472,2026-05-14T04:01:53.433Z,30.6829756,76.8224468,249.904,railway_geometry,,44.7,0,Ghagghar → Chandigarh Junction,0.0,osm_node
+1473,2026-05-14T04:01:54.162Z,30.6830326,76.8223794,249.913,railway_geometry,,44.6,0,Ghagghar → Chandigarh Junction,0.0,osm_node
+1474,2026-05-14T04:01:54.848Z,30.6830862,76.8223161,249.922,railway_geometry,,44.5,0,Ghagghar → Chandigarh Junction,0.0,osm_node
+1475,2026-05-14T04:01:55.937Z,30.6831710,76.8222159,249.935,railway_geometry,,44.4,0,Ghagghar → Chandigarh Junction,0.0,osm_node
+1476,2026-05-14T04:02:15.753Z,30.6846150,76.8204081,250.171,railway_geometry,,41.4,0,Ghagghar → Chandigarh Junction,2.5,osm_node
+1477,2026-05-14T04:02:24.740Z,30.6852654,76.8196624,250.273,railway_geometry,,40.0,0,Ghagghar → Chandigarh Junction,6.5,osm_node
+1478,2026-05-14T04:02:28.321Z,30.6855453,76.8194076,250.312,railway_geometry,,39.5,0,Ghagghar → Chandigarh Junction,2.5,osm_node
+1479,2026-05-14T04:02:32.168Z,30.6858513,76.8191528,250.354,railway_geometry,,38.9,0,Ghagghar → Chandigarh Junction,2.2,osm_node
+1480,2026-05-14T04:02:35.348Z,30.6861077,76.8189564,250.388,railway_geometry,,38.4,0,Ghagghar → Chandigarh Junction,4.4,osm_node
+1481,2026-05-14T04:02:38.581Z,30.6863772,76.8187827,250.423,railway_geometry,,37.9,0,Ghagghar → Chandigarh Junction,3.8,osm_node
+1482,2026-05-14T04:02:43.311Z,30.6867786,76.8185627,250.472,railway_geometry,,37.2,0,Ghagghar → Chandigarh Junction,3.6,osm_node
+1483,2026-05-14T04:02:46.845Z,30.6870817,76.8184230,250.508,railway_geometry,,36.7,0,Ghagghar → Chandigarh Junction,5.2,osm_node
+1484,2026-05-14T04:02:50.246Z,30.6873783,76.8183213,250.543,railway_geometry,,36.1,0,Ghagghar → Chandigarh Junction,1.2,osm_node
+1485,2026-05-14T04:02:54.593Z,30.6877490,76.8181841,250.586,railway_geometry,,35.5,0,Ghagghar → Chandigarh Junction,6.8,osm_node
+1486,2026-05-14T04:02:59.201Z,30.6881462,76.8180952,250.631,railway_geometry,,34.8,0,Ghagghar → Chandigarh Junction,6.5,osm_node
+1487,2026-05-14T04:03:02.872Z,30.6884618,76.8180670,250.666,railway_geometry,,34.2,0,Ghagghar → Chandigarh Junction,1.5,osm_node
+1488,2026-05-14T04:03:07.505Z,30.6888519,76.8180199,250.710,railway_geometry,,33.5,0,Ghagghar → Chandigarh Junction,5.1,osm_node
+1489,2026-05-14T04:03:12.241Z,30.6892444,76.8180137,250.753,station_approach,,32.8,0,Ghagghar → Chandigarh Junction,4.7,osm_node
+1490,2026-05-14T04:03:16.564Z,30.6895945,76.8180416,250.792,station_approach,,32.2,0,Ghagghar → Chandigarh Junction,0.0,osm_node
+1491,2026-05-14T04:03:17.540Z,30.6896714,76.8180584,250.801,station_approach,,32.0,0,Ghagghar → Chandigarh Junction,0.0,osm_node
+1492,2026-05-14T04:03:20.005Z,30.6898640,76.8181006,250.823,station_approach,,31.6,0,Ghagghar → Chandigarh Junction,0.8,osm_node
+1493,2026-05-14T04:03:23.336Z,30.6901200,76.8181612,250.852,station_approach,,31.1,0,Ghagghar → Chandigarh Junction,3.3,osm_node
+1494,2026-05-14T04:04:10.175Z,30.6932430,76.8191178,251.211,station_approach,,24.1,0,Ghagghar → Chandigarh Junction,0.0,interpolation
+1495,2026-05-14T04:05:18.643Z,30.6963661,76.8200744,251.570,station_approach,,13.7,0,Ghagghar → Chandigarh Junction,4.2,osm_node
+1496,2026-05-14T04:05:47.256Z,30.6971461,76.8203866,251.662,station_approach,,9.4,0,Ghagghar → Chandigarh Junction,1.3,osm_node
+1497,2026-05-14T04:06:08.177Z,30.6975342,76.8205307,251.707,station_approach,,6.2,0,Ghagghar → Chandigarh Junction,2.0,osm_node
+1498,2026-05-14T04:06:37.720Z,30.6978343,76.8206559,251.743,station_end,Chandigarh Junction,0.0,0,Ghagghar → Chandigarh Junction,0.0,osm_node

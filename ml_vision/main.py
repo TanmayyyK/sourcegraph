@@ -800,7 +800,16 @@ async def embed_audio(
     """
     raw_bytes = await audio.read()
     if not raw_bytes:
-        raise HTTPException(status_code=422, detail="Uploaded audio file is empty.")
+        # Stub path — empty audio file; skip Whisper, close the audio barrier.
+        payload = {
+            "packet_id":   packet_id,
+            "type":        "audio_final_summary",
+            "source_node": SOURCE_NODE,
+            "transcript":  [],
+            "full_script": "",
+        }
+        await _dispatch_webhook(payload, label="audio_final_summary")
+        return {"status": "completed", "packet_id": packet_id, "stub": True}
 
     with tempfile.NamedTemporaryFile(
         delete=False, suffix=".wav", prefix=f"{packet_id}_"
