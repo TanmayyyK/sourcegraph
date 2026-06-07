@@ -32,10 +32,9 @@ engine = create_async_engine(
     max_overflow=10,
     pool_recycle=3600,
     pool_pre_ping=True,
-    # asyncpg-specific: disable prepared statements entirely for PgBouncer compatibility
-    prepared_statement_cache_size=0,
     connect_args={
         "command_timeout": 10,
+        "statement_cache_size": 0,
     },
 )
 

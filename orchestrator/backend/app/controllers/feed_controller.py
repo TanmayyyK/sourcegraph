@@ -55,9 +55,9 @@ import uuid
 health_engine = create_async_engine(
     settings.database_url,
     echo=False,
-    prepared_statement_cache_size=0,
     connect_args={
         "command_timeout": 10,
+        "statement_cache_size": 0,
     },
 )
 
