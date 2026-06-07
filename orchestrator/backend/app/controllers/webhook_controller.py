@@ -532,9 +532,15 @@ def _dispatch_system_ping(
 # When ANY payload arrives from a live node, update its heartbeat so
 # the Command Centre shows it as green/OK.
 _SOURCE_TO_DASHBOARD_KEY: dict[str, str] = {
-    "ml_vision": "vision_engine",
-    "ml_context": "text_processor",
-    "ATLAS": "orchestrator",
+    # Simulator / contract identifiers
+    "ml_vision": "argus",
+    "ml_context": "hermes",
+    "extractor": "atlas",
+    "ATLAS": "atlas",
+    # Production worker source_node strings
+    "RTX-3050-Rohit": "argus",
+    "RTX-2050-Yug": "hermes",
+    "M2-Extractor-Yogesh": "atlas",
 }
 
 def _touch_node_heartbeat(source_node: str) -> None:

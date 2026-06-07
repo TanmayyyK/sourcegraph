@@ -688,9 +688,9 @@ const NodeRoster: React.FC<{ statsData: DashboardStats }> = ({ statsData }) => {
   const ref    = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-40px" });
   const nodes  = [
-    { name: "ATLAS",  id: "orchestrator",   role: "Lead Analyst",   color: C.accent },
-    { name: "HERMES", id: "text_processor",  role: "Context Engine", color: C.violet },
-    { name: "ARGUS",  id: "vision_engine", role: "Vision Engine", color: C.green  },
+    { name: "ATLAS",  id: "atlas",         role: "Lead Analyst",   color: C.accent },
+    { name: "HERMES", id: "hermes",        role: "Context Engine", color: C.violet },
+    { name: "ARGUS",  id: "argus",         role: "Vision Engine",  color: C.green  },
   ];
 
   return (
