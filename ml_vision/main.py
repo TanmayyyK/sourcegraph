@@ -4,7 +4,7 @@ vision_main.py — SourceGraph ML Vision Node (ml_vision)  |  Contract v1.0
 Node B of the SourceGraph Distributed Worker architecture.
 
 Role    : Visual Embedding Generation
-Hardware: NVIDIA RTX 3050 (Rohit)
+Hardware: Hugging Face Spaces CPU Basic (2 vCPU / 16 GB RAM)
 Contract: SourceGraph Distributed Worker Implementation Contract v1.0
 
 Hosted Endpoints
@@ -13,14 +13,14 @@ Hosted Endpoints
                                  fire frame_vision webhook to Orchestrator.
     POST /embed/visual/finish  — Finalise a batch: fire vision_final_summary
                                  webhook, clear local state for that packet_id.
-    GET  /health               — Liveness probe (returns node + GPU status).
+    GET  /health               — Liveness probe (returns node + CPU status).
 
 Startup
 -------
-    uvicorn vision_main:app --host 0.0.0.0 --port 8081 --workers 1
+    uvicorn main:app --host 0.0.0.0 --port 7860 --workers 1
 
-    Single-worker is intentional: CUDA models are NOT fork-safe after
-    initialisation. Scale horizontally via multiple containers instead.
+    Single-worker is intentional for CPU-constrained Hugging Face Spaces.
+    Scale horizontally via multiple containers instead.
 
 Environment Variables (.env)
 ----------------------------
@@ -29,7 +29,7 @@ Environment Variables (.env)
     WEBHOOK_SECRET        — Shared secret for X-Webhook-Secret header.
     LOG_LEVEL             — DEBUG / INFO / WARNING (default: INFO).
     VISION_HOST           — Bind address (default: 0.0.0.0).
-    VISION_PORT           — Bind port   (default: 8081).
+    VISION_PORT           — Bind port   (default: 7860).
 
 Webhook Contract (Outgoing)
 ----------------------------
@@ -48,7 +48,7 @@ v1.0.0
 
 v1.0.0 → v1.0.1  (gap-fixes — no ML logic changed)
 - [FIX 1] engine.py zero-vector passthrough: engine._clip_embed() returns
-  [0.0]*512 on CLIP failure (CUDA OOM, corrupt input, etc.). The previous
+  [0.0]*512 on CLIP failure (model error, corrupt input, etc.). The previous
   len()-only guard passed this silently. Added all(v == 0.0) check; zero
   vectors are now logged as WARNING and skipped — NOT counted in batch_tracker
   and NOT forwarded to the Orchestrator.
@@ -73,19 +73,40 @@ from __future__ import annotations
 
 import asyncio
 import io
-import json
 import logging
 import os
 import tempfile
 import threading
 import time
-import uuid
 from contextlib import asynccontextmanager
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Annotated, Any
 
+# Hugging Face Spaces runs as UID 1000 with restricted write permissions.
+# Keep all ML caches in /tmp/cache and hide accelerators before importing ML libs.
+_CACHE_ROOT = Path(os.environ.setdefault("ML_VISION_CACHE_DIR", "/tmp/cache"))
+_CACHE_ENV = {
+    "HF_HOME": _CACHE_ROOT / "huggingface",
+    "HF_HUB_CACHE": _CACHE_ROOT / "huggingface" / "hub",
+    "TRANSFORMERS_CACHE": _CACHE_ROOT / "huggingface" / "transformers",
+    "TORCH_HOME": _CACHE_ROOT / "torch",
+    "XDG_CACHE_HOME": _CACHE_ROOT / "xdg",
+    "YOLO_CONFIG_DIR": _CACHE_ROOT / "ultralytics",
+    "MPLCONFIGDIR": _CACHE_ROOT / "matplotlib",
+}
+for _name, _path in _CACHE_ENV.items():
+    os.environ.setdefault(_name, str(_path))
+    Path(os.environ[_name]).mkdir(parents=True, exist_ok=True)
+
+os.environ.setdefault("CUDA_VISIBLE_DEVICES", "")
+os.environ.setdefault("OMP_NUM_THREADS", "2")
+os.environ.setdefault("MKL_NUM_THREADS", "2")
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "2")
+os.environ.setdefault("NUMEXPR_NUM_THREADS", "2")
+os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
+
 import httpx
-import torch
 from dotenv import load_dotenv
 from fastapi import BackgroundTasks, Depends, FastAPI, File, Form, Header, HTTPException, UploadFile
 from PIL import Image, UnidentifiedImageError
@@ -141,7 +162,7 @@ HEARTBEAT_INTERVAL_S = 30
 
 # [FIX 4] Maximum seconds to wait for Whisper transcription before giving up.
 # Tune this to match your longest expected audio clip. At 120 s the node will
-# abandon a stuck transcription, dispatch a degraded summary, and release VRAM.
+# abandon a stuck transcription, dispatch a degraded summary, and release RAM.
 AUDIO_TRANSCRIPTION_TIMEOUT_S = 120
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -232,10 +253,9 @@ async def lifespan(app: FastAPI):
         await heartbeat_task
     except asyncio.CancelledError:
         pass
-    # Graceful VRAM release on shutdown
+    # Graceful model release on shutdown
     del _state.engine
-    torch.cuda.empty_cache()
-    logger.info("ML Vision Node shut down — VRAM released.")
+    logger.info("ML Vision Node shut down — CPU model state released.")
 
 
 app = FastAPI(
@@ -243,7 +263,7 @@ app = FastAPI(
     version     = "1.0.0",
     description = (
         f"Node B — Visual Embedding Generation ({SOURCE_NODE}). "
-        "CLIP fp16 512-D vectors + YOLOv8n detections. "
+        "CLIP fp32 CPU 512-D vectors + YOLOv8n detections. "
         "Implements SourceGraph Distributed Worker Contract v1.0."
     ),
     lifespan = lifespan,
@@ -375,7 +395,7 @@ class HealthResponse(BaseModel):
 # HTTP Transmission Layer — Webhook Dispatch  (Contract §2)
 # ─────────────────────────────────────────────────────────────────────────────
 # All outbound HTTP lives here.  Routes call these via BackgroundTasks so the
-# Orchestrator being offline NEVER blocks GPU frame processing.
+# Orchestrator being offline NEVER blocks frame processing.
 #
 # Contract §2 error handling matrix:
 #   422  — Non-retryable: schema violation, log CRITICAL, stop.
@@ -470,7 +490,7 @@ async def post_frame_vision(payload: dict[str, Any]) -> None:
     """Fire a frame_vision webhook. Runs as a BackgroundTask — must never raise."""
     try:
         await _dispatch_webhook(payload, label="frame_vision")
-    except Exception as exc:  # Absolute safety net: GPU must keep processing
+    except Exception as exc:  # Absolute safety net: inference must keep processing
         logger.exception("[frame_vision] Unexpected dispatch failure: %s", exc)
 
 
@@ -492,9 +512,9 @@ async def _run_audio_transcription_job(packet_id: str, wav_path: str) -> None:
     asyncio.wait_for() cancels the *asyncio* future but cannot cancel the
     underlying OS thread created by asyncio.to_thread().  If we called
     engine.hard_unload() in the TimeoutError handler while the thread was
-    still running we would race against live CUDA kernels → potential crash.
+    still running we would race against live inference state → potential crash.
 
-    BUG FIX 2 (thread leak + CUDA race on timeout):
+    BUG FIX 2 (thread leak + inference race on timeout):
     We run transcribe() in a plain concurrent.futures thread (via the default
     executor) and give the thread a generous OS-level join window
     (AUDIO_TRANSCRIPTION_TIMEOUT_S + 5 s) before abandoning it.
@@ -555,7 +575,7 @@ async def _run_audio_transcription_job(packet_id: str, wav_path: str) -> None:
     finally:
         # BUG FIX 3: hard_unload() is intentionally NOT called here.
         # AudioEngine.transcribe() already calls it unconditionally in its own
-        # finally block regardless of success, failure, or CUDA fallback.
+        # finally block regardless of success, failure, or device fallback.
         # Calling it again here would race with the thread on timeout paths.
         try:
             os.remove(wav_path)
@@ -581,7 +601,7 @@ async def post_system_ping(payload: dict[str, Any]) -> None:
         else:
             logger.debug("[system_ping] HTTP %d — Orchestrator may be busy", response.status_code)
     except Exception as exc:
-        # Heartbeat failures are non-critical — GPU must keep processing frames
+        # Heartbeat failures are non-critical — inference must keep processing frames
         logger.debug("[system_ping] Delivery failed (non-critical): %s", exc)
 
 
@@ -619,19 +639,17 @@ async def _heartbeat_loop() -> None:
     "/health",
     response_model = HealthResponse,
     tags           = ["ops"],
-    summary        = "Liveness probe — GPU status and active batch count",
+    summary        = "Liveness probe — CPU status and active batch count",
 )
 async def health() -> HealthResponse:
-    gpu_available = torch.cuda.is_available()
-    cuda_device   = torch.cuda.get_device_name(0) if gpu_available else "CPU fallback"
     with _tracker_lock:
         active = len(batch_tracker)
     return HealthResponse(
         status         = "ok",
         source_node    = SOURCE_NODE,
         active_batches = active,
-        gpu_available  = gpu_available,
-        cuda_device    = cuda_device,
+        gpu_available  = False,
+        cuda_device    = "CPU only",
     )
 
 
@@ -689,7 +707,7 @@ async def embed_vision(
         )
 
     # [FIX 1] Zero-vector passthrough guard.
-    # engine._clip_embed() returns [0.0]*512 on CUDA OOM or any CLIP failure
+    # engine._clip_embed() returns [0.0]*512 on any CLIP failure
     # (see engine.py lines under "Failure modes handled").  A zero-vector passes
     # the len() check above but is NOT a valid embedding — it carries no semantic
     # information and would corrupt Orchestrator similarity searches.
@@ -705,7 +723,7 @@ async def embed_vision(
             status_code = 422,
             detail      = (
                 "CLIP embedding failed for this frame (engine returned a zero-vector). "
-                "Possible causes: CUDA OOM, corrupt/blank image, or model error. "
+                "Possible causes: corrupt/blank image or model error. "
                 "Check Vision Node logs for details."
             ),
         )
@@ -875,7 +893,7 @@ if __name__ == "__main__":
     import uvicorn
 
     _host    = os.environ.get("VISION_HOST", "0.0.0.0")
-    _port    = int(os.environ.get("VISION_PORT", "8081"))
+    _port    = int(os.environ.get("VISION_PORT", "7860"))
     _log_lvl = _LOG_LEVEL.lower()
 
     uvicorn.run(
@@ -883,5 +901,5 @@ if __name__ == "__main__":
         host      = _host,
         port      = _port,
         log_level = _log_lvl,
-        workers   = 1,   # Single-worker — CUDA is not fork-safe
+        workers   = 1,   # Single-worker — predictable on 2 vCPU CPU Basic tier
     )

@@ -1,18 +1,37 @@
 """
 engine.py — Visual Cortex Inference Engine
-RTX 3050 VRAM-optimized CLIP + YOLO pipeline.
-
-Memory budget (RTX 3050 4 GB VRAM):
-    CLIP  ViT-B/32  fp16  ≈  290 MB
-    YOLOv8n         fp32  ≈    6 MB
-    ─────────────────────────────────
-    Total (rough)         ≈  300 MB  — well within the 4 GB budget
+CPU-only CLIP + YOLO pipeline for Hugging Face Spaces.
 """
 from __future__ import annotations
 
 import gc
 import logging
+import os
+from pathlib import Path
 from typing import Any
+
+# Hugging Face Spaces runs the container as UID 1000. Keep every model/config
+# cache in writable storage and hide accelerators before importing torch.
+_CACHE_ROOT = Path(os.environ.setdefault("ML_VISION_CACHE_DIR", "/tmp/cache"))
+_CACHE_ENV = {
+    "HF_HOME": _CACHE_ROOT / "huggingface",
+    "HF_HUB_CACHE": _CACHE_ROOT / "huggingface" / "hub",
+    "TRANSFORMERS_CACHE": _CACHE_ROOT / "huggingface" / "transformers",
+    "TORCH_HOME": _CACHE_ROOT / "torch",
+    "XDG_CACHE_HOME": _CACHE_ROOT / "xdg",
+    "YOLO_CONFIG_DIR": _CACHE_ROOT / "ultralytics",
+    "MPLCONFIGDIR": _CACHE_ROOT / "matplotlib",
+}
+for _name, _path in _CACHE_ENV.items():
+    os.environ.setdefault(_name, str(_path))
+    Path(os.environ[_name]).mkdir(parents=True, exist_ok=True)
+
+os.environ.setdefault("CUDA_VISIBLE_DEVICES", "")
+os.environ.setdefault("OMP_NUM_THREADS", "2")
+os.environ.setdefault("MKL_NUM_THREADS", "2")
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "2")
+os.environ.setdefault("NUMEXPR_NUM_THREADS", "2")
+os.environ.setdefault("HF_HUB_DISABLE_SYMLINKS_WARNING", "1")
 
 import numpy as np
 import torch
@@ -27,11 +46,56 @@ logger = logging.getLogger("vision.engine")
 # Constants
 # ─────────────────────────────────────────────────────────────────────────────
 CLIP_MODEL_ID  = "openai/clip-vit-base-patch32"
-YOLO_WEIGHTS   = "yolov8n.pt"
+SERVICE_ROOT   = Path(__file__).resolve().parent
+HF_CACHE_DIR   = Path(os.environ["HF_HOME"])
+YOLO_FALLBACK  = "yolov8n.pt"
+YOLO_LOCAL_CANDIDATES = (
+    SERVICE_ROOT / "models" / "yolo8vn.pt",
+    SERVICE_ROOT / "models" / "yolov8n.pt",
+)
 EMBED_DIM      = 512   # CLIP ViT-B/32 visual output dimension
 TOP_K_OBJECTS  = 3     # Maximum YOLO detections to surface
 YOLO_CONF_THR  = 0.20  # Low threshold — we always want something if present
 MAX_IMAGE_SIDE = 1024  # Downsample extreme resolutions before inference
+
+
+def _configure_torch_cpu_runtime() -> None:
+    """Constrain PyTorch CPU work to the small 2-vCPU Spaces tier."""
+    num_threads = max(1, int(os.environ.get("VISION_TORCH_THREADS", "2")))
+    interop_threads = max(1, int(os.environ.get("VISION_TORCH_INTEROP_THREADS", "1")))
+
+    torch.set_num_threads(num_threads)
+    try:
+        torch.set_num_interop_threads(interop_threads)
+    except RuntimeError:
+        # PyTorch raises if interop threads were already configured by an import.
+        logger.debug("PyTorch interop thread count was already configured.")
+
+
+def _resolve_yolo_weights() -> str:
+    """
+    Prefer a usable local YOLO file, otherwise fall back to Ultralytics'
+    managed yolov8n.pt download/cache path.
+    """
+    candidates: list[Path] = []
+    if os.environ.get("YOLO_WEIGHTS_PATH"):
+        candidates.append(Path(os.environ["YOLO_WEIGHTS_PATH"]).expanduser())
+    candidates.extend(YOLO_LOCAL_CANDIDATES)
+
+    for path in candidates:
+        if path.is_file():
+            if path.stat().st_size > 0:
+                logger.info("Using local YOLO weights: %s", path)
+                return str(path)
+            logger.warning("Ignoring empty YOLO weights file: %s", path)
+
+    logger.warning(
+        "No usable local YOLO weights found under %s; falling back to %s "
+        "download/cache via Ultralytics.",
+        SERVICE_ROOT / "models",
+        YOLO_FALLBACK,
+    )
+    return YOLO_FALLBACK
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -42,7 +106,7 @@ def _safe_to_rgb(image: Image.Image) -> Image.Image:
     """
     Convert *image* to plain RGB, handling palette / transparency / CMYK modes.
     Extreme resolutions are down-sampled to ``MAX_IMAGE_SIDE`` on the longest
-    side using LANCZOS resampling to avoid OOM on the CUDA device.
+    side using LANCZOS resampling to keep CPU inference latency bounded.
     """
     # Normalise mode (handles P, RGBA, CMYK, L, etc.)
     image = ImageOps.exif_transpose(image)          # honour EXIF orientation
@@ -82,26 +146,38 @@ class VisionEngine:
     """
 
     def __init__(self) -> None:
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        _configure_torch_cpu_runtime()
+        self.device = torch.device("cpu")
         logger.info("VisionEngine target device: %s", self.device)
 
-        # ── CLIP ViT-B/32 (fp16) ──────────────────────────────────────────
+        # ── CLIP ViT-B/32 (fp32 CPU) ───────────────────────────────────────
         logger.info("Loading CLIP model [%s] …", CLIP_MODEL_ID)
         self._clip_processor: CLIPProcessor = CLIPProcessor.from_pretrained(
-            CLIP_MODEL_ID
+            CLIP_MODEL_ID,
+            cache_dir=str(HF_CACHE_DIR),
         )
         self._clip_model: CLIPModel = CLIPModel.from_pretrained(
             CLIP_MODEL_ID,
-            torch_dtype=torch.float16,  # Half-precision → halves VRAM footprint
+            cache_dir=str(HF_CACHE_DIR),
+            torch_dtype=torch.float32,
         ).to(self.device)
         self._clip_model.eval()
-        logger.info("CLIP loaded on %s (fp16).", self.device)
+        logger.info("CLIP loaded on %s (fp32).", self.device)
 
         # ── YOLOv8-nano ───────────────────────────────────────────────────
-        logger.info("Loading YOLOv8n [%s] …", YOLO_WEIGHTS)
-        self._yolo: YOLO = YOLO(YOLO_WEIGHTS)
-        self._yolo.to(self.device)
-        logger.info("YOLOv8n loaded on %s.", self.device)
+        self._yolo: YOLO | None = None
+        yolo_weights = _resolve_yolo_weights()
+        logger.info("Loading YOLOv8n [%s] …", yolo_weights)
+        try:
+            self._yolo = YOLO(yolo_weights)
+            self._yolo.to(self.device)
+            logger.info("YOLOv8n loaded on %s.", self.device)
+        except Exception:
+            logger.exception(
+                "YOLOv8n failed to load from %s. Service will stay up and "
+                "return empty object detections until weights are fixed.",
+                yolo_weights,
+            )
 
     # ─────────────────────────────────────────────────────────────────────────
     # Public API
@@ -142,8 +218,7 @@ class VisionEngine:
         Failure modes handled
         ---------------------
         * Corrupt/empty image → zero-vector fallback.
-        * CUDA OOM → VRAM is recovered via ``torch.cuda.empty_cache()``,
-          then a zero-vector is returned so the server stays alive.
+        * CPU/model failure → zero-vector is returned so the server stays alive.
         * Any other exception → logged, zero-vector returned.
 
         The zero-vector convention signals "embedding unavailable" to the
@@ -152,7 +227,7 @@ class VisionEngine:
         try:
             inputs = self._clip_processor(images=image, return_tensors="pt")
             pixel_values: torch.Tensor = inputs["pixel_values"].to(
-                dtype=torch.float16, device=self.device
+                dtype=torch.float32, device=self.device
             )
 
             # Vision encoder only — no text branch needed
@@ -161,7 +236,7 @@ class VisionEngine:
             # visual_projection maps the CLS pooled output → 512-D embedding
             pooled: torch.Tensor = self._clip_model.visual_projection(
                 vision_out.pooler_output
-            )  # [1, 512] fp16
+            )  # [1, 512] fp32
 
             # L2 normalise → unit vector (cosine-similarity compatible)
             normed: torch.Tensor = F.normalize(pooled, p=2, dim=-1)
@@ -181,17 +256,9 @@ class VisionEngine:
 
             return vector
 
-        except torch.cuda.OutOfMemoryError:
-            logger.error(
-                "CUDA OOM during CLIP embed — recovering VRAM, "
-                "returning zero-vector fallback."
-            )
-            torch.cuda.empty_cache()
-            gc.collect()
-            return [0.0] * EMBED_DIM
-
         except Exception:
             logger.exception("CLIP embedding failed — returning zero-vector fallback.")
+            gc.collect()
             return [0.0] * EMBED_DIM
 
     @torch.inference_mode()
@@ -213,12 +280,16 @@ class VisionEngine:
 
         Failure modes handled
         ---------------------
-        * CUDA OOM → VRAM recovered, empty detections returned.
+        * CPU/model failure → empty detections returned.
         * Any other exception → logged, empty detections returned.
         """
+        if self._yolo is None:
+            return {"detected_objects": []}
+
         try:
             results = self._yolo.predict(
                 source=image,
+                device="cpu",
                 verbose=False,
                 conf=YOLO_CONF_THR,
             )
@@ -245,15 +316,7 @@ class VisionEngine:
 
             return {"detected_objects": detections}
 
-        except torch.cuda.OutOfMemoryError:
-            logger.error(
-                "CUDA OOM during YOLO detect — recovering VRAM, "
-                "returning empty detections."
-            )
-            torch.cuda.empty_cache()
-            gc.collect()
-            return {"detected_objects": []}
-
         except Exception:
             logger.exception("YOLO detection failed — returning empty detections.")
+            gc.collect()
             return {"detected_objects": []}

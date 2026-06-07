@@ -1,10 +1,22 @@
 import os
 import gc
 import traceback
-import torch
+from pathlib import Path
+
+_CACHE_ROOT = Path(os.environ.setdefault("ML_VISION_CACHE_DIR", "/tmp/cache"))
+_CACHE_ENV = {
+    "HF_HOME": _CACHE_ROOT / "huggingface",
+    "HF_HUB_CACHE": _CACHE_ROOT / "huggingface" / "hub",
+    "TRANSFORMERS_CACHE": _CACHE_ROOT / "huggingface" / "transformers",
+    "XDG_CACHE_HOME": _CACHE_ROOT / "xdg",
+}
+for _name, _path in _CACHE_ENV.items():
+    os.environ.setdefault(_name, str(_path))
+    Path(os.environ[_name]).mkdir(parents=True, exist_ok=True)
 
 os.environ["HF_HUB_DISABLE_SYMLINKS_WARNING"] = "1"
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+os.environ.setdefault("CUDA_VISIBLE_DEVICES", "")
 
 # --- HARDWARE SAFETY BINDING FOR WINDOWS CTRANSLATE2 / FASTER-WHISPER ---
 if os.name == "nt":
@@ -92,7 +104,7 @@ class AudioEngine:
     Lifecycle contract
     ------------------
     Instantiate once per job, destroy immediately after. Never store alongside
-    VisionEngine (CLIP/YOLO) to avoid VRAM collisions.
+    VisionEngine (CLIP/YOLO) to avoid memory pressure.
 
     Recommended pattern:
 
@@ -121,13 +133,11 @@ class AudioEngine:
     def __init__(self, model_size: str = "small", device_override: str = None):
         self.model: WhisperModel | None = None
         self.model_size   = model_size
-        
-        if device_override:
-            self.device = device_override
-            self.compute_type = "int8" if device_override == "cpu" else "int8_float16"
-        else:
-            self.device       = "cuda" if torch.cuda.is_available() else "cpu"
-            self.compute_type = "int8_float16" if self.device == "cuda" else "int8"
+
+        if device_override and device_override != "cpu":
+            print(f"[AudioEngine] Ignoring non-CPU device override: {device_override}")
+        self.device       = "cpu"
+        self.compute_type = "int8"
 
     # ── Context manager ───────────────────────────────────────────────────────
     def __enter__(self) -> "AudioEngine":
@@ -191,8 +201,6 @@ class AudioEngine:
             del self.model
             self.model = None
         gc.collect()
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
         self.device       = "cpu"
         self.compute_type = "int8"
 
@@ -240,7 +248,7 @@ class AudioEngine:
     # ── Public API ────────────────────────────────────────────────────────────
     def hard_unload(self):
         """
-        Idempotent VRAM/RAM teardown.
+        Idempotent RAM teardown.
         Primary cleanup path is transcribe()'s own finally block.
         This is a safe no-op when called a second time.
         """
@@ -249,10 +257,7 @@ class AudioEngine:
             del self.model
             self.model = None
             gc.collect()
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-                torch.cuda.ipc_collect()
-            print("✅ [AudioEngine] VRAM cleared.")
+            print("✅ [AudioEngine] RAM cleared.")
         else:
             print("✅ [AudioEngine] hard_unload() — model already None (no-op).")
 

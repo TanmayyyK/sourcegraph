@@ -20,4 +20,4 @@ ultralytics>=8.0.0       # Official library for YOLOv8n object detection
 # ─────────────────────────────────────────────────────────────────
 # 3. Audio Machine Learning (audio_engine.py)
 # ─────────────────────────────────────────────────────────────────
-faster-whisper>=1.0.0    # CTranslate2-backed Whisper for VRAM-efficient audio
+faster-whisper>=1.0.0    # CTranslate2-backed Whisper for CPU-efficient audio
