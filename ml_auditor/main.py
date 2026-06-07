@@ -624,7 +624,13 @@ async def search_vectors(payload: VectorPayload) -> SearchResult:
     )
 
 
+@app.get("/")
+async def root():
+    """Root liveness probe for HF Spaces health checks."""
+    return {"status": "ok", "node": "ML Auditor v2"}
+
+
 # ──────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8004)
+    uvicorn.run(app, host="0.0.0.0", port=7860)
