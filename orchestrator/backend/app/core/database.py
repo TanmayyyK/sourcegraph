@@ -32,11 +32,10 @@ engine = create_async_engine(
     max_overflow=10,
     pool_recycle=3600,
     pool_pre_ping=True,
-    # asyncpg-specific: raise immediately instead of blocking forever
+    # asyncpg-specific: disable prepared statements entirely for PgBouncer compatibility
+    prepared_statement_cache_size=0,
     connect_args={
-        "command_timeout": 10, 
-        "statement_cache_size": 0,
-        "prepared_statement_name_func": lambda: f"stmt_{uuid.uuid4()}"
+        "command_timeout": 10,
     },
 )
 
