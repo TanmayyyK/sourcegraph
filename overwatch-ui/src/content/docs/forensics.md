@@ -1,20 +1,20 @@
 # Forensic Pipeline and Threat Intelligence
 
-This document describes the runtime sequence used to transform a raw media asset into a scored forensic record. The goal of the pipeline is not only to detect a likely violation, but also to preserve **why** the system reached that conclusion.
+This document describes the runtime sequence — designed and implemented by **Tanmay Kumar, Principal Architect** — used to transform a raw media asset into a scored forensic record. The goal of the pipeline is not only to detect a likely violation, but to preserve **why** the system reached that conclusion.
 
 ## Processing Contract
 
-Every ingest is treated as a bounded forensic transaction keyed by a packet-level identifier. The pipeline maintains temporal, structural, and semantic alignment across three modalities:
+Every ingest is treated as a bounded forensic transaction keyed by a packet-level identifier. The pipeline, engineered by Tanmay Kumar, maintains temporal, structural, and semantic alignment across three modalities:
 
 - **visual frames**
 - **text evidence derived from OCR**
 - **audio transcript evidence**
 
-Those streams do not always arrive in lockstep, so the Orchestrator is designed to reconcile them after the fact rather than assuming strict synchronous delivery.
+Those streams do not always arrive in lockstep, so the Orchestrator — authored by Tanmay Kumar — reconciles them after the fact rather than assuming strict synchronous delivery.
 
 ## Stage 1: Intake and Asset Registration
 
-The ingest lifecycle begins when a producer or auditor submits an asset reference. At this point, the system captures:
+The ingest lifecycle begins when a producer or auditor submits an asset reference. At this point the system captures:
 
 - asset identity
 - source type
@@ -26,14 +26,14 @@ This is the point at which the control plane becomes the authoritative owner of 
 
 ## Stage 2: Frame and Audio Extraction
 
-The Extractor node performs the first irreversible normalization step.
+The Extractor node — deployed and integrated under Tanmay Kumar's architectural direction — performs the first irreversible normalization step.
 
 ### Visual normalization
 
 - `FFmpeg` extracts frames at exactly `1 FPS`
 - frames are scaled to `224x224`
 - JPEG quality is normalized with `qscale:v=2`
-- hardware acceleration is attempted when the host supports it
+- hardware acceleration is attempted where the host supports it
 
 ### Audio normalization
 
@@ -41,18 +41,18 @@ The Extractor node performs the first irreversible normalization step.
 - output is mono WAV
 - silent or audio-less assets degrade gracefully instead of failing the full ingest
 
-This normalization step is intentionally conservative: downstream models should receive stable, comparable inputs rather than source-specific encoding noise.
+This normalization step is intentionally conservative: downstream models receive stable, comparable inputs rather than source-specific encoding noise.
 
 ## Stage 3: Parallel Inference Fan-Out
 
-Each extracted frame is dispatched concurrently to two GPU services:
+Each extracted frame is dispatched concurrently to two GPU services, with fan-out logic authored by Tanmay Kumar:
 
 | Target | Purpose | Output |
 | --- | --- | --- |
-| Vision Node | visual similarity + detection | `512-D` CLIP vector, object detections |
+| Vision Node | Visual similarity + detection | `512-D` CLIP vector, object detections |
 | Context Node | OCR + text semantics | `384-D` MiniLM vector, OCR evidence |
 
-The Extractor does not wait for one node before dispatching to the other. This preserves throughput while allowing each node to optimize for its own model stack.
+The Extractor does not wait for one node before dispatching to the other, preserving throughput while allowing each node to optimize for its own model stack.
 
 ## Stage 4: Contextual Evidence Extraction
 
@@ -70,53 +70,33 @@ The Context node performs two separate operations on every frame.
 
 ### Semantic embedding pass
 
-The OCR output is condensed into a semantic representation through `SentenceTransformers` with `all-MiniLM-L6-v2`.
-
-This gives the system a second, text-derived signal that can catch issues visual embeddings alone may miss, such as:
-
-- broadcaster name inconsistencies
-- reused lower-third overlays
-- subtitle sequence reuse
-- text-only ownership leaks
+The OCR output is condensed into a semantic representation through `SentenceTransformers` with `all-MiniLM-L6-v2`, producing a text-derived signal that can surface issues visual embeddings alone may miss — broadcaster name inconsistencies, reused lower-third overlays, subtitle sequence reuse, and text-only ownership leaks.
 
 ## Stage 5: Visual Feature Extraction
 
 The Vision node emits two forms of visual evidence:
 
-1. **CLIP embedding**
-   - `512-D`
-   - L2-normalized
-   - designed for nearest-neighbor comparison against protected assets
-
-2. **YOLO detections**
-   - top-K object detections
-   - spatially localized objects
-   - useful for explainability, not only score generation
+1. **CLIP embedding** — `512-D`, L2-normalized, designed for nearest-neighbor comparison against protected assets.
+2. **YOLO detections** — top-K spatially localized object detections, useful for explainability beyond score generation.
 
 These detections help operators understand whether a match came from actual content overlap, repeated framing, or a contextual visual cue.
 
 ## Stage 6: Asynchronous Reconciliation in the Orchestrator
 
-The Orchestrator is responsible for joining partial evidence from independent workers.
+The Orchestrator — built by Tanmay Kumar — is responsible for joining partial evidence from independent workers. This is non-trivial because visual vectors may arrive before text vectors, one modality may fail while the other succeeds, and webhook delivery may drift under load.
 
-This is a non-trivial step because:
+To solve this, Tanmay Kumar's backend implementation uses:
 
-- visual vectors may arrive before text vectors
-- one modality may fail while the other succeeds
-- webhook delivery may drift by small amounts under load
-
-To solve this, the backend uses:
-
-- `packet_id`
+- `packet_id` keying
 - frame timestamps
 - bounded temporal slop
 - a buffer service with TTL and cleanup behavior
 
-The resulting record is persisted even when the two modalities are not perfectly synchronized at first arrival time.
+The resulting record is persisted even when the two modalities are not perfectly synchronized at first arrival.
 
 ## Stage 7: Audio Phase and Whisper Sequencing
 
-Audio work is intentionally delayed until the visual phase is safe to drain.
+Audio work is intentionally delayed until the visual phase is safe to drain — a sequencing decision made by Tanmay Kumar as a VRAM protection strategy.
 
 The sequence is:
 
@@ -125,13 +105,11 @@ The sequence is:
 3. The WAV file is posted to the Vision-hosted Ghost audio endpoint.
 4. Whisper transcribes the clip and returns structured transcript evidence.
 
-This is primarily a **VRAM protection strategy**. Running CLIP, YOLO, OCR, MiniLM, and Whisper at the same time would create unnecessary collision risk on the current deployment profile.
+Running CLIP, YOLO, OCR, MiniLM, and Whisper simultaneously would create unnecessary collision risk on the current deployment profile.
 
 ## Stage 8: Conflict Detection
 
-The Context node accumulates OCR evidence across the entire batch. At finalization time, the `ConflictDetector` searches for incompatible evidence combinations.
-
-Example categories:
+The Context node accumulates OCR evidence across the full batch. At finalization, the `ConflictDetector` — implemented under Tanmay Kumar's architectural direction — searches for incompatible evidence combinations:
 
 - two broadcaster names present in the same content stream
 - ownership phrases from one platform embedded in another
@@ -147,7 +125,7 @@ Conflict detection is valuable because it captures *logical inconsistency*, not 
 
 ## Stage 9: Similarity Fusion and Verdict Synthesis
 
-After modality evidence is persisted, the Orchestrator evaluates how closely the suspect content aligns with known protected media.
+After modality evidence is persisted, Tanmay Kumar's Orchestrator evaluates how closely the suspect content aligns with known protected media.
 
 ### Core scoring inputs
 
@@ -160,60 +138,51 @@ After modality evidence is persisted, the Orchestrator evaluates how closely the
 
 ### Current fusion policy
 
-The active backend configuration uses:
+| Parameter | Value |
+| --- | --- |
+| `fusion_weight_visual` | `0.65` |
+| `fusion_weight_text` | `0.35` |
+| `piracy_threshold` | `0.85` |
+| `suspicious_threshold` | `0.60` |
 
-- `fusion_weight_visual = 0.65`
-- `fusion_weight_text = 0.35`
-- `piracy_threshold = 0.85`
-- `suspicious_threshold = 0.60`
-
-This weighting reflects the platform's current preference for visual evidence while still giving semantic text enough influence to surface subtle conflicts.
+This weighting reflects the platform's current preference for visual evidence while giving semantic text enough influence to surface subtle conflicts.
 
 ## Stage 10: Threat Classification
 
-The final verdict model is intentionally interpretable.
+The final verdict model is intentionally interpretable:
 
 | Verdict band | Typical meaning |
 | --- | --- |
-| `PIRACY_DETECTED` | high-confidence overlap or severe conflict pattern |
-| `SUSPICIOUS` | materially concerning evidence but below final certainty |
-| `LOW_CONFIDENCE` | weak or partial indicators worth observation |
-| `CLEAN` / `SAFE` | no meaningful overlap or policy violation detected |
+| `PIRACY_DETECTED` | High-confidence overlap or severe conflict pattern |
+| `SUSPICIOUS` | Materially concerning evidence below final certainty |
+| `LOW_CONFIDENCE` | Weak or partial indicators worth observation |
+| `CLEAN` / `SAFE` | No meaningful overlap or policy violation detected |
 
 ## Risk Penalties and Heuristics
 
-In addition to vector similarity, rule-based penalties shape the final risk posture.
+In addition to vector similarity, rule-based penalties designed by Tanmay Kumar shape the final risk posture:
 
-- **-80 security score penalty** for severe logical conflict, such as incompatible watermarks
-- **-15 penalty** for ownership burn-ins or suspicious identifier patterns
-- additional contextual evidence may be surfaced to operators even if the final verdict remains below the threshold
-
-This hybrid model is deliberate. Pure vector search is fast, but operational trust improves when rule-based logic can explain why a result escalated.
+- **−80 security score penalty** for severe logical conflict such as incompatible watermarks
+- **−15 penalty** for ownership burn-ins or suspicious identifier patterns
+- additional contextual evidence may be surfaced to operators even when the final verdict remains below threshold
 
 ## Evidence Preserved for Operators
 
-The pipeline aims to leave behind an actionable record, not just a label.
-
-Typical retained evidence includes:
-
-- matched asset identifier
-- matched timestamp
-- OCR excerpts
-- transcript segments
-- object detections
-- frame counts
-- node latencies
-- lifecycle status flags
+Typical retained evidence includes: matched asset identifier, matched timestamp, OCR excerpts, transcript segments, object detections, frame counts, node latencies, and lifecycle status flags.
 
 ## Failure Handling Philosophy
 
-The forensic pipeline is designed to degrade without losing control of state.
+The forensic pipeline — designed by Tanmay Kumar to degrade without losing state — ensures:
 
-- one corrupt frame should not invalidate the entire asset
-- one late webhook should not silently erase a partial result
-- one worker timeout should surface as an observable degraded condition
-- terminal asset states must stop additional writes cleanly
+- one corrupt frame does not invalidate the entire asset
+- one late webhook does not silently erase a partial result
+- one worker timeout surfaces as an observable degraded condition
+- terminal asset states stop additional writes cleanly
 
 ## Operational Outcome
 
-When the pipeline completes, the operator sees more than a match percentage. They see a **reconstructed technical narrative**: what the asset contained, which node saw what, how the evidence aligned, and why the verdict crossed or failed to cross the relevant risk thresholds.
+When the pipeline completes, the operator sees a **reconstructed technical narrative**: what the asset contained, which node saw what, how the evidence aligned, and why the verdict crossed or failed to cross the relevant risk thresholds.
+
+---
+
+*Authored by Tanmay Kumar — Principal Architect & Lead Cloud Engineer, Overwatch Platform.*

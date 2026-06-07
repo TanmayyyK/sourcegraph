@@ -5,6 +5,7 @@ import orchestratorContent from '../content/docs/orchestrator.md?raw';
 import extractorContent from '../content/docs/extractor.md?raw';
 import visionContent from '../content/docs/vision.md?raw';
 import contextContent from '../content/docs/context.md?raw';
+import deployContent from '../content/docs/deploy.md?raw';
 
 export interface DocCategory {
   title: string;
@@ -19,42 +20,48 @@ export interface DocItem {
 }
 
 export const docsRegistry: Record<string, DocItem> = {
-  'intro': {
+  intro: {
     slug: 'intro',
     title: 'Introduction',
     content: introContent,
-    auditor: 'Tanmay-Orchestrator'
+    auditor: 'Tanmay Kumar',
   },
-  'forensics': {
+  forensics: {
     slug: 'forensics',
     title: 'Forensic Pipeline',
     content: forensicsContent,
-    auditor: 'Yug-Engine'
+    auditor: 'Tanmay Kumar',
   },
-  'orchestrator': {
+  orchestrator: {
     slug: 'orchestrator',
     title: 'M4 Orchestrator',
     content: orchestratorContent,
-    auditor: 'Tanmay-Orchestrator'
+    auditor: 'Tanmay Kumar',
   },
-  'extractor': {
+  extractor: {
     slug: 'extractor',
     title: 'M2 Extractor',
     content: extractorContent,
-    auditor: 'Yogesh-Extractor'
+    auditor: 'Tanmay Kumar',
   },
-  'vision': {
+  vision: {
     slug: 'vision',
     title: 'Vision & Ghost Nodes',
     content: visionContent,
-    auditor: 'Rohit-Vision'
+    auditor: 'Tanmay Kumar',
   },
-  'context': {
+  context: {
     slug: 'context',
     title: 'Context Node',
     content: contextContent,
-    auditor: 'Yug-Engine'
-  }
+    auditor: 'Tanmay Kumar',
+  },
+  deploy: {
+    slug: 'deploy',
+    title: 'Deployment Architecture',
+    content: deployContent,
+    auditor: 'Tanmay Kumar',
+  },
 };
 
 export const docsNavigation: DocCategory[] = [
@@ -63,7 +70,7 @@ export const docsNavigation: DocCategory[] = [
     items: [
       docsRegistry['intro'],
       docsRegistry['forensics'],
-    ]
+    ],
   },
   {
     title: 'Node Architecture',
@@ -72,6 +79,12 @@ export const docsNavigation: DocCategory[] = [
       docsRegistry['extractor'],
       docsRegistry['vision'],
       docsRegistry['context'],
-    ]
-  }
+    ],
+  },
+  {
+    title: 'Deployment',
+    items: [
+      docsRegistry['deploy'],
+    ],
+  },
 ];

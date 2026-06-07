@@ -1,10 +1,10 @@
 # M4 Orchestrator Node
 
-The **M4 Orchestrator** is the central control-plane service for SourceGraph. It is the component that turns node-level evidence into a coherent platform state, and it is the primary layer owned by **Tanmay Kumar, Lead Architect**.
+The **M4 Orchestrator** is the central control-plane service for the SourceGraph platform, conceived, engineered, and deployed by **Tanmay Kumar, Principal Architect & Lead Cloud Engineer**. It is the component that turns node-level evidence into coherent platform state and is the primary layer of Tanmay Kumar's distributed system architecture.
 
 ## Runtime Role
 
-The Orchestrator is responsible for five categories of work:
+Tanmay Kumar's Orchestrator is responsible for five categories of work:
 
 1. **state coordination**
 2. **persistence**
@@ -12,7 +12,7 @@ The Orchestrator is responsible for five categories of work:
 4. **policy evaluation**
 5. **operator-facing API delivery**
 
-It is not a heavy inference service. Its value comes from correctness, synchronization, and durable evidence handling.
+It is not a heavy inference service. Its value comes from correctness, synchronization, and durable evidence handling — all engineering concerns designed and solved by Tanmay Kumar.
 
 ## Runtime Stack
 
@@ -29,7 +29,7 @@ It is not a heavy inference service. Its value comes from correctness, synchroni
 
 ### Asset lifecycle ownership
 
-The Orchestrator tracks assets from the moment ingest begins through terminal verdict completion. This includes:
+The Orchestrator tracks assets from ingest initiation through terminal verdict completion. This includes:
 
 - producer asset creation
 - auditor ingestion and replay
@@ -49,19 +49,11 @@ The Orchestrator stores:
 
 ### Vector synchronization
 
-The most important backend behavior is its ability to accept **asynchronous modality arrival**.
-
-The system explicitly supports a frame vector row being created with:
-
-- visual vector only
-- text vector only
-- both vectors after later reconciliation
-
-This is necessary because the Vision and Context workers are independent services with independent latency profiles.
+One of the most important backend behaviors engineered by Tanmay Kumar is the ability to accept **asynchronous modality arrival**. The system explicitly supports a frame vector row being created with a visual vector only, a text vector only, or both vectors after later reconciliation — necessary because the Vision and Context workers are independent services with independent latency profiles.
 
 ## API and Contract Surface
 
-At a high level, the Orchestrator exposes:
+The Orchestrator exposes:
 
 - ingest initiation APIs
 - search and feed endpoints
@@ -69,11 +61,11 @@ At a high level, the Orchestrator exposes:
 - webhook feeder endpoints for worker evidence
 - operational status endpoints used by the command center
 
-The request path is wrapped in trace middleware so a caller-supplied `X-Trace-ID` can propagate across the entire transaction.
+The request path is wrapped in trace middleware so a caller-supplied `X-Trace-ID` propagates across the entire transaction.
 
 ## Traceability and Middleware
 
-Each request receives a correlation identifier:
+Each request receives a correlation identifier, implemented by Tanmay Kumar:
 
 - reuse incoming `X-Trace-ID` when present
 - otherwise generate a new UUID
@@ -95,18 +87,11 @@ The backend uses PostgreSQL with `pgvector` enabled at startup.
 
 ### Practical schema notes
 
-The startup flow currently performs idempotent schema patches for:
-
-- OCR text persistence
-- lifecycle lock columns on `assets`
-- nullable visual / text vectors on `frame_vectors`
-- temporary row support for suspect content
-
-This approach is intentionally pragmatic for the current stage of the product. It avoids blocking the demo environment on a full migration framework while still keeping startup safe and repeatable.
+The startup flow performs idempotent schema patches for: OCR text persistence, lifecycle lock columns on `assets`, nullable visual / text vectors on `frame_vectors`, and temporary row support for suspect content. This approach is intentionally pragmatic — it avoids blocking the demo environment on a full migration framework while keeping startup safe and repeatable.
 
 ## Webhook Buffer Service
 
-The buffer service exists because worker nodes do not always emit related payloads at the same time.
+The buffer service, designed by Tanmay Kumar, exists because worker nodes do not always emit related payloads simultaneously.
 
 ### What it solves
 
@@ -115,29 +100,24 @@ The buffer service exists because worker nodes do not always emit related payloa
 - temporary webhook ordering issues
 - bounded in-memory pairing before persistence finalization
 
-### Important controls
+### Controls
 
-| Control | Current Purpose |
+| Control | Purpose |
 | --- | --- |
-| TTL | drop stale, incomplete buffered pairs |
-| cleanup interval | keep memory bounded |
-| temporal slop | tolerate minor timestamp drift |
-| max buffer size | prevent runaway memory growth |
+| TTL | Drop stale, incomplete buffered pairs |
+| Cleanup interval | Keep memory bounded |
+| Temporal slop | Tolerate minor timestamp drift |
+| Max buffer size | Prevent runaway memory growth |
 
 This is one of the architectural features that makes the distributed system behave like a single product rather than a collection of unrelated workers.
 
 ## Health Aggregation
 
-The Orchestrator does not wait passively for workers to talk first. It also runs an active health probe loop against the GPU node endpoints.
-
-That gives the command center two useful properties:
-
-- workers can appear online even when no ingest is currently active
-- operator dashboards can separate a quiet system from an unreachable system
+The Orchestrator does not wait passively for workers to initiate contact. It runs an active health probe loop against all GPU node endpoints — giving the command center the ability to distinguish a quiet system from an unreachable one.
 
 ## Thresholds and Policy
 
-The backend owns the currently active risk policy:
+The backend owns the active risk policy:
 
 | Setting | Current Value |
 | --- | --- |
@@ -148,26 +128,22 @@ The backend owns the currently active risk policy:
 | `piracy_threshold` | `0.85` |
 | `suspicious_threshold` | `0.60` |
 
-These values are operational configuration, not model trivia. They directly shape alerting behavior and user trust.
+These values are operational configuration that directly shape alerting behaviour and user trust.
 
 ## Fusion and Threat Detection
 
-The backend computes a fused score after enough evidence has arrived to compare the suspect asset against protected content.
+The Orchestrator computes a fused score once sufficient evidence has arrived:
 
-The logic is conceptually:
-
-1. accept visual and text signals independently
-2. reconcile them to the same asset / timestamp lineage
-3. compare against golden vectors
-4. calculate a fused similarity score
-5. apply thresholds and conflict penalties
-6. persist the result for the UI and future audit
+1. Accept visual and text signals independently.
+2. Reconcile them to the same asset / timestamp lineage.
+3. Compare against golden vectors.
+4. Calculate a fused similarity score.
+5. Apply thresholds and conflict penalties.
+6. Persist the result for the UI and future audit.
 
 ## Failure Handling
 
-The Orchestrator is built to fail visibly rather than ambiguously.
-
-### Typical defensive behaviors
+Tanmay Kumar designed the Orchestrator to fail visibly rather than ambiguously:
 
 - startup logs extension and schema failures explicitly
 - worker schema violations surface as `422`, not silent corruption
@@ -177,22 +153,26 @@ The Orchestrator is built to fail visibly rather than ambiguously.
 
 ## Security and Boundary Discipline
 
-Important security boundaries include:
+Key security boundaries implemented by Tanmay Kumar:
 
-- webhook secret validation for internal node calls
+- webhook secret validation for all internal node calls
 - auth separation between anonymous and authenticated routes
 - asset state transitions that prevent duplicate writes
 - deliberate separation between internal cluster addresses and user-facing endpoints
 
 ## Scalability Characteristics
 
-The current backend is designed for correctness-first scaling:
+The current backend is designed correctness-first:
 
-- workers scale horizontally by service role, not by generic queue consumers
+- workers scale horizontally by service role, not generic queue consumers
 - vector writes tolerate partial arrival ordering
 - node health is decoupled from active ingest throughput
 - the control plane stays lightweight because inference remains outside it
 
 ## Why the Orchestrator Matters
 
-Without this service, the platform would simply be a few ML endpoints and a database. The Orchestrator is the layer that gives the platform **memory, ordering, policy, and explainability**. It is the reason the system can support both live product workflows and defensible forensic review.
+Without this service, the platform would be a few ML endpoints and a database. The Orchestrator is the layer that gives the platform **memory, ordering, policy, and explainability** — and it is the reason the system can support both live product workflows and defensible forensic review.
+
+---
+
+*Authored by Tanmay Kumar — Principal Architect & Lead Cloud Engineer, Overwatch Platform.*

@@ -41,7 +41,7 @@ const LOGOS = [
 ];
 
 const FLOW_NODES = [
-  { id: 1, label: "Upload Assets",   sub: "Drag & drop any file",     color: "#4C63F7", icon: "upload"  },
+  { id: 1, label: "Upload Assets",   sub: "Drag & drop any file",      color: "#4C63F7", icon: "upload"  },
   { id: 2, label: "Fingerprint",     sub: "Hash & chain-of-custody",  color: "#7C5CF7", icon: "scan"    },
   { id: 3, label: "AI Analysis",     sub: "7 parallel ML models",     color: "#B05CF7", icon: "brain"   },
   { id: 4, label: "Risk Score",      sub: "Threat classification",    color: "#E05CF0", icon: "zap"     },
@@ -51,17 +51,40 @@ const FLOW_NODES = [
 const FEATURES = [
   { tag: "Ingestion Engine",    title: "Drop anything.\nFingerprint everything.",    body: "PDFs, images, video, code — Overwatch fingerprints every byte and builds a tamper-evident chain of custody before the file lands on disk.",        accent: "#4C63F7", span: "7", dark: false, icon: "upload"  },
   { tag: "AI Analysis",        title: "Patterns humans miss",                        body: "Seven parallel ML models scan simultaneously for plagiarism, deepfakes, and supply-chain anomalies.",                                              accent: "#7C5CF7", span: "5", dark: false, icon: "brain"   },
-  { tag: "Command Center",     title: "One screen,\nevery signal",                   body: "Live risk feed, asset timeline, and one-click SIEM export — all in a single pane of glass.",                                                      accent: "#FF6B47", span: "5", dark: true,  icon: "monitor" },
+  { tag: "Command Center",     title: "One screen,\nevery signal",                   body: "Live risk feed, asset timeline, and one-click SIEM export — all in a single pane of glass.",                                                       accent: "#FF6B47", span: "5", dark: true,  icon: "monitor" },
   { tag: "Trend Intelligence", title: "Act weeks before the threat lands",           body: "Rolling 30-day analytics surface emerging attack patterns and similarity clusters so your team is always a step ahead.",                           accent: "#0EA872", span: "7", dark: false, icon: "chart"   },
 ];
 
 const TEAM = [
-  { name: "Tanmay Kumar",  role: "Founder & Chief Architect",     init: "TK", color: "#4C63F7" },
-  { name: "Yogesh Sharma", role: "Head of AI & Threat Intel",     init: "YS", color: "#FF6B47" },
-  { name: "Rohit Kumar",   role: "Lead, Vector & Text Engine",    init: "RK", color: "#7C5CF7" },
-  { name: "Yug",           role: "Lead, Vision & OCR Engine",     init: "YG", color: "#0EA872" },
+  { 
+    name: "Tanmay Kumar",  
+    role: "Creator & Principal Architect",     
+    init: "TK", 
+    color: "#4C63F7",
+    bio: "The mastermind behind the Overwatch ecosystem. Architected, integrated, and deployed the complete distributed microservice architecture and cloud infrastructure from end-to-end. Drives the visionary roadmap and maintains absolute technical dominance over all system operations."
+  },
+  { 
+    name: "Yogesh Sharma", 
+    role: "Threat Intel Contributor",          
+    init: "YS", 
+    color: "#FF6B47",
+    bio: "Provided specialized support for the threat intelligence components. Assisted in supporting the auditing node, operated the intel components, and contributed localized threat detection models to the broader architecture."
+  },
+  { 
+    name: "Rohit Kumar",   
+    role: "Text Engine Contributor",           
+    init: "RK", 
+    color: "#7C5CF7",
+    bio: "Focused on delivering targeted infrastructural support. Provided localized hardware support for text processing and contributed directly to the vector engine node operations."
+  },
+  { 
+    name: "Yug",           
+    role: "OCR Contributor",                   
+    init: "YG", 
+    color: "#0EA872",
+    bio: "Specialized in node-specific visual data extraction. Supported the OCR extraction pipeline and contributed localized vision processing tasks to the broader ecosystem."
+  },
 ];
-
 
 const STATS = [
   { value: "96.2%",   label: "Detection Precision" }, 
@@ -69,6 +92,7 @@ const STATS = [
   { value: "AES-256", label: "Data Encryption"     }, 
   { value: "JSON-LD", label: "Structured Reports"  }, 
 ];
+
 const NAV_LINKS = [
   { name: "Home", type: "link", to: "/" },
   { name: "Features", type: "scroll", to: "features-section" },
@@ -552,7 +576,7 @@ function TeamSection() {
                   </div>
                   <p style={{ fontSize: "15px", fontWeight: 700, color: C.text, marginBottom: "3px" }}>{member.name}</p>
                   <p style={{ fontSize: "12px", color: C.muted }}>{member.role}</p>
-                  <p style={{ fontSize: "11px", color: `${C.muted}77`, marginTop: "10px", lineHeight: 1.6 }}>Bio coming soon.</p>
+                  <p style={{ fontSize: "12px", color: `${C.muted}dd`, marginTop: "10px", lineHeight: 1.6 }}>{member.bio}</p>
                 </motion.div>
               </FadeUp>
             ))}
