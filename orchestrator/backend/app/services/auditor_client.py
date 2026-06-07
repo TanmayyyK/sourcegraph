@@ -5,11 +5,28 @@ from uuid import UUID
 from sqlalchemy import delete, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.config import settings
 from app.models.db_models import AudioSegment, FrameVector, SimilarityResult
 
 logger = logging.getLogger("sourcegraph.auditor_client")
 
-AUDITOR_URL = "http://localhost:8004/api/v1/auditor"
+
+def _resolve_auditor_base(url: str) -> str:
+    """
+    Normalise AUDITOR_URL from Render env.
+
+    Accepts either:
+      • Base Space URL     → https://<user>-<space>.hf.space
+      • Full API base      → https://<user>-<space>.hf.space/api/v1/auditor
+    """
+    base = url.strip().rstrip("/")
+    if base.endswith("/api/v1/auditor"):
+        return base
+    return f"{base}/api/v1/auditor"
+
+
+AUDITOR_URL = _resolve_auditor_base(settings.auditor_url)
+logger.info("[AUDITOR] Resolved endpoint base: %s", AUDITOR_URL)
 
 
 def _uuid_or_none(value: object) -> UUID | None:
@@ -87,16 +104,20 @@ async def process_asset_with_auditor(asset_id: UUID, is_golden: bool, db: AsyncS
         # 2. Communicate with Auditor microservice.
         # Golden assets are indexed into FAISS; suspect assets search FAISS and
         # persist only the verdict/result row in Postgres.
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(follow_redirects=True) as client:
             if is_golden:
-                logger.info(f"[AUDITOR] Sending golden asset {asset_id} to /index endpoint. trace={trace_id}")
-                resp = await client.post(f"{AUDITOR_URL}/index", json=payload, timeout=30.0)
+                logger.info(
+                    f"[AUDITOR] Sending golden asset {asset_id} to {AUDITOR_URL}/index trace={trace_id}"
+                )
+                resp = await client.post(f"{AUDITOR_URL}/index", json=payload, timeout=60.0)
                 resp.raise_for_status()
                 logger.info(f"[AUDITOR] Golden asset {asset_id} indexed successfully.")
                 return True
             else:
-                logger.info(f"[AUDITOR] Sending suspect asset {asset_id} to /search endpoint. trace={trace_id}")
-                resp = await client.post(f"{AUDITOR_URL}/search", json=payload, timeout=30.0)
+                logger.info(
+                    f"[AUDITOR] Sending suspect asset {asset_id} to {AUDITOR_URL}/search trace={trace_id}"
+                )
+                resp = await client.post(f"{AUDITOR_URL}/search", json=payload, timeout=60.0)
                 resp.raise_for_status()
 
                 search_data = resp.json()

@@ -94,6 +94,7 @@ from typing import Any
 
 import httpx
 import psutil
+import struct
 import uvicorn
 from dotenv import load_dotenv
 from fastapi import BackgroundTasks, FastAPI, Form, HTTPException, UploadFile, File
@@ -183,6 +184,7 @@ VISION_HEALTH_URL:  str = f"{VISION_NODE_BASE}/health"
 # The Extractor dispatches the raw audio track here AFTER both GPU nodes have
 # confirmed idle so CLIP/YOLO and Whisper never co-exist in VRAM.
 VISION_AUDIO_URL:   str = f"{VISION_NODE_BASE}/embed/audio"
+AUDIO_POST_TIMEOUT_S: float = float(os.getenv("AUDIO_POST_TIMEOUT_S", "30"))
 
 CONTEXT_EMBED_URL:   str = f"{CONTEXT_NODE_BASE}/embed/text"
 CONTEXT_FINISH_URL:  str = f"{CONTEXT_NODE_BASE}/embed/text/finish"
@@ -731,6 +733,33 @@ def _extract_audio_ffmpeg(video_path: Path, audio_path: Path) -> bool:
     return True
 
 
+def _minimal_empty_wav() -> bytes:
+    """Smallest valid 16 kHz mono PCM WAV — zero audio samples (Whisper stub)."""
+    sample_rate = 16000
+    num_channels = 1
+    bits_per_sample = 16
+    byte_rate = sample_rate * num_channels * bits_per_sample // 8
+    block_align = num_channels * bits_per_sample // 8
+    data_size = 0
+    fmt_chunk_size = 16
+    riff_size = 4 + 8 + fmt_chunk_size + 8 + data_size
+    return (
+        struct.pack("<4sI4s", b"RIFF", riff_size, b"WAVE")
+        + struct.pack(
+            "<4sIHHIIHH",
+            b"fmt ",
+            fmt_chunk_size,
+            1,
+            num_channels,
+            sample_rate,
+            byte_rate,
+            block_align,
+            bits_per_sample,
+        )
+        + struct.pack("<4sI", b"data", data_size)
+    )
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # VIDEO DOWNLOAD  (FIX-4: unauthenticated client)
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1116,15 +1145,55 @@ async def _run_pipeline_inner(
         if not idle_confirmed:
             logger.critical(
                 "🚫 [AudioPhase] GPU idle handshake was not confirmed — "
-                "using stub audio summary."
+                "continuing with empty dummy WAV."
             )
 
-        # ── 6. Audio Phase (STUB) — empty summary, Whisper bypassed ───────────
-        # Preserves execution order: audio_final_summary → pipeline_final_summary
-        logger.info("🔇 [AudioPhase] Stub mode — dispatching empty audio summary")
-        await _webhook_audio_final_summary_stub(packet_id)
+        # ── 6. Audio Phase — same path as before, empty WAV when no real audio ─
+        audio_path = tmp_dir / "audio.wav"
+        audio_ok: bool = await loop.run_in_executor(
+            None, _extract_audio_ffmpeg, video_path, audio_path
+        )
 
-        # pipeline_final_summary fires AFTER stub audio summary
+        audio_bytes = _minimal_empty_wav()
+        if audio_ok:
+            logger.info(
+                "🔇 [AudioPhase] Track extracted — dispatching empty dummy WAV "
+                "(Whisper bypassed) → %s  packet_id=%s",
+                VISION_AUDIO_URL, packet_id,
+            )
+        else:
+            logger.info(
+                "🔇 [AudioPhase] No audio track — dispatching empty dummy WAV → %s  packet_id=%s",
+                VISION_AUDIO_URL, packet_id,
+            )
+
+        audio_ok_post, audio_abort, audio_detail = await _post(
+            "Vision/Audio",
+            VISION_AUDIO_URL,
+            files={"audio": ("audio.wav", audio_bytes, "audio/wav")},
+            data={"packet_id": packet_id},
+            timeout=AUDIO_POST_TIMEOUT_S,
+        )
+
+        if audio_ok_post:
+            logger.info(
+                "✅ [AudioPhase] Vision Node confirmed audio phase complete. detail=%s",
+                audio_detail,
+            )
+        elif audio_abort:
+            logger.error(
+                "🔴 [AudioPhase] Vision Node returned 409 — fallback stub summary. detail=%s",
+                audio_detail,
+            )
+            await _webhook_audio_final_summary_stub(packet_id)
+        else:
+            logger.warning(
+                "⚠  [AudioPhase] Vision audio request failed — fallback stub summary. detail=%s",
+                audio_detail,
+            )
+            await _webhook_audio_final_summary_stub(packet_id)
+
+        # pipeline_final_summary fires AFTER audio phase (Vision 200 or stub fallback)
         metrics = tracker.snapshot()
         logger.info("📊 Metrics snapshot: %s", metrics)
         await _webhook_pipeline_final_summary(packet_id, metrics)

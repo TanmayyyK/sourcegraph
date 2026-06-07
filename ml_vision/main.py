@@ -799,8 +799,8 @@ async def embed_audio(
     eliminating the 14-second race condition.
     """
     raw_bytes = await audio.read()
-    if not raw_bytes:
-        # Stub path — empty audio file; skip Whisper, close the audio barrier.
+    # Empty or header-only WAV → fast-path stub (no Whisper, no endless wait).
+    if not raw_bytes or len(raw_bytes) <= 128:
         payload = {
             "packet_id":   packet_id,
             "type":        "audio_final_summary",
