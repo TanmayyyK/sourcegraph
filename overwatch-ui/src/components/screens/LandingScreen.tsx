@@ -1,8 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Link } from "react-router-dom";
-import SystemStatusOverlay from "./SystemStatusOverlay";
-
 // ─── Colour tokens ────────────────────────────────────────────────────────────
 const C = {
   bg: "#F5F2EC",
@@ -722,7 +720,6 @@ export default function LandingScreen({ onLoginClick, onSignupClick }: { onLogin
       <TeamSection />
       <CtaSection onSignupClick={onSignupClick} />
       <Footer />
-      <SystemStatusOverlay />
     </div>
   );
 }
