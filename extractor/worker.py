@@ -1464,9 +1464,9 @@ async def pipeline_status(packet_id: str):
 # ─────────────────────────────────────────────────────────────────────────────
 if __name__ == "__main__":
     uvicorn.run(
-        "extractor_main:app",
+        "worker:app",
         host="0.0.0.0",
-        port=8003,
+        port=int(os.getenv("PORT", "7860")),
         reload=False,
         log_level="info",
     )
