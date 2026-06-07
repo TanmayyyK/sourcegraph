@@ -10,6 +10,7 @@ Pool parameters follow the architectural mandate:
 
 from __future__ import annotations
 
+import uuid
 from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import (
@@ -32,7 +33,11 @@ engine = create_async_engine(
     pool_recycle=3600,
     pool_pre_ping=True,
     # asyncpg-specific: raise immediately instead of blocking forever
-    connect_args={"command_timeout": 10},
+    connect_args={
+        "command_timeout": 10, 
+        "statement_cache_size": 0,
+        "prepared_statement_name_func": lambda: f"stmt_{uuid.uuid4()}"
+    },
 )
 
 # ── Session factory ─────────────────────────────────────────────────────

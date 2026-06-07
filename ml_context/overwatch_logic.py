@@ -83,10 +83,11 @@ class OverwatchNode:
         if self._easy_ocr is None or self._minilm is None:
             self._assert_memory()
             print("🔍 [Overwatch Node] Loading Visual & Embedding Phase engines...")
-            self._easy_ocr = easyocr.Reader(['en'], gpu=True)
-            self._minilm   = SentenceTransformer('all-MiniLM-L6-v2', device='cuda')
+            use_gpu = torch.cuda.is_available()
+            self._easy_ocr = easyocr.Reader(['en'], gpu=use_gpu)
+            self._minilm   = SentenceTransformer('all-MiniLM-L6-v2', device='cuda' if use_gpu else 'cpu')
             self.is_visual_phase_active = True
-            print("✅ [Overwatch Node] Visual Phase ready.")
+            print(f"✅ [Overwatch Node] Visual Phase ready (GPU: {use_gpu}).")
 
     def unload_visual_phase(self):
         """

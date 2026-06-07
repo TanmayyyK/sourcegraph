@@ -17,7 +17,7 @@ from uuid import UUID
 from typing import Any, Literal
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy import func, select
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from app.config import settings
 from app.core.auth import get_trace_id
@@ -48,6 +48,13 @@ NODE_LAST_SEEN = {
     "hermes": 0.0, 
     "orchestrator": time.time() 
 }
+
+# Dedicated secondary engine for health probes to bypass statement caching issues in PgBouncer
+health_engine = create_async_engine(
+    settings.database_url,
+    echo=False,
+    connect_args={"statement_cache_size": 0},
+)
 
 
 def _normalize_confidence_score(score: float | None) -> float:
@@ -116,7 +123,6 @@ async def heartbeat(req: HeartbeatRequest):
 )
 async def health_check(
     request: Request,
-    db: AsyncSession = Depends(get_db),
 ) -> HealthResponse:
     """Aggregate asset counts from PostgreSQL."""
     trace_id = get_trace_id(request)
@@ -125,13 +131,14 @@ async def health_check(
     NODE_LAST_SEEN["orchestrator"] = time.time()
 
     try:
-        total_result = await db.execute(select(func.count(Asset.id)))
-        total = total_result.scalar_one_or_none() or 0
+        async with health_engine.connect() as conn:
+            total_result = await conn.execute(select(func.count(Asset.id)))
+            total = total_result.scalar_one_or_none() or 0
 
-        golden_result = await db.execute(
-            select(func.count(Asset.id)).where(Asset.is_golden.is_(True))
-        )
-        golden = golden_result.scalar_one_or_none() or 0
+            golden_result = await conn.execute(
+                select(func.count(Asset.id)).where(Asset.is_golden.is_(True))
+            )
+            golden = golden_result.scalar_one_or_none() or 0
 
     except Exception as exc:
         logger.error(f"[FEED] Health check DB error: {exc} trace={trace_id}")
