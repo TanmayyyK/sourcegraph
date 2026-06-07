@@ -1,0 +1,5 @@
+
+# Test assets (binary — excluded from HF push)
+test_frame.jpg
+_sandbox_output/
+temp_processing/
