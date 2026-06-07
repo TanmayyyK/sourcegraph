@@ -35,6 +35,7 @@ engine = create_async_engine(
     connect_args={
         "command_timeout": 10,
         "statement_cache_size": 0,
+        "prepared_statement_cache_size": 0,
     },
 )
 
