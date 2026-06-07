@@ -86,8 +86,8 @@ def _send_smtp_email(to_email: str, subject: str, html_content: str) -> None:
     message.add_alternative(html_content, subtype="html")
 
     try:
-        with smtplib.SMTP(settings.smtp_host, settings.smtp_port, timeout=15) as server:
-            server.starttls()
+        # Use SMTP_SSL on port 465 to bypass Render's common 587 port block
+        with smtplib.SMTP_SSL(settings.smtp_host, 465, timeout=15) as server:
             server.login(settings.smtp_user, settings.smtp_password)
             server.send_message(message)
     except smtplib.SMTPAuthenticationError as exc:
