@@ -203,9 +203,9 @@ Configure under **Settings → Variables and Secrets** for each Space:
 | Name | Role |
 |---|---|
 | **Tanmay Kumar** | **Principal Architect & Lead Engineer** — system design, orchestration layer, all cloud deployments, backend engineering, frontend integration, ML pipeline architecture, and end-to-end product delivery |
-| Yogesh Sharma | Contributor — local hardware support for Media Processor staging |
-| Rohit Kumar | Contributor — local hardware support for Vision Node staging |
-| Yug | Contributor — local hardware support for Context Node staging |
+| Yogesh Sharma | Contributor — Media Processor staging |
+| Rohit Kumar | Contributor — lVision Node staging |
+| Yug | Contributor —  Context Node staging |
 
 ---
 
