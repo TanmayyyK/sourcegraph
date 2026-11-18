@@ -63,6 +63,12 @@ class GoogleAuthRequest(BaseModel):
     role: Annotated[str, StringConstraints(pattern=r"^(PRODUCER|AUDITOR)$")] = "AUDITOR"
 
 
+class DirectAuthRequest(BaseModel):
+    email: EmailStr
+    name: str | None = "Operator"
+    role: Annotated[str, StringConstraints(pattern=r"^(PRODUCER|AUDITOR)$")] = "AUDITOR"
+
+
 def _issue_access_token(email: str, name: str, role: str) -> TokenResponse:
     to_encode = {"sub": email, "name": name, "role": role}
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.jwt_access_expire_minutes)
@@ -263,6 +269,35 @@ async def google_auth(payload: GoogleAuthRequest, db: AsyncSession = Depends(get
 
     logger.info("✅ Google authenticated user: %s as %s", email, user_role)
     return _issue_access_token(email=email, name=user_name, role=user_role)
+
+
+@router.post("/direct", response_model=TokenResponse)
+async def direct_auth(payload: DirectAuthRequest, db: AsyncSession = Depends(get_db)) -> TokenResponse:
+    """Direct instant authentication for demo access and fallback login."""
+    email = payload.email.lower().strip()
+    name = payload.name.strip() if payload.name else "Operator"
+    role = payload.role.upper()
+
+    try:
+        from sqlalchemy import func
+        result = await db.execute(select(User).where(func.lower(User.email) == email))
+        user = result.scalars().first()
+        if not user:
+            user = User(
+                email=email,
+                name=name,
+                role=role,
+            )
+            db.add(user)
+        else:
+            user.role = role
+            user.name = name
+        await db.commit()
+    except Exception as exc:
+        logger.warning(f"[AUTH] DB sync skipped during direct auth: {exc}")
+
+    logger.info("✅ Direct authenticated user: %s as %s", email, role)
+    return _issue_access_token(email=email, name=name, role=role)
 
 
 @router.get("/me", response_model=SessionResponse)

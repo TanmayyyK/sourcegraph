@@ -171,6 +171,18 @@ export const authApi = {
     return result;
   },
 
+  directAuth: async (email: string, name: string, role: string) => {
+    const result = await apiFetch<{ access_token: string; role: string; name: string }>("/api/v1/auth/direct", {
+      method: "POST",
+      body: JSON.stringify({ email, name, role }),
+    });
+
+    if (result.ok && result.data.access_token) {
+      auth.setToken(result.data.access_token);
+    }
+    return result;
+  },
+
   me: async () => {
     return apiFetch<{ sub: string; name: string; role: string }>("/api/v1/auth/me", {
       method: "GET",

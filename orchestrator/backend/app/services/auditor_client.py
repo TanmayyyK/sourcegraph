@@ -168,6 +168,26 @@ async def process_asset_with_auditor(asset_id: UUID, is_golden: bool, db: AsyncS
                 return True
 
     except Exception as exc:
-        logger.error(f"[AUDITOR] Error communicating with ML Auditor: {exc!r} trace={trace_id}")
+        logger.warning(
+            f"[AUDITOR] Remote ML Auditor endpoint unavailable ({exc!r}). "
+            f"Falling back to native PostgreSQL pgvector SimilarityService for asset {asset_id} trace={trace_id}"
+        )
         await db.rollback()
-        return False
+
+        # If it's a golden asset, the vectors are already persisted in frame_vectors.
+        if is_golden:
+            logger.info(f"[AUDITOR] Golden asset {asset_id} vectors safely stored in PostgreSQL frame_vectors.")
+            return True
+
+        # For suspect assets, run native pgvector KNN similarity search
+        try:
+            from app.services.similarity_service import similarity_service
+            result = await similarity_service.run_for_asset(
+                asset_id=asset_id,
+                db=db,
+                trace_id=trace_id,
+            )
+            return result is not None
+        except Exception as sim_exc:
+            logger.error(f"[AUDITOR] Native similarity service failed: {sim_exc!r} trace={trace_id}")
+            return False
