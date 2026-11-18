@@ -12,6 +12,7 @@ GET /api/v1/assets/{id}/result — similarity result (non-golden only)
 
 from __future__ import annotations
 
+import os
 from uuid import UUID
 
 from typing import Any, Literal
@@ -169,6 +170,7 @@ async def health_check(
         tailscale_ip=settings.tailscale_ip,
         nodes=nodes_health,
         auditor_mode=settings.auditor_mode,
+        commit=os.getenv("RENDER_GIT_COMMIT", os.getenv("COMMIT_SHA", "dev"))[:7],
     )
 
 

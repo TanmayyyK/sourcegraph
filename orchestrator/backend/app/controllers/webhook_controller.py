@@ -431,6 +431,7 @@ async def _handle_frame_vision(
                 f"packet={payload.packet_id} ts={payload.timestamp} "
                 f"error={exc!r} trace={trace_id}"
             )
+            raise HTTPException(status_code=503, detail="Visual embedding could not be saved") from exc
 
 
 async def _handle_frame_text(
@@ -591,23 +592,16 @@ def _touch_node_heartbeat(source_node: str) -> None:
         NODE_LAST_SEEN[key] = time.time()
 
 
-def _dispatch_frame_vision(
+async def _dispatch_frame_vision(
     payload: FrameVisionPayload,
     trace_id: str,
 ) -> dict:
-    """
-    Fire-and-forget: schedule the DB write as a background task so the
-    HTTP response is returned immediately without blocking on I/O.
-    """
+    """Acknowledge the visual embedding after PostgreSQL commits it."""
     _touch_node_heartbeat(payload.source_node)
-
-    asyncio.create_task(
-        _handle_frame_vision(payload, trace_id),
-        name=f"frame_vision:{payload.packet_id}:{payload.timestamp}",
-    )
+    await _handle_frame_vision(payload, trace_id)
 
     logger.debug(
-        f"[{payload.source_node}] frame_vision queued: "
+        f"[{payload.source_node}] frame_vision stored: "
         f"packet={payload.packet_id} ts={payload.timestamp:.3f}s "
         f"node={payload.source_node} trace={trace_id}"
     )
@@ -1009,7 +1003,7 @@ async def feeder_ingest(
             return _dispatch_system_ping(payload, trace_id)
 
         case FrameVisionPayload():
-            return _dispatch_frame_vision(payload, trace_id)
+            return await _dispatch_frame_vision(payload, trace_id)
 
         case FrameTextPayload():
             return _dispatch_frame_text(payload, trace_id)

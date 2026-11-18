@@ -68,6 +68,7 @@ async def process_asset_with_auditor(
                     FrameVector.is_temporary.is_(is_temporary),
                 )
                 .order_by(FrameVector.timestamp)
+                .execution_options(populate_existing=True)
             )
             frames = result.scalars().all()
             paired_frames = sum(
@@ -81,11 +82,11 @@ async def process_asset_with_auditor(
                 await asyncio.sleep(1.0)
         else:
             if expected_frames is not None:
-                logger.error(
-                    "[AUDITOR] Expected %s paired frames for %s, received %s",
+                logger.warning(
+                    "[AUDITOR] Expected %s paired frames for %s, received %s; "
+                    "auditing available evidence",
                     expected_frames, asset_id, paired_frames,
                 )
-                return False
 
         result_audio = await db.execute(
             select(AudioSegment)

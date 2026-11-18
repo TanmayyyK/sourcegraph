@@ -486,14 +486,6 @@ async def _dispatch_webhook(payload: dict[str, Any], label: str) -> bool:
     return False
 
 
-async def post_frame_vision(payload: dict[str, Any]) -> None:
-    """Fire a frame_vision webhook. Runs as a BackgroundTask — must never raise."""
-    try:
-        await _dispatch_webhook(payload, label="frame_vision")
-    except Exception as exc:  # Absolute safety net: inference must keep processing
-        logger.exception("[frame_vision] Unexpected dispatch failure: %s", exc)
-
-
 async def post_vision_summary(payload: dict[str, Any]) -> None:
     """Fire a vision_final_summary webhook. Runs as a BackgroundTask — must never raise."""
     try:
@@ -662,7 +654,6 @@ async def health() -> HealthResponse:
     summary        = "Run CLIP inference on a raw frame and fire frame_vision webhook",
 )
 async def embed_vision(
-    background_tasks: BackgroundTasks,
     engine:           EngineDep,
     image:       UploadFile = File(...),
     packet_id:   str        = Form(...),
@@ -694,7 +685,7 @@ async def embed_vision(
 
     # ── 2. ML Inference  (CLIP 512-D embedding + YOLO detections) ────────────
     # !! DO NOT MODIFY — core ML logic !!
-    visual_vector, inference_metadata = engine.embed_and_detect(img_obj)
+    visual_vector, _ = engine.embed_and_detect(img_obj)
 
     # Guard: enforce dimensionality contract (Contract §1)
     if len(visual_vector) != VECTOR_DIMENSION:
@@ -729,30 +720,6 @@ async def embed_vision(
             ),
         )
 
-    # ── 3. Update batch_tracker (thread-safe) with Duplicate Check ───────────
-    processed_count, is_duplicate = _Tracker.increment(packet_id, timestamp)
-
-    if is_duplicate:
-        logger.warning(
-            "Duplicate frame received — ignoring. packet_id=%s ts=%.3f",
-            packet_id, timestamp
-        )
-        # BUG FIX 1: EmbedVisionResponse requires packet_id, frame_timestamp,
-        # processed_count. The old code passed neither, plus a non-existent
-        # `message` field — guaranteed pydantic.ValidationError → 500 on every
-        # duplicate frame. All required fields are now supplied; processed_count
-        # is the last known value for this packet_id (already incremented by
-        # the non-duplicate path, so we read it back from the tracker).
-        with _tracker_lock:
-            current_count = batch_tracker.get(packet_id, _BatchRecord()).processed_count
-        return EmbedVisionResponse(
-            status          = "duplicate",
-            packet_id       = packet_id,
-            frame_timestamp = timestamp,
-            processed_count = current_count,
-        )
-
-    # ── 4. Build frame_vision webhook payload (Contract §3 Node B) ──────────
     packet = FrameVisionPacket(
         packet_id     = packet_id,
         type          = "frame_vision",       # Contract discriminator
@@ -761,21 +728,17 @@ async def embed_vision(
         visual_vector = visual_vector,        # 512-D CLIP fp32 — field name per contract
     )
 
-    # ── 5. Fire-and-forget to Orchestrator ───────────────────────────────────
-    background_tasks.add_task(post_frame_vision, packet.model_dump())
+    if not await _dispatch_webhook(packet.model_dump(), label="frame_vision"):
+        raise HTTPException(status_code=503, detail="Visual embedding could not be delivered.")
 
-    detected = [d["class"] for d in inference_metadata.get("detected_objects", [])]
-    logger.info(
-        "Queued frame_vision  packet_id=%s  ts=%.3f  frame#=%d  objects=%s",
-        packet_id, timestamp, processed_count, detected,
-    )
-
-    # ── 6. Immediate ACK to Extractor ────────────────────────────────────────
+    # Retries may redeliver a committed frame. PostgreSQL upserts the same
+    # timestamp, and the tracker counts it only once.
+    processed_count, duplicate = _Tracker.increment(packet_id, timestamp)
     return EmbedVisionResponse(
-        status          = "queued",
-        packet_id       = packet_id,
-        frame_timestamp = timestamp,
-        processed_count = processed_count,
+        status="duplicate" if duplicate else "stored",
+        packet_id=packet_id,
+        frame_timestamp=timestamp,
+        processed_count=processed_count,
     )
 
 

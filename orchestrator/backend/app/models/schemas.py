@@ -298,6 +298,7 @@ class HealthResponse(BaseModel):
     tailscale_ip: str
     nodes: dict[str, str] | None = None
     auditor_mode: Literal["native", "remote"] = "native"
+    commit: str | None = None
 
 
 # ── Asset feed ────────────────────────────────────────────────────────────────
