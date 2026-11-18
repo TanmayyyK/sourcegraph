@@ -35,7 +35,8 @@ def _sample(rows, limit):
 
 def _unit_vectors(rows):
     vectors = np.asarray([row[1] for row in rows], dtype=np.float32)
-    return vectors / np.linalg.norm(vectors, axis=1, keepdims=True)
+    norms = np.linalg.norm(vectors, axis=1, keepdims=True)
+    return vectors / np.where(norms == 0, 1.0, norms)
 
 
 def _align(query, reference):
