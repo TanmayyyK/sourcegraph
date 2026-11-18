@@ -832,7 +832,7 @@ export function AuditorInsights({ data, Maps }: { data: AuditorForensics; Maps: 
           <EngineCard
             title="Visual Similarity"
             subtitle="Argus Node"
-            badgeLabel="FAISS"
+            badgeLabel="VECTOR MATCH"
             badgeTone={visualPct >= 70 ? "red" : "green"}
             icon={<Eye size={14} />}
             accentColor={visualPct >= 70 ? C.coral : C.green}

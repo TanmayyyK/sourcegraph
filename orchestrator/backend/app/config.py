@@ -8,6 +8,8 @@ Import the singleton `settings` everywhere — never re-instantiate.
 
 from __future__ import annotations
 
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -30,14 +32,15 @@ class Settings(BaseSettings):
     # ── Node Topology ───────────────────────────────────────────
     tailscale_ip: str = "100.69.253.89"
     # Full URL of the ATLAS (M2 FFmpeg Extractor) (env: EXTRACTOR_URL)
-    extractor_url: str = "http://100.103.180.14:8003"
+    extractor_url: str = "https://tanmayml01-overwatch-media-processor.hf.space"
     extractor_timeout_seconds: float = 300.0
     extractor_max_retries: int = 3
 
     # GPU node health endpoints (used by active health probe)
-    vision_node_url: str = "http://100.119.250.125:8080"   # ARGUS / RTX 3050
-    context_node_url: str = "http://100.115.89.72:8002"    # HERMES / RTX 2050
+    vision_node_url: str = "https://tanmayml01-overwatch-vision-service.hf.space"
+    context_node_url: str = "https://tanmayml01-overwatch-context-worker.hf.space"
     auditor_url: str = "http://localhost:8004"
+    auditor_mode: Literal["native", "remote"] = "native"
     health_probe_interval: float = 10.0                    # seconds between probes
 
     # ── Security ────────────────────────────────────────────────

@@ -3,7 +3,7 @@ import asyncio
 import logging
 import math
 from uuid import UUID
-from sqlalchemy import delete, select, update
+from sqlalchemy import delete, select
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
@@ -28,6 +28,7 @@ def _resolve_auditor_base(url: str) -> str:
 
 AUDITOR_URL = _resolve_auditor_base(settings.auditor_url)
 logger.info("[AUDITOR] Resolved endpoint base: %s", AUDITOR_URL)
+logger.info("[AUDITOR] Matching mode: %s", settings.auditor_mode)
 
 
 def _uuid_or_none(value: object) -> UUID | None:
@@ -44,18 +45,12 @@ async def _run_native_similarity(asset_id: UUID, db: AsyncSession, trace_id: str
     from app.services.similarity_service import similarity_service
 
     result = await similarity_service.run_for_asset(asset_id=asset_id, db=db, trace_id=trace_id)
-    if result is None:
-        return False
-    await db.execute(
-        delete(FrameVector).where(
-            FrameVector.asset_id == asset_id,
-            FrameVector.is_temporary.is_(True),
-        )
-    )
-    await db.commit()
-    return True
+    return result is not None
 
-async def process_asset_with_auditor(asset_id: UUID, is_golden: bool, db: AsyncSession, trace_id: str) -> bool:
+async def process_asset_with_auditor(
+    asset_id: UUID, is_golden: bool, db: AsyncSession, trace_id: str,
+    expected_frames: int | None = None,
+) -> bool:
     """
     Fetches all vectors for an asset, and either indexes them (if golden)
     or searches them against the Auditor microservice.
@@ -65,7 +60,7 @@ async def process_asset_with_auditor(asset_id: UUID, is_golden: bool, db: AsyncS
         # Golden rows are permanent library data; suspect rows are disposable.
         is_temporary = not is_golden
         frames = []
-        for _ in range(30):
+        for attempt in range(30):
             result = await db.execute(
                 select(FrameVector)
                 .where(
@@ -75,9 +70,22 @@ async def process_asset_with_auditor(asset_id: UUID, is_golden: bool, db: AsyncS
                 .order_by(FrameVector.timestamp)
             )
             frames = result.scalars().all()
-            if frames:
+            paired_frames = sum(
+                frame.visual_vector is not None and frame.text_vector is not None
+                for frame in frames
+            )
+            ready = bool(frames) if expected_frames is None else paired_frames >= expected_frames
+            if ready:
                 break
-            await asyncio.sleep(1.0)
+            if attempt < 29:
+                await asyncio.sleep(1.0)
+        else:
+            if expected_frames is not None:
+                logger.error(
+                    "[AUDITOR] Expected %s paired frames for %s, received %s",
+                    expected_frames, asset_id, paired_frames,
+                )
+                return False
 
         result_audio = await db.execute(
             select(AudioSegment)
@@ -124,11 +132,6 @@ async def process_asset_with_auditor(asset_id: UUID, is_golden: bool, db: AsyncS
                     raise ValueError("HERMES returned invalid transcript vectors")
                 for segment, vector in zip(missing, vectors):
                     segment.audio_vector = vector
-                    await db.execute(
-                        update(AudioSegment)
-                        .where(AudioSegment.id == segment.id)
-                        .values(audio_vector=vector)
-                    )
                 await db.commit()
             except Exception as exc:
                 logger.warning("[AUDITOR] Transcript embedding unavailable for %s: %r", asset_id, exc)
@@ -139,6 +142,10 @@ async def process_asset_with_auditor(asset_id: UUID, is_golden: bool, db: AsyncS
                     .order_by(AudioSegment.start_time)
                 )
                 audio_segments_records = result_audio.scalars().all()
+
+        if settings.auditor_mode == "native":
+            # Golden vectors are already durable in PostgreSQL.
+            return is_golden or await _run_native_similarity(asset_id, db, trace_id)
 
         for segment in audio_segments_records:
             if segment.audio_vector is not None:
@@ -229,12 +236,14 @@ async def process_asset_with_auditor(asset_id: UUID, is_golden: bool, db: AsyncS
                 return True
 
     except Exception as exc:
+        await db.rollback()
+        if settings.auditor_mode == "native":
+            logger.exception("[AUDITOR] Native audit failed for %s trace=%s", asset_id, trace_id)
+            return False
         logger.warning(
             f"[AUDITOR] Remote ML Auditor endpoint unavailable ({exc!r}). "
             f"Falling back to native PostgreSQL pgvector SimilarityService for asset {asset_id} trace={trace_id}"
         )
-        await db.rollback()
-
         # If it's a golden asset, the vectors are already persisted in frame_vectors.
         if is_golden:
             logger.info(f"[AUDITOR] Golden asset {asset_id} vectors safely stored in PostgreSQL frame_vectors.")

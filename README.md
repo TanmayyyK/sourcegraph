@@ -148,7 +148,7 @@ Asset submitted
 [6] Conflict Detection        ConflictDetector scans accumulated OCR for
       │                       logically incompatible broadcaster evidence
       ▼
-[7] Fusion & Verdict          Fused score (visual 0.65 + text 0.35) vs thresholds
+[7] Fusion & Verdict          Fused score (visual 0.60 + speech 0.30 + OCR 0.10)
       │                       piracy: 0.85 · suspicious: 0.60
       ▼
 [8] Incident Delivery         Verdict + full evidence record surfaced in UI
@@ -165,7 +165,7 @@ All cloud infrastructure was provisioned and configured by **Tanmay Kumar**.
 | Context Worker | HuggingFace Spaces | `tanmayml01/overwatch-context-worker` | Push to `main` |
 | Media Processor | HuggingFace Spaces | `tanmayml01/overwatch-media-processor` | Push to `main` |
 | Vision Service | HuggingFace Spaces | `tanmayml01/overwatch-vision-service` | Push to `main` |
-| Auditor | HuggingFace Spaces | `tanmayml01/overwatch-auditor` | Push to `main` |
+| Auditor | Orchestrator + PostgreSQL | Native pgvector search and sequence matching | Orchestrator deploy |
 | Orchestrator | Render | Web Service | Push to `main` |
 | Overwatch UI | Vercel / Render | Web App | Push to `main` |
 
@@ -189,10 +189,15 @@ Configure under **Settings → Variables and Secrets** for each Space:
 
 ### Fusion Policy (Orchestrator)
 
+Render defaults to `AUDITOR_MODE=native`. The extractor, vision, and context Spaces remain active. The Auditor Space can stay paused. Configure `EXTRACTOR_URL`, `VISION_NODE_URL`, and `CONTEXT_NODE_URL` to override the worker URLs, and use the same webhook secret on Render and the three Spaces.
+
+On startup the orchestrator adds the audio embedding and score columns to Supabase. Verify `auditor_mode` is `native` in the orchestrator root response, then upload a reference with speech, wait for completion, and upload a sped-up copy as a suspect. The result should identify the reference and report visual, OCR, audio, and fused scores. Reingest videos processed during the empty WAV bypass to populate their speech data.
+
 | Parameter | Value |
 |---|---|
-| `fusion_weight_visual` | `0.65` |
-| `fusion_weight_text` | `0.35` |
+| `fusion_weight_visual` | `0.60` |
+| `fusion_weight_audio` | `0.30` |
+| `fusion_weight_text` | `0.10` |
 | `piracy_threshold` | `0.85` |
 | `suspicious_threshold` | `0.60` |
 

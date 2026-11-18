@@ -1,62 +1,52 @@
-"""PostgreSQL fallback must score matching speech even without frame vectors."""
+"""Regression checks for native sequence scoring and fusion."""
 
-import unittest
-from types import SimpleNamespace
-from uuid import uuid4
+from collections import defaultdict
+from uuid import UUID
 
 from app.services.similarity_service import SimilarityService
 
-
-class _Rows:
-    def __init__(self, rows):
-        self.rows = rows
-
-    def scalars(self):
-        return self
-
-    def all(self):
-        return self.rows
-
-    def __iter__(self):
-        return iter(self.rows)
+PROTECTED = UUID(int=1)
+OTHER = UUID(int=2)
 
 
-class _Session:
-    def __init__(self, suspect_id, golden_id):
-        transcript = ["How a hole becomes a trench", "Digging begins here"]
-        self.results = [
-            _Rows([]),
-            _Rows([SimpleNamespace(asset_id=suspect_id, segment_text=text) for text in transcript]),
-            _Rows([SimpleNamespace(asset_id=golden_id, segment_text=text) for text in transcript]),
-        ]
-        self.saved = None
-
-    async def execute(self, _statement):
-        return self.results.pop(0)
-
-    def add(self, row):
-        self.saved = row
-
-    async def commit(self):
-        pass
-
-    async def refresh(self, _row):
-        pass
+def sequence(*vectors):
+    return list(enumerate(vectors))
 
 
-class AudioFallbackTests(unittest.IsolatedAsyncioTestCase):
-    async def test_audio_only_match(self):
-        suspect_id, golden_id = uuid4(), uuid4()
-        db = _Session(suspect_id, golden_id)
+def test_embedding_alignment_tolerates_repeated_segments():
+    short = sequence([1, 0], [0, 1])
+    long = sequence([1, 0], [1, 0], [0, 1], [0, 1])
+    comparisons = {PROTECTED: {"audio_score": (short, long)}}
 
-        result = await SimilarityService().run_for_asset(suspect_id, db)
+    result, matched, _ = SimilarityService._rank({PROTECTED}, comparisons, {})
 
-        self.assertIs(result, db.saved)
-        self.assertEqual(result.golden_asset_id, golden_id)
-        self.assertEqual(result.audio_score, 1.0)
-        self.assertEqual(result.fused_score, 1.0)
-        self.assertEqual(result.verdict, "PIRACY_DETECTED")
+    assert matched == PROTECTED
+    assert result["audio_score"] == result["fused_score"] == 1.0
 
 
-if __name__ == "__main__":
-    unittest.main()
+def test_fusion_does_not_combine_different_references():
+    query = sequence([1, 0])
+    other = sequence([0, 1])
+    comparisons = {
+        PROTECTED: {"visual_score": (query, query), "audio_score": (query, other)},
+        OTHER: {"visual_score": (query, other), "audio_score": (query, query)},
+    }
+
+    result, matched, _ = SimilarityService._rank({PROTECTED, OTHER}, comparisons, {})
+
+    assert matched == PROTECTED
+    assert result["visual_score"] == 1.0
+    assert result["audio_score"] == 0.0
+    assert 0.60 < result["fused_score"] < 0.70
+
+
+def test_transcripts_support_references_without_speech_vectors():
+    words = ["how", "a", "hole", "becomes", "a", "trench"]
+    transcripts = [(PROTECTED, "How a hole becomes a trench")]
+    legacy = SimilarityService._transcript_scores(words, transcripts)
+
+    result, matched, timestamp = SimilarityService._rank({PROTECTED}, defaultdict(dict), legacy)
+
+    assert matched == PROTECTED
+    assert timestamp is None
+    assert result["audio_score"] == result["fused_score"] == 1.0

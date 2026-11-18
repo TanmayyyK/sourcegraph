@@ -58,7 +58,7 @@ health_engine = create_async_engine(
     connect_args={
         "command_timeout": 10,
         "statement_cache_size": 0,
-        "prepared_statement_cache_size": 0,
+        "prepared_statement_name_func": lambda: f"__asyncpg_{uuid.uuid4().hex}__",
     },
 )
 
@@ -167,6 +167,7 @@ async def health_check(
         suspect_assets=total - golden,
         tailscale_ip=settings.tailscale_ip,
         nodes=nodes_health,
+        auditor_mode=settings.auditor_mode,
     )
 
 
@@ -561,8 +562,8 @@ async def get_forensic_analysis(
             },
             "position": {"x": 320, "y": 560},
         })
-        edges.append({"id": "e-argus-verdict",  "source": "engine_argus",  "target": "verdict_final", "label": "FAISS Indexed"})
-        edges.append({"id": "e-hermes-verdict", "source": "engine_hermes", "target": "verdict_final", "label": "FAISS Indexed"})
+        edges.append({"id": "e-argus-verdict",  "source": "engine_argus",  "target": "verdict_final", "label": "Vectors stored"})
+        edges.append({"id": "e-hermes-verdict", "source": "engine_hermes", "target": "verdict_final", "label": "Vectors stored"})
 
     # ── 6. Construct timestamped Ingest Logs ──────────────────────────────────
     ts_fmt = lambda dt: dt.isoformat() if dt else "—"
@@ -600,8 +601,13 @@ async def get_forensic_analysis(
         logs.append(f"{ts_fmt(asset.updated_at)} [OK]    Asset status → COMPLETED")
 
     if sim_result:
-        logs.append(f"{ts_fmt(sim_result.created_at)} [INFO]  Similarity engine fired — FAISS KNN search")
-        logs.append(f"{ts_fmt(sim_result.created_at)} [INFO]  Visual: {sim_result.visual_score:.2f}% · Text: {sim_result.text_score:.2f}% · Fused: {sim_result.fused_score:.2f}%")
+        logs.append(f"{ts_fmt(sim_result.created_at)} [INFO]  Similarity result stored")
+        logs.append(
+            f"{ts_fmt(sim_result.created_at)} [INFO]  "
+            f"Visual: {_normalize_confidence_score(sim_result.visual_score):.1%} · "
+            f"Audio: {_normalize_confidence_score(sim_result.audio_score):.1%} · "
+            f"OCR: {_normalize_confidence_score(sim_result.text_score):.1%} · Fused: {fused_raw:.1%}"
+        )
         verdict_tier = _piracy_tier(sim_result.fused_score)
         level = "ALERT" if _normalize_confidence_score(sim_result.fused_score) >= 0.40 else "OK"
         logs.append(

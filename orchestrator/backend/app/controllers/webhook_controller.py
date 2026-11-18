@@ -202,7 +202,9 @@ async def _flush_frame_to_db(
         raise
 
 
-async def _run_auditor_background(asset_id: UUID, is_golden: bool, trace_id: str) -> None:
+async def _run_auditor_background(
+    asset_id: UUID, is_golden: bool, trace_id: str, expected_frames: int | None = None,
+) -> None:
     """
     Background task: open a *fresh* DB session isolated from the request
     session, then run the ML auditor engine.
@@ -214,7 +216,8 @@ async def _run_auditor_background(asset_id: UUID, is_golden: bool, trace_id: str
     async with AsyncSessionLocal() as db:
         try:
             success = await process_asset_with_auditor(
-                asset_id=asset_id, is_golden=is_golden, db=db, trace_id=trace_id
+                asset_id=asset_id, is_golden=is_golden, db=db, trace_id=trace_id,
+                expected_frames=expected_frames,
             )
             if success:
                 logger.info(
@@ -227,10 +230,18 @@ async def _run_auditor_background(asset_id: UUID, is_golden: bool, trace_id: str
                     f"asset={asset_id} trace={trace_id}"
                 )
         except Exception as exc:
+            success = False
             logger.error(
                 f"[WEBHOOK] Auditor engine error: {exc!r} "
                 f"asset={asset_id} trace={trace_id}"
             )
+        if not success:
+            await db.rollback()
+        await db.execute(
+            update(Asset).where(Asset.id == asset_id, Asset.status != "failed")
+            .values(status="completed" if success else "failed")
+        )
+        await db.commit()
 
 
 async def _stub_audio_barrier_if_missing(
@@ -265,6 +276,7 @@ async def _maybe_dispatch_auditor(
     asset_id: UUID,
     db: AsyncSession,
     trace_id: str,
+    expected_frames: int | None = None,
 ) -> bool:
     """
     Atomically dispatch the Auditor exactly once, and only after both
@@ -280,8 +292,9 @@ async def _maybe_dispatch_auditor(
             Asset.audio_summary_completed.is_(True),
             Asset.pipeline_summary_completed.is_(True),
             Asset.auditor_dispatched.is_(False),
+            Asset.status != "failed",
         )
-        .values(status="completed", auditor_dispatched=True)
+        .values(status="analyzing", auditor_dispatched=True)
         .returning(Asset.is_golden)
     )
     result = await db.execute(stmt)
@@ -297,7 +310,7 @@ async def _maybe_dispatch_auditor(
 
     is_golden = bool(row[0])
     asyncio.create_task(
-        _run_auditor_background(asset_id, is_golden, trace_id),
+        _run_auditor_background(asset_id, is_golden, trace_id, expected_frames),
         name=f"auditor:{asset_id}",
     )
     logger.info(
@@ -901,10 +914,12 @@ async def _dispatch_pipeline_final_summary(
         f"asset={asset_id} is_golden={asset.is_golden} trace={trace_id}"
     )
 
-    auditor_queued = await _maybe_dispatch_auditor(asset_id, db, trace_id)
+    auditor_queued = await _maybe_dispatch_auditor(
+        asset_id, db, trace_id, expected_frames=m.successful_broadcasts,
+    )
 
     return {
-        "status": "completed" if auditor_queued else "waiting_for_audio_summary",
+        "status": "auditing" if auditor_queued else "accepted",
         "type": payload.type,
         "asset_id": str(asset_id),
         "is_golden": asset.is_golden,

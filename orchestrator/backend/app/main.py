@@ -213,6 +213,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info(
         f"[STARTUP] 🔑 Fusion weights: "
         f"visual={settings.fusion_weight_visual} "
+        f"audio={settings.fusion_weight_audio} "
         f"text={settings.fusion_weight_text}"
     )
     logger.info(
@@ -244,6 +245,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         shows the node as ONLINE even when no video is being processed.
         """
         targets = [
+            ("atlas", settings.extractor_url),
             ("argus",  settings.vision_node_url),
             ("hermes", settings.context_node_url),
         ]
@@ -251,8 +253,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             for key, base_url in targets:
                 try:
                     async with httpx.AsyncClient(timeout=3.0) as client:
-                        resp = await client.get(f"{base_url}/")
-                        if resp.status_code < 500:
+                        resp = await client.get(f"{base_url.rstrip('/')}/health")
+                        if resp.is_success:
                             NODE_LAST_SEEN[key] = time.time()
                 except Exception:
                     pass  # node unreachable — leave last_seen stale → ERR
