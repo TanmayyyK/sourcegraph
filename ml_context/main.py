@@ -159,6 +159,10 @@ class FinishRequest(BaseModel):
     source_node: str | None = None
 
 
+class TranscriptEmbeddingRequest(BaseModel):
+    texts: list[str]
+
+
 class SystemPingServices(BaseModel):
     atlas:        str = "UNKNOWN"
     argus:        str = "UNKNOWN"
@@ -362,6 +366,22 @@ async def embed_text(
 
     _fire_webhook(frame_payload, label=f"frame_text frame={frame_index}")
     return frame_payload
+
+
+@app.post("/embed/transcript", tags=["Inference"], dependencies=[Depends(verify_webhook_secret)])
+async def embed_transcript(payload: TranscriptEmbeddingRequest) -> dict[str, list[list[float]]]:
+    """Embed Whisper speech segments in the same MiniLM space as OCR text."""
+    if not payload.texts or len(payload.texts) > 512 or any(not text.strip() for text in payload.texts):
+        raise HTTPException(status_code=400, detail="Supply 1 to 512 non-empty speech segments.")
+
+    def _encode() -> list[list[float]]:
+        node.prepare_visual_phase()
+        return node._minilm.encode(
+            payload.texts, convert_to_numpy=True, normalize_embeddings=True
+        ).tolist()
+
+    vectors = await asyncio.to_thread(_encode)
+    return {"vectors": vectors}
 
 
 @app.post("/embed/text/finish", tags=["Inference"], dependencies=[Depends(verify_webhook_secret)])

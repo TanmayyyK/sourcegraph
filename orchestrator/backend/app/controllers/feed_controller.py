@@ -706,6 +706,7 @@ async def get_similarity_result(
         matched_timestamp=row.matched_timestamp,
         visual_score=row.visual_score,
         text_score=row.text_score,
+        audio_score=row.audio_score,
         fused_score=row.fused_score,
         verdict=row.verdict,  # type: ignore[arg-type]
         trace_id=trace_id,

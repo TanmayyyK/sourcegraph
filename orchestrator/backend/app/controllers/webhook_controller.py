@@ -725,10 +725,9 @@ def _dispatch_text_final_summary(
 async def _handle_audio_summary(
     payload: AudioSummaryPacket,
     trace_id: str,
-) -> None:
+) -> bool:
     """
-    Background task — persist audio segments and full transcript
-    from the Vision Node.
+    Persist audio segments and full transcript before acknowledging the Vision Node.
     """
     asset_id_val: UUID | None = _resolve_asset_id(
         payload.packet_id, trace_id, "audio_final_summary"
@@ -738,18 +737,24 @@ async def _handle_audio_summary(
             f"[{payload.source_node}] Cannot process audio summary — "
             f"packet_id={payload.packet_id} is not a valid UUID. trace={trace_id}"
         )
-        return
+        return False
 
     async with AsyncSessionLocal() as db:
         try:
             # Verify asset exists
-            asset = await db.scalar(select(Asset).where(Asset.id == asset_id_val))
+            asset = await db.scalar(
+                select(Asset).where(Asset.id == asset_id_val).with_for_update()
+            )
             if not asset:
                 logger.warning(
                     f"[{payload.source_node}] Audio summary ignored — "
                     f"Asset {asset_id_val} not found. trace={trace_id}"
                 )
-                return
+                return False
+
+            if asset.audio_summary_completed:
+                logger.info("[%s] Duplicate audio summary ignored for %s", payload.source_node, asset_id_val)
+                return True
 
             # Update asset with full transcript
             await db.execute(
@@ -781,35 +786,32 @@ async def _handle_audio_summary(
                 f"trace={trace_id}"
             )
             await _maybe_dispatch_auditor(asset_id_val, db, trace_id)
+            return True
         except Exception as exc:
             await db.rollback()
             logger.error(
                 f"[{payload.source_node}] audio_final_summary persist error: "
                 f"packet={payload.packet_id} error={exc!r} trace={trace_id}"
             )
+            return False
 
 
-def _dispatch_audio_summary(
+async def _dispatch_audio_summary(
     payload: AudioSummaryPacket,
     trace_id: str,
 ) -> dict:
-    """
-    Fire-and-forget: schedule audio transcript persist as a background task.
-    """
+    """Acknowledge audio only after transcript and lifecycle state are durable."""
     _touch_node_heartbeat(payload.source_node)
-
-    asyncio.create_task(
-        _handle_audio_summary(payload, trace_id),
-        name=f"audio_summary:{payload.packet_id}",
-    )
+    if not await _handle_audio_summary(payload, trace_id):
+        raise HTTPException(status_code=503, detail="Audio summary could not be persisted")
 
     logger.debug(
-        f"[{payload.source_node}] audio_final_summary queued: "
+        f"[{payload.source_node}] audio_final_summary persisted: "
         f"packet={payload.packet_id} segments={len(payload.transcript)} trace={trace_id}"
     )
 
     return {
-        "status": "accepted",
+        "status": "completed",
         "type": payload.type,
         "source_node": payload.source_node,
         "segments": len(payload.transcript),
@@ -1004,7 +1006,7 @@ async def feeder_ingest(
             return _dispatch_text_final_summary(payload, trace_id)
 
         case AudioSummaryPacket():
-            return _dispatch_audio_summary(payload, trace_id)
+            return await _dispatch_audio_summary(payload, trace_id)
 
         case PipelineFinalSummaryPayload():
             # Awaited — drives DB state transition; must not be fire-and-forget

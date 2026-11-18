@@ -22,6 +22,7 @@ export type SimilarityResultResponse = {
   matched_timestamp: number | null;
   visual_score: number;
   text_score: number;
+  audio_score: number;
   fused_score: number;
   verdict: SimilarityVerdict;
   trace_id: string;

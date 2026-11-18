@@ -39,17 +39,17 @@ type Props = {
 type Tone = "green" | "red" | "amber" | "yellow" | "emerald" | "blue" | "neutral";
 
 const C = {
-  bg: "#F5F2EC",
-  bgCard: "#FFFFFF",
-  bgMuted: "#EEEBE3",
-  text: "#0F0F0F",
-  muted: "#6B6860",
-  border: "rgba(0,0,0,0.07)",
-  divider: "rgba(0,0,0,0.04)",
-  accent: "#4C63F7",
-  violet: "#7C5CF7",
-  coral: "#FF6B47",
-  green: "#0EA872",
+  bg: "transparent",
+  bgCard: "var(--card-bg, #FFFFFF)",
+  bgMuted: "var(--muted-bg, #F3F4F6)",
+  text: "var(--text, #111827)",
+  muted: "var(--muted, #6B7280)",
+  border: "var(--border, #E5E7EB)",
+  divider: "var(--border, #E5E7EB)",
+  accent: "var(--accent, #6B7280)",
+  violet: "var(--accent, #6B7280)",
+  coral: "#EF4444",
+  green: "#10B981",
   amber: "#F59E0B",
   yellow: "#FACC15",
   emerald: "#10B981",
@@ -78,18 +78,7 @@ type PiracyTierInfo = {
   borderClass: string;
 };
 
-function useFonts() {
-  useEffect(() => {
-    const id = "ow-insight-fonts";
-    if (document.getElementById(id)) return;
-    const link = document.createElement("link");
-    link.id = id;
-    link.rel = "stylesheet";
-    link.href =
-      "https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&family=DM+Mono:wght@400;500&display=swap";
-    document.head.appendChild(link);
-  }, []);
-}
+function useFonts() {}
 
 function toScorePercent(score: number): number {
   return score > 1 ? Math.round(score) : Math.round(score * 100);
@@ -185,13 +174,12 @@ function buildAuditorForensics(
   status: AssetStatusResponse | null,
   result: SimilarityResultResponse | null,
 ): AuditorForensics {
-  const payload = result as (SimilarityResultResponse & { audio_score?: number }) | null;
   return {
     assetId: status?.asset_id ?? result?.suspect_asset_id ?? "unavailable",
     filename: status?.filename ?? "No asset selected",
     fusedScore: result?.fused_score ?? 0,
     visualScore: result?.visual_score ?? 0,
-    audioScore: payload?.audio_score ?? result?.text_score ?? 0,
+    audioScore: result?.audio_score ?? 0,
     verdict: normalizeVerdict(result?.verdict),
     matchedAssetId: result?.golden_asset_id ?? null,
     matchedTimestamp: result?.matched_timestamp ?? null,
@@ -221,7 +209,7 @@ function StatusBadge({ label, tone = "neutral" }: { label: string; tone?: Tone }
         padding: "3px 9px",
         borderRadius: "20px",
         background: clr.bg,
-        fontFamily: "DM Mono, monospace",
+        fontFamily:"monospace",
         fontSize: "9px",
         fontWeight: 500,
         letterSpacing: "0.1em",
@@ -274,7 +262,7 @@ function ArcGauge({ pct, color }: { pct: number; color: string }) {
         x="19"
         y="23"
         textAnchor="middle"
-        style={{ fontFamily: "DM Mono, monospace", fontSize: "7px", fill: color, fontWeight: 500 }}
+        style={{ fontFamily:"monospace", fontSize: "7px", fill: color, fontWeight: 500 }}
       >
         {clamped}%
       </text>
@@ -311,7 +299,7 @@ function MetricRow({
           {icon && <span style={{ color: C.muted, display: "flex", alignItems: "center", flexShrink: 0 }}>{icon}</span>}
           <span
             style={{
-              fontFamily: "DM Mono, monospace",
+              fontFamily:"monospace",
               fontSize: "10px",
               fontWeight: 500,
               letterSpacing: "0.14em",
@@ -325,7 +313,7 @@ function MetricRow({
         </div>
         <span
           style={{
-            fontFamily: "DM Sans, sans-serif",
+            fontFamily:"inherit",
             fontSize: "13px",
             fontWeight: 600,
             color: valueColor,
@@ -392,7 +380,7 @@ function EngineCard({
           <div>
             <p
               style={{
-                fontFamily: "DM Mono, monospace",
+                fontFamily:"monospace",
                 fontSize: "9px",
                 fontWeight: 500,
                 letterSpacing: "0.14em",
@@ -403,7 +391,7 @@ function EngineCard({
             >
               {subtitle}
             </p>
-            <p style={{ fontFamily: "DM Sans, sans-serif", fontSize: "13px", fontWeight: 600, color: C.text }}>
+            <p style={{ fontFamily:"inherit", fontSize: "13px", fontWeight: 600, color: C.text }}>
               {title}
             </p>
           </div>
@@ -419,7 +407,7 @@ function ContentPlaceholder({ type, message }: { type: "loading" | "error" | "em
   const isLoading = type === "loading";
   const isError = type === "error";
   return (
-    <div style={{ minHeight: "100vh", background: C.bg, fontFamily: "DM Sans, sans-serif", color: C.text }}>
+    <div style={{ minHeight: "100vh", background: C.bg, fontFamily:"inherit", color: C.text }}>
       <Fade delay={0.05}>
         <div
           style={{
@@ -456,7 +444,7 @@ function ContentPlaceholder({ type, message }: { type: "loading" | "error" | "em
             {isLoading ? "Loading asset insights" : isError ? "Failed to load asset" : "Select an asset to view insights"}
           </span>
           {!isLoading && (
-            <span style={{ fontFamily: "DM Mono, monospace", fontSize: "11px", color: C.muted, maxWidth: "360px", lineHeight: 1.6 }}>
+            <span style={{ fontFamily:"monospace", fontSize: "11px", color: C.muted, maxWidth: "360px", lineHeight: 1.6 }}>
               {message ?? "Upload or select an asset from the command center."}
             </span>
           )}
@@ -484,6 +472,15 @@ function InsightsShell({
   children: React.ReactNode;
 }) {
   const isAuditor = mode === "AUDITOR";
+  const [isDark, setIsDark] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setIsDark(window.matchMedia("(prefers-color-scheme: dark)").matches);
+      const listener = (e: any) => setIsDark(e.matches);
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", listener);
+      return () => window.matchMedia("(prefers-color-scheme: dark)").removeEventListener("change", listener);
+    }
+  }, []);
   const ghostBtnStyle: React.CSSProperties = {
     display: "inline-flex",
     alignItems: "center",
@@ -494,21 +491,27 @@ function InsightsShell({
     background: "transparent",
     cursor: "pointer",
     color: C.muted,
-    fontFamily: "DM Sans, sans-serif",
+    fontFamily:"inherit",
     fontSize: "13px",
     fontWeight: 500,
     transition: "border-color 0.15s, color 0.15s",
   };
 
   return (
-    <div
+    <div className={isDark ? 'dark' : ''}
       style={{
         minHeight: "100vh",
-        background: C.bg,
-        fontFamily: "DM Sans, sans-serif",
-        color: C.text,
+        background: isDark ? "#030712" : "#F9FAFB",
+        fontFamily: "Inter, sans-serif",
+        color: isDark ? "#F3F4F6" : "#111827",
         paddingBottom: "88px",
-      }}
+        "--text": isDark ? "#F3F4F6" : "#111827",
+        "--muted": isDark ? "#9CA3AF" : "#6B7280",
+        "--card-bg": isDark ? "#0A0A0A" : "#FFFFFF",
+        "--border": isDark ? "#1F2937" : "#F3F4F6",
+        "--muted-bg": isDark ? "#1F2937" : "#F3F4F6",
+        "--accent": isDark ? "#4B5563" : "#9CA3AF"
+      } as any}
     >
       <Fade delay={0}>
         <div
@@ -552,7 +555,7 @@ function InsightsShell({
             {isAuditor ? <ShieldAlert size={14} /> : <CheckCircle2 size={14} />}
             <span
               style={{
-                fontFamily: "DM Mono, monospace",
+                fontFamily:"monospace",
                 fontSize: "10px",
                 fontWeight: 600,
                 letterSpacing: "0.12em",
@@ -570,7 +573,7 @@ function InsightsShell({
         <div style={{ padding: "18px 28px 0" }}>
           <p
             style={{
-              fontFamily: "DM Mono, monospace",
+              fontFamily:"monospace",
               fontSize: "10px",
               fontWeight: 500,
               letterSpacing: "0.14em",
@@ -582,7 +585,7 @@ function InsightsShell({
           </p>
           <h1
             style={{
-              fontFamily: "DM Sans, sans-serif",
+              fontFamily:"inherit",
               fontSize: "clamp(22px, 2.8vw, 32px)",
               fontWeight: 700,
               color: C.text,
@@ -626,7 +629,7 @@ function InsightsShell({
                   {item.icon}
                   <span
                     style={{
-                      fontFamily: "DM Mono, monospace",
+                      fontFamily:"monospace",
                       fontSize: "9px",
                       fontWeight: 500,
                       letterSpacing: "0.12em",
@@ -637,7 +640,7 @@ function InsightsShell({
                     {item.label}
                   </span>
                 </div>
-                <span style={{ fontFamily: "DM Sans, sans-serif", fontSize: "13px", fontWeight: 600, color: item.color }}>
+                <span style={{ fontFamily:"inherit", fontSize: "13px", fontWeight: 600, color: item.color }}>
                   {item.value}
                 </span>
               </div>
@@ -669,7 +672,7 @@ function InsightsShell({
           <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: verdictColor, flexShrink: 0 }} />
           <span
             style={{
-              fontFamily: "DM Mono, monospace",
+              fontFamily:"monospace",
               fontSize: "10px",
               fontWeight: 500,
               letterSpacing: "0.12em",
@@ -679,8 +682,8 @@ function InsightsShell({
           >
             {isAuditor ? "Forensics Ready" : "Ingest Verified"}
           </span>
-          <span style={{ color: C.muted, fontFamily: "DM Mono, monospace", fontSize: "10px" }}>·</span>
-          <span style={{ fontFamily: "DM Mono, monospace", fontSize: "10px", color: C.muted }}>{assetId}</span>
+          <span style={{ color: C.muted, fontFamily:"monospace", fontSize: "10px" }}>·</span>
+          <span style={{ fontFamily:"monospace", fontSize: "10px", color: C.muted }}>{assetId}</span>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
@@ -695,7 +698,7 @@ function InsightsShell({
               border: `1px solid ${C.border}`,
               background: "transparent",
               cursor: "pointer",
-              fontFamily: "DM Sans, sans-serif",
+              fontFamily:"inherit",
               fontSize: "13px",
               fontWeight: 500,
               color: C.muted,
@@ -720,7 +723,7 @@ function InsightsShell({
                 borderRadius: "8px",
                 border: "none",
                 cursor: "pointer",
-                fontFamily: "DM Sans, sans-serif",
+                fontFamily:"inherit",
                 fontSize: "13px",
                 fontWeight: 600,
                 background: C.text,
@@ -796,7 +799,7 @@ export function AuditorInsights({ data, Maps }: { data: AuditorForensics; Maps: 
                   borderRadius: "8px",
                   border: "none",
                   cursor: "pointer",
-                  fontFamily: "DM Sans, sans-serif",
+                  fontFamily:"inherit",
                   fontSize: "13px",
                   fontWeight: 700,
                   background: C.text,

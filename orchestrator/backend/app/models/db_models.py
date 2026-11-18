@@ -481,6 +481,9 @@ class SimilarityResult(Base):
     text_score: Mapped[float] = mapped_column(
         Float, nullable=False, default=0.0
     )
+    audio_score: Mapped[float] = mapped_column(
+        Float, nullable=False, default=0.0
+    )
     fused_score: Mapped[float] = mapped_column(
         Float, nullable=False, default=0.0
     )
@@ -521,5 +524,6 @@ class AudioSegment(Base):
     start_time: Mapped[float] = mapped_column(Float, nullable=False)
     end_time: Mapped[float] = mapped_column(Float, nullable=False)
     segment_text: Mapped[str] = mapped_column(Text, nullable=False)
+    audio_vector: Mapped[list[float] | None] = mapped_column(Vector(384), nullable=True)
 
     asset: Mapped[Asset] = relationship("Asset", back_populates="audio_segments")

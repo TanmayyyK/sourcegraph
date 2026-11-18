@@ -179,6 +179,19 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     except Exception as exc:
         logger.error(f"[STARTUP] ❌ Schema initialisation failed: {exc}")
 
+    try:
+        async with engine.begin() as conn:
+            await conn.execute(text(
+                "ALTER TABLE IF EXISTS audio_segments ADD COLUMN IF NOT EXISTS audio_vector vector(384)"
+            ))
+            await conn.execute(text(
+                "ALTER TABLE IF EXISTS similarity_results ADD COLUMN IF NOT EXISTS audio_score DOUBLE PRECISION NOT NULL DEFAULT 0"
+            ))
+        logger.info("[STARTUP] Audio vector and score schema ready")
+    except Exception as exc:
+        logger.error("[STARTUP] Audio schema patch failed: %s", exc)
+        raise
+
     buffer = BufferService()
     buffer.start()
     app.state.buffer = buffer

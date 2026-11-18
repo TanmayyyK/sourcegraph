@@ -63,8 +63,9 @@ class Settings(BaseSettings):
     text_dim: int = 384
 
     # ── Fusion Weights ──────────────────────────────────────────
-    fusion_weight_visual: float = 0.65
-    fusion_weight_text: float = 0.35
+    fusion_weight_visual: float = 0.60
+    fusion_weight_audio: float = 0.30
+    fusion_weight_text: float = 0.10
 
     # ── Matching Thresholds ─────────────────────────────────────
     piracy_threshold: float = 0.85

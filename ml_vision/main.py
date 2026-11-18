@@ -160,10 +160,9 @@ RETRY_BASE_DELAY_S = 1.0           # doubles each attempt: 1 s → 2 s → 4 s
 # Heartbeat interval (Contract §4: all nodes SHOULD ping every 30 s)
 HEARTBEAT_INTERVAL_S = 30
 
-# [FIX 4] Maximum seconds to wait for Whisper transcription before giving up.
-# Tune this to match your longest expected audio clip. At 120 s the node will
-# abandon a stuck transcription, dispatch a degraded summary, and release RAM.
-AUDIO_TRANSCRIPTION_TIMEOUT_S = 120
+# Maximum seconds to wait for Whisper. Leave room for webhook retries in the
+# Extractor's AUDIO_POST_TIMEOUT_S, which defaults to 360 seconds.
+AUDIO_TRANSCRIPTION_TIMEOUT_S = int(os.environ.get("AUDIO_TRANSCRIPTION_TIMEOUT_S", "300"))
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Application state — singleton ML engine
@@ -412,7 +411,7 @@ def _build_headers() -> dict[str, str]:
     }
 
 
-async def _dispatch_webhook(payload: dict[str, Any], label: str) -> None:
+async def _dispatch_webhook(payload: dict[str, Any], label: str) -> bool:
     """
     Core async dispatcher with retry / backoff.
 
@@ -441,7 +440,7 @@ async def _dispatch_webhook(payload: dict[str, Any], label: str) -> None:
                     "Orchestrator response: %s",
                     label, packet_id, response.text,
                 )
-                return  # Retrying will produce the same failure
+                return False  # Retrying will produce the same failure
 
             # ── Non-retryable: asset in terminal failed state ─────────────────
             if response.status_code == 409:
@@ -451,7 +450,7 @@ async def _dispatch_webhook(payload: dict[str, Any], label: str) -> None:
                     "Aborting dispatch for this batch.",
                     label, packet_id,
                 )
-                return  # Further frames for this asset are meaningless
+                return False  # Further frames for this asset are meaningless
 
             # ── Success ───────────────────────────────────────────────────────
             if response.status_code < 300:
@@ -459,7 +458,7 @@ async def _dispatch_webhook(payload: dict[str, Any], label: str) -> None:
                     "[%s] Delivered  packet_id=%s  attempt=%d/%d  http=%d",
                     label, packet_id, attempt, MAX_RETRIES, response.status_code,
                 )
-                return
+                return True
 
             # ── Retryable HTTP error (404, 5xx, etc.) ─────────────────────────
             logger.warning(
@@ -484,6 +483,7 @@ async def _dispatch_webhook(payload: dict[str, Any], label: str) -> None:
         "[%s] DISCARDED after %d attempts — packet_id=%s",
         label, MAX_RETRIES, packet_id,
     )
+    return False
 
 
 async def post_frame_vision(payload: dict[str, Any]) -> None:
@@ -502,7 +502,7 @@ async def post_vision_summary(payload: dict[str, Any]) -> None:
         logger.exception("[vision_final_summary] Unexpected dispatch failure: %s", exc)
 
 
-async def _run_audio_transcription_job(packet_id: str, wav_path: str) -> None:
+async def _run_audio_transcription_job(packet_id: str, wav_path: str) -> bool:
     """
     Whisper transcription pipeline for /embed/audio.
     Guarantees best-effort cleanup: hard_unload + temp file deletion.
@@ -546,7 +546,7 @@ async def _run_audio_transcription_job(packet_id: str, wav_path: str) -> None:
             "transcript":  result.get("transcript", []),
             "full_script": result.get("full_script", ""),
         }
-        await _dispatch_webhook(payload, label="audio_final_summary")
+        return await _dispatch_webhook(payload, label="audio_final_summary")
 
     except asyncio.TimeoutError:
         # The asyncio timeout fired.  The thread is still running in the
@@ -566,11 +566,12 @@ async def _run_audio_transcription_job(packet_id: str, wav_path: str) -> None:
             "full_script": "",
             "error":       "transcription_timeout",
         }
-        await _dispatch_webhook(payload, label="audio_final_summary")
+        return await _dispatch_webhook(payload, label="audio_final_summary")
         # Do NOT call engine.hard_unload() here — the thread owns the engine.
 
     except Exception as exc:
         logger.exception("[audio_final_summary] Dispatch pipeline failed: %s", exc)
+        raise
 
     finally:
         # BUG FIX 3: hard_unload() is intentionally NOT called here.
@@ -808,7 +809,9 @@ async def embed_audio(
             "transcript":  [],
             "full_script": "",
         }
-        await _dispatch_webhook(payload, label="audio_final_summary")
+        delivered = await _dispatch_webhook(payload, label="audio_final_summary")
+        if not delivered:
+            raise HTTPException(status_code=502, detail="Empty audio summary could not be persisted")
         return {"status": "completed", "packet_id": packet_id, "stub": True}
 
     with tempfile.NamedTemporaryFile(
@@ -818,7 +821,9 @@ async def embed_audio(
         wav_path = tmp.name
 
     # Run transcription SYNCHRONOUSLY — hold the connection open
-    await _run_audio_transcription_job(packet_id, wav_path)
+    delivered = await _run_audio_transcription_job(packet_id, wav_path)
+    if not delivered:
+        raise HTTPException(status_code=502, detail="Audio transcript could not be persisted")
     return {"status": "completed", "packet_id": packet_id}
 
 

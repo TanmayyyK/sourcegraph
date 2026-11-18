@@ -42,15 +42,15 @@ export interface OverwatchIngestPortalProps {
    DESIGN TOKENS
    ════════════════════════════════════════════════════════════════════════ */
 const C = {
-  bg:         "#F5F3EF",
-  ink:        "#18181B",
-  muted:      "#9B9897",
-  card:       "rgba(255,255,255,0.97)",
-  cardBorder: "rgba(0,0,0,0.07)",
-  blue:       "#4F6AFF",
-  violet:     "#7C5CF7",
-  coral:      "#F26B5B",
-  green:      "#22C55E",
+  bg:         "transparent",
+  ink:        "var(--ink, #111827)",
+  muted:      "var(--muted, #6B7280)",
+  card:       "var(--card-bg, #FFFFFF)",
+  cardBorder: "var(--card-border, #E5E7EB)",
+  blue:       "var(--accent, #6B7280)",
+  violet:     "var(--accent, #6B7280)",
+  coral:      "#EF4444",
+  green:      "#10B981",
   amber:      "#F59E0B",
   redTier:    "#EF4444",
   yellowTier: "#FACC15",
@@ -157,15 +157,7 @@ const PATHS = {
 /* ════════════════════════════════════════════════════════════════════════════
    HOOKS
    ════════════════════════════════════════════════════════════════════════ */
-function useFonts() {
-  useEffect(() => {
-    if (document.getElementById("ow-fonts")) return;
-    const l = document.createElement("link");
-    l.id = "ow-fonts"; l.rel = "stylesheet";
-    l.href = "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap";
-    document.head.appendChild(l);
-  }, []);
-}
+function useFonts() {}
 
 function useScaledCanvas(vw: number, vh: number) {
   const ref   = useRef<HTMLDivElement>(null);
@@ -256,7 +248,7 @@ const PipelineStepper: React.FC<{ state: PipelineState; failedAt?: PipelineState
                 )}
               </motion.div>
               <span style={{
-                fontSize:10, fontFamily:"DM Mono, monospace",
+                fontSize:10, fontFamily:"monospace",
                 letterSpacing:"0.1em", textTransform:"uppercase",
                 color: done ? C.green : active ? C.blue : C.muted,
                 fontWeight: active ? 600 : 400,
@@ -379,18 +371,18 @@ const NodeCard: React.FC<NodeCardProps> = ({
       </div>
       <div style={{ flex:1, minWidth:0 }}>
         <div style={{
-          fontSize:8.5, fontWeight:700, letterSpacing:"0.15em",
+          fontSize:8, fontWeight:700, letterSpacing:"0.15em",
           textTransform:"uppercase", color:accent,
-          fontFamily:"DM Mono, monospace", marginBottom:2,
+          fontFamily:"monospace", marginBottom:2,
         }}>{role}</div>
         <div style={{
           fontSize:15, fontWeight:700, color:C.ink,
-          fontFamily:"DM Sans, sans-serif", lineHeight:1.2,
+          fontFamily:"inherit", lineHeight:1.2,
           whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
         }}>{title}</div>
         <div style={{
-          fontSize:9.5, color:C.muted, marginTop:3,
-          fontFamily:"DM Mono, monospace", lineHeight:1.3,
+          fontSize:9, color:C.muted, marginTop:3,
+          fontFamily:"monospace", lineHeight:1.3,
           whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis",
         }}>{subtitle}</div>
       </div>
@@ -473,13 +465,13 @@ const OrchestratorCard: React.FC<OrchProps> = ({ cx, cy, progress, verdict, puls
               initial={{ opacity:0, y:3 }} animate={{ opacity:1, y:0 }}
               className={verdict === "FAILED" ? "text-red-500" : tier.textClass}
               style={{ fontSize:8, fontWeight:700, letterSpacing:"0.13em",
-                textTransform:"uppercase", fontFamily:"DM Mono, monospace" }}
+                textTransform:"uppercase", fontFamily:"monospace" }}
             >
               {verdict === "FAILED" ? "Failed" : tier.label}
             </motion.div>
           )}
           {!verdict && progress > 0 && progress < 1 && (
-            <div style={{ fontSize:10, color:C.muted, fontFamily:"DM Mono, monospace" }}>
+            <div style={{ fontSize:10, color:C.muted, fontFamily:"monospace" }}>
               {Math.round(progress * 100)}%
             </div>
           )}
@@ -500,7 +492,7 @@ const OrchestratorCard: React.FC<OrchProps> = ({ cx, cy, progress, verdict, puls
         </div>
       </div>
 
-      <div style={{ marginTop:9, fontSize:8.5, fontFamily:"DM Mono, monospace",
+      <div style={{ marginTop:9, fontSize:8, fontFamily:"monospace",
         letterSpacing:"0.18em", textTransform:"uppercase", color:C.muted }}>
         Orchestrator
       </div>
@@ -531,7 +523,7 @@ const ClosedModule: React.FC<{ cx:number; cy:number; state:PipelineState }> = ({
         animate={{ rotate:[0,12,-12,0] }} transition={{ duration:T(1.0), repeat:Infinity }}>
         <Scissors size={22} strokeWidth={2} />
       </motion.div>
-      <div style={{ fontSize:9.5, fontFamily:"DM Mono, monospace",
+      <div style={{ fontSize:9, fontFamily:"monospace",
         color:C.muted, letterSpacing:"0.14em", textTransform:"uppercase" }}>
         {state==="UPLOADING" ? "Buffering…" : "Extracting…"}
       </div>
@@ -584,7 +576,7 @@ const FileChip: React.FC<FileChipProps> = ({
             borderRadius:10, background:C.card,
             border:`1px solid ${C.blue}30`,
             boxShadow:`0 4px 18px ${C.blue}20`,
-            fontFamily:"DM Mono, monospace", fontSize:11, color:C.ink, whiteSpace:"nowrap",
+            fontFamily:"monospace", fontSize:11, color:C.ink, whiteSpace:"nowrap",
           }}>
             <motion.div style={{ color:C.blue }}
               animate={{ y:[-1,1,-1] }} transition={{ duration:T(0.8), repeat:Infinity }}>
@@ -626,14 +618,10 @@ const IdleDropzone: React.FC<IdleDropzoneProps> = ({ onPick }) => {
         className="relative flex flex-col items-center justify-center focus:outline-none"
         style={{
           width:520, height:256, borderRadius:20,
-          background: active
-            ? `linear-gradient(145deg,${C.blue}10 0%,rgba(124,92,247,0.07) 100%)`
-            : "rgba(255,255,255,0.9)",
+          background: active ? "var(--card-bg)" : "var(--card-bg)",
           border:`1.5px dashed ${active ? C.blue : "rgba(0,0,0,0.13)"}`,
           backdropFilter:"blur(14px)",
-          boxShadow: active
-            ? `0 0 0 10px ${C.blue}09, 0 24px 60px ${C.blue}1c`
-            : "0 8px 40px rgba(0,0,0,0.07)",
+          boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
           cursor:"pointer", gap:18,
           transition:"background 200ms, border-color 200ms, box-shadow 260ms",
         }}
@@ -656,23 +644,23 @@ const IdleDropzone: React.FC<IdleDropzoneProps> = ({ onPick }) => {
           <Upload size={24} strokeWidth={1.9} />
         </motion.div>
         <div className="text-center" style={{ pointerEvents:"none" }}>
-          <div style={{ fontSize:18, fontWeight:700, color:C.ink, fontFamily:"DM Sans, sans-serif" }}>
+          <div style={{ fontSize:18, fontWeight:700, color:C.ink, fontFamily:"inherit" }}>
             {dragDepth>0 ? "Release to ingest" : "Drop your file here"}
           </div>
-          <div style={{ fontSize:13, color:C.muted, marginTop:5, fontFamily:"DM Mono, monospace" }}>
+          <div style={{ fontSize:13, color:C.muted, marginTop:5, fontFamily:"monospace" }}>
             or click to browse
           </div>
         </div>
         <div style={{ display:"flex", gap:8 }}>
           {["MP4","MOV","WEBM"].map(f=>(
             <span key={f} style={{ padding:"3px 10px", borderRadius:6, fontSize:10,
-              fontFamily:"DM Mono, monospace", letterSpacing:"0.12em", textTransform:"uppercase",
+              fontFamily:"monospace", letterSpacing:"0.12em", textTransform:"uppercase",
               background:"rgba(0,0,0,0.055)", color:C.muted, border:"1px solid rgba(0,0,0,0.09)" }}>
               {f}
             </span>
           ))}
           <span style={{ padding:"3px 10px", borderRadius:6, fontSize:10,
-            fontFamily:"DM Mono, monospace", letterSpacing:"0.12em",
+            fontFamily:"monospace", letterSpacing:"0.12em",
             background:`${C.blue}0e`, color:C.blue, border:`1px solid ${C.blue}26` }}>
             max 5 GB
           </span>
@@ -881,14 +869,14 @@ const StatusChip: React.FC<{state:PipelineState}> = ({ state }) => {
       display:"flex", alignItems:"center", gap:7,
       padding:"6px 14px", borderRadius:9999,
       background:C.card, border:`1px solid ${C.cardBorder}`,
-      fontFamily:"DM Mono, monospace",
+      fontFamily:"monospace",
     }}>
       <motion.span
         style={{ width:6, height:6, borderRadius:"50%", background:color, display:"inline-block" }}
         animate={state!=="IDLE" ? { opacity:[0.3,1,0.3], scale:[1,1.2,1] } : {}}
         transition={{ duration:T(0.95), repeat:Infinity }}
       />
-      <span style={{ fontSize:10.5, fontWeight:500, letterSpacing:"0.1em",
+      <span style={{ fontSize:10, fontWeight:500, letterSpacing:"0.1em",
         textTransform:"uppercase", color }}>{label}</span>
     </div>
   );
@@ -965,7 +953,7 @@ const ReportCard: React.FC<{
           </div>
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <div style={{ fontSize:8.5, fontFamily:"DM Mono, monospace",
+              <div style={{ fontSize:8, fontFamily:"monospace",
                 letterSpacing:"0.14em", textTransform:"uppercase", color:vc }}>
                 {subheading}
               </div>
@@ -979,24 +967,24 @@ const ReportCard: React.FC<{
                 {badgeText}
               </div>
             </div>
-            <div style={{ fontSize:8.5, fontFamily:"DM Mono, monospace",
+            <div style={{ fontSize:8, fontFamily:"monospace",
               letterSpacing:"0.14em", textTransform:"uppercase", color:C.muted, marginBottom:4 }}>
               Final Analysis Verdict
             </div>
-            <div className={failed ? "text-red-500" : isGolden === true ? "text-emerald-500" : tier.textClass} style={{ fontSize:21, fontWeight:800, fontFamily:"DM Sans, sans-serif" }}>
+            <div className={failed ? "text-red-500" : isGolden === true ? "text-emerald-500" : tier.textClass} style={{ fontSize:21, fontWeight:800, fontFamily:"inherit" }}>
               {headline}
             </div>
             {!failed && isAuditorAsset && (
-              <div className={tier.textClass} style={{ fontSize:10.5, fontWeight:700, fontFamily:"DM Mono, monospace", marginTop:6 }}>
+              <div className={tier.textClass} style={{ fontSize:10, fontWeight:700, fontFamily:"monospace", marginTop:6 }}>
                 {tier.action}
               </div>
             )}
             {failed && errorHint && (
-              <div style={{ fontSize:10.5, color:C.muted, fontFamily:"DM Mono, monospace", marginTop:6 }}>
+              <div style={{ fontSize:10, color:C.muted, fontFamily:"monospace", marginTop:6 }}>
                 {errorHint}
               </div>
             )}
-            <div style={{ fontSize:10.5, color:C.muted, fontFamily:"DM Mono, monospace", marginTop:2 }}>
+            <div style={{ fontSize:10, color:C.muted, fontFamily:"monospace", marginTop:2 }}>
               {fileName} · {fileSize>0 ? `${(fileSize/1024).toFixed(1)} KB` : "—"}
             </div>
           </div>
@@ -1011,14 +999,14 @@ const ReportCard: React.FC<{
         ].map((m,i)=>(
           <React.Fragment key={m.label}>
             <div className="px-8 py-5 flex flex-col justify-center gap-1">
-              <div style={{ fontSize:8.5, fontFamily:"DM Mono, monospace",
+              <div style={{ fontSize:8, fontFamily:"monospace",
                 letterSpacing:"0.14em", textTransform:"uppercase", color:C.muted }}>
                 {m.label}
               </div>
-              <div style={{ fontSize:22, fontWeight:700, color:C.ink, fontFamily:"DM Sans, sans-serif" }}>
+              <div style={{ fontSize:22, fontWeight:700, color:C.ink, fontFamily:"inherit" }}>
                 {m.value}
               </div>
-              <div style={{ fontSize:9.5, color:C.muted, fontFamily:"DM Mono, monospace" }}>
+              <div style={{ fontSize:9, color:C.muted, fontFamily:"monospace" }}>
                 {m.sub}
               </div>
             </div>
@@ -1033,7 +1021,7 @@ const ReportCard: React.FC<{
             style={{ padding:"10px 16px", borderRadius:10,
               border:`1px solid ${C.cardBorder}`, background:"transparent",
               cursor:"pointer", fontSize:12, fontWeight:600, color:C.ink,
-              fontFamily:"DM Sans, sans-serif",
+              fontFamily:"inherit",
               display:"flex", alignItems:"center", gap:6 }}
             whileHover={{ background:"rgba(0,0,0,0.03)", scale:1.02 }} whileTap={{ scale:0.98 }}
           >
@@ -1053,7 +1041,7 @@ const ReportCard: React.FC<{
               style={{ padding:"10px 18px", borderRadius:10,
                 background:"rgba(245, 158, 11, 0.1)", border:`1px solid ${C.amber}`,
                 color:C.amber, cursor:"pointer", fontSize:12, fontWeight:700,
-                fontFamily:"DM Sans, sans-serif",
+                fontFamily:"inherit",
                 display:"flex", alignItems:"center", gap:7 }}
               whileHover={{ scale:1.04, background:"rgba(245, 158, 11, 0.15)" }} 
               whileTap={{ scale:0.96 }}
@@ -1068,7 +1056,7 @@ const ReportCard: React.FC<{
               style={{ padding:"10px 20px", borderRadius:10,
                 background:C.ink, color:C.bg,
                 cursor:"pointer", fontSize:12, fontWeight:700,
-                fontFamily:"DM Sans, sans-serif",
+                fontFamily:"inherit",
                 display:"flex", alignItems:"center", gap:7,
                 boxShadow:"0 8px 20px rgba(0,0,0,0.12)" }}
               whileHover={{ scale:1.04, filter:"brightness(1.1)" }} whileTap={{ scale:0.96 }}
@@ -1476,9 +1464,19 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
     startRealPipeline(f);
   },[state, startRealPipeline]);
 
+  const isDark = typeof window !== "undefined" ? window.matchMedia("(prefers-color-scheme: dark)").matches : false;
   return (
-    <div className="w-full min-h-screen relative flex flex-col overflow-hidden"
-      style={{ background:C.bg, fontFamily:"DM Sans, sans-serif", color:C.ink }}>
+    <div className={`w-full min-h-screen relative flex flex-col overflow-hidden ${isDark ? 'dark' : ''}`}
+      style={{ 
+        background: isDark ? "#030712" : "#F9FAFB", 
+        fontFamily: "Inter, sans-serif", 
+        color: isDark ? "#F3F4F6" : "#111827",
+        "--ink": isDark ? "#F3F4F6" : "#111827",
+        "--muted": isDark ? "#9CA3AF" : "#6B7280",
+        "--card-bg": isDark ? "#111827" : "#FFFFFF",
+        "--card-border": isDark ? "#1F2937" : "#E5E7EB",
+        "--accent": isDark ? "#4B5563" : "#9CA3AF"
+      } as any}>
 
       {/* ─── HEADER ─── */}
       <header className="flex-shrink-0 px-8 pt-5 pb-2 flex items-center justify-between gap-4 flex-wrap">
@@ -1495,12 +1493,12 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
           )}
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span style={{ fontSize:9.5, fontFamily:"DM Mono, monospace",
+              <span style={{ fontSize:9, fontFamily:"monospace",
                 letterSpacing:"0.2em", textTransform:"uppercase", color:C.blue }}>
                 Ingest Portal · Live Pipeline
               </span>
               {isRunning && (
-                <span style={{ fontSize:9.5, fontFamily:"DM Mono, monospace",
+                <span style={{ fontSize:9, fontFamily:"monospace",
                   color:C.muted, display:"flex", alignItems:"center", gap:4 }}>
                   <Clock size={9} strokeWidth={2} /> {elapsed}
                 </span>
@@ -1508,8 +1506,8 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
             </div>
             <h1 style={{ fontSize:24, fontWeight:700, lineHeight:1.1,
               letterSpacing:"-0.02em", color:C.ink, margin:0 }}>
-              Watch a file liquidate{" "}
-              <span style={{ color:C.muted, fontWeight:500 }}>into intelligence.</span>
+              Upload a file for processing.{" "}
+              <span style={{ color:C.muted, fontWeight:500 }}>The system will analyze and verify the asset.</span>
             </h1>
           </div>
         </div>
@@ -1538,7 +1536,7 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
             initial={{ opacity:0, y:-6 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}
             className="flex-shrink-0 mx-8 mb-2 px-5 py-2.5 rounded-[14px] flex items-center gap-3"
             style={{ background:C.card, border:`1px solid ${C.cardBorder}` }}>
-            <span style={{ fontSize:9.5, fontFamily:"DM Mono, monospace",
+            <span style={{ fontSize:9, fontFamily:"monospace",
               letterSpacing:"0.14em", textTransform:"uppercase", color:C.muted, flexShrink:0 }}>
               Pipeline
             </span>
@@ -1552,8 +1550,7 @@ const OverwatchIngestPortal: React.FC<OverwatchIngestPortalProps> = ({
 
         {/* Ambient glow */}
         <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage:
-          `radial-gradient(circle at 72% 44%, ${C.blue}0b 0%, transparent 42%),
-           radial-gradient(circle at 30% 70%, ${C.violet}09 0%, transparent 40%)` }} />
+          'none' }} />
 
         {/* Dot grid */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity:0.4 }}>

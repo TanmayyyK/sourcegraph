@@ -1,5 +1,21 @@
+# Dependencies and environments
+node_modules/
+venv/
+*/venv/
+.venv/
+*/.venv/
 
-# Test assets (binary — excluded from HF push)
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Test assets and temporary outputs
 test_frame.jpg
 _sandbox_output/
 temp_processing/

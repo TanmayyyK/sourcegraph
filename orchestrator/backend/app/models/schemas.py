@@ -350,6 +350,7 @@ class SimilarityResultResponse(BaseModel):
     matched_timestamp: float | None    # timestamp of the best-matching frame
     visual_score: float                # cosine similarity, visual modality
     text_score: float                  # cosine similarity, text modality
+    audio_score: float                 # transcript embedding similarity
     fused_score: float                 # weighted combination
     verdict: Verdict
     trace_id: str

@@ -116,6 +116,7 @@ class VectorPayload(BaseModel):
 
 class SearchResult(BaseModel):
     verdict:      str
+    golden_asset_id: Optional[str] = None
     visual_score: float
     text_score:   float
     audio_score:  float   # ← NEW
@@ -400,6 +401,31 @@ def _fuse_scores(
     return min(100.0, max(0.0, fused))
 
 
+def _scores_by_asset(
+    query_vectors: List[List[float]],
+    golden_sequences: Dict[str, List[np.ndarray]],
+) -> Dict[str, float]:
+    """Compare each query with one golden asset at a time to keep modalities aligned."""
+    if not query_vectors:
+        return {}
+    query = np.asarray(query_vectors, dtype=np.float32)
+    scores: Dict[str, float] = {}
+    for asset_id, vectors in golden_sequences.items():
+        if not vectors:
+            continue
+        golden = np.asarray(vectors, dtype=np.float32)
+        squared = np.maximum(
+            np.sum(query * query, axis=1)[:, None]
+            + np.sum(golden * golden, axis=1)[None, :]
+            - 2.0 * (query @ golden.T),
+            0.0,
+        )
+        flat_score = _l2_to_similarity(np.sqrt(np.min(squared, axis=1)))
+        dtw_score = _dtw_score_to_similarity(_dtw_distance(query, golden))
+        scores[asset_id] = 0.65 * dtw_score + 0.35 * flat_score
+    return scores
+
+
 # ──────────────────────────────────────────────────────────────────────────────
 # FastAPI lifecycle
 # ──────────────────────────────────────────────────────────────────────────────
@@ -510,7 +536,7 @@ async def search_vectors(payload: VectorPayload) -> SearchResult:
 
     Pipeline per modality
     ─────────────────────
-    1.  FAISS flat search  — fast per-frame nearest-neighbour baseline.
+    1.  Per-asset nearest-neighbour search — preserves golden asset identity.
     2.  DTW sequence alignment — time-warp-robust sequence comparison.
     3.  Blend:  score = 0.65 × DTW + 0.35 × FAISS-flat
         (DTW dominates because it handles temporal distortions; the flat
@@ -542,53 +568,25 @@ async def search_vectors(payload: VectorPayload) -> SearchResult:
             fused_score=0.0,
         )
 
-    # Determine which modalities are actually usable for this query
-    has_visual = bool(payload.visual_vectors) and index_visual.ntotal > 0
-    has_text   = bool(payload.text_vectors)   and index_text.ntotal   > 0
-    has_audio  = bool(payload.audio_vectors)  and index_audio.ntotal  > 0
-
-    visual_score = text_score = audio_score = 0.0
-
-    # ── Visual ───────────────────────────────────────────────────────────────
-    if has_visual:
-        vis_arr = np.array(payload.visual_vectors, dtype=np.float32)
-
-        # FAISS flat — per-frame nearest-neighbour
-        distances, _ = index_visual.search(vis_arr, 1)
-        flat_sim      = _l2_to_similarity(distances[:, 0])
-
-        # DTW — sequence-level temporal alignment
-        dtw_sim       = _compute_dtw_score(vis_arr, dict(visual_sequences))
-
-        visual_score  = 0.65 * dtw_sim + 0.35 * flat_sim
-
-    # ── Text (OCR) ───────────────────────────────────────────────────────────
-    if has_text:
-        txt_arr = np.array(payload.text_vectors, dtype=np.float32)
-
-        distances, _ = index_text.search(txt_arr, 1)
-        flat_sim      = _l2_to_similarity(distances[:, 0])
-
-        dtw_sim       = _compute_dtw_score(txt_arr, dict(text_sequences))
-
-        text_score    = 0.65 * dtw_sim + 0.35 * flat_sim
-
-    # ── Audio ────────────────────────────────────────────────────────────────
-    if has_audio:
-        aud_arr = np.array(payload.audio_vectors, dtype=np.float32)
-
-        distances, _ = index_audio.search(aud_arr, 1)
-        flat_sim      = _l2_to_similarity(distances[:, 0])
-
-        dtw_sim       = _compute_dtw_score(aud_arr, dict(audio_sequences))
-
-        audio_score   = 0.65 * dtw_sim + 0.35 * flat_sim
-
-    # ── Fusion ───────────────────────────────────────────────────────────────
-    fused_score = _fuse_scores(
-        visual_score, text_score, audio_score,
-        has_visual, has_text, has_audio,
-    )
+    visual_scores = _scores_by_asset(payload.visual_vectors, dict(visual_sequences))
+    text_scores = _scores_by_asset(payload.text_vectors, dict(text_sequences))
+    audio_scores = _scores_by_asset(payload.audio_vectors, dict(audio_sequences))
+    has_visual = bool(visual_scores)
+    has_text = bool(text_scores)
+    has_audio = bool(audio_scores)
+    golden_asset_id: Optional[str] = None
+    visual_score = text_score = audio_score = fused_score = 0.0
+    for asset_id in visual_scores.keys() | text_scores.keys() | audio_scores.keys():
+        visual = visual_scores.get(asset_id, 0.0)
+        text = text_scores.get(asset_id, 0.0)
+        audio = audio_scores.get(asset_id, 0.0)
+        combined = _fuse_scores(
+            visual, text, audio,
+            has_visual, has_text, has_audio,
+        )
+        if combined > fused_score:
+            golden_asset_id = asset_id
+            visual_score, text_score, audio_score, fused_score = visual, text, audio, combined
 
     # ── Verdict ──────────────────────────────────────────────────────────────
     if fused_score >= 85.0:
@@ -617,6 +615,7 @@ async def search_vectors(payload: VectorPayload) -> SearchResult:
 
     return SearchResult(
         verdict      = verdict,
+        golden_asset_id = golden_asset_id,
         visual_score = round(visual_score, 4),
         text_score   = round(text_score,   4),
         audio_score  = round(audio_score,  4),
