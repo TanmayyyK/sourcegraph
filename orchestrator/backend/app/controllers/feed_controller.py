@@ -58,6 +58,7 @@ health_engine = create_async_engine(
     connect_args={
         "command_timeout": 10,
         "statement_cache_size": 0,
+        "prepared_statement_cache_size": 0,
         "prepared_statement_name_func": lambda: f"__asyncpg_{uuid.uuid4().hex}__",
     },
 )
@@ -253,36 +254,47 @@ async def get_asset_status(
     """
     trace_id = get_trace_id(request)
 
-    stmt = (
-        select(Asset, func.count(FrameVector.id).label("frame_count"))
-        .outerjoin(FrameVector, FrameVector.asset_id == Asset.id)
-        .where(Asset.id == asset_id)
-        .group_by(Asset.id)
-    )
-    result = await db.execute(stmt)
-    row = result.one_or_none()
-
-    if row is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Asset {asset_id} not found.",
+    try:
+        stmt = (
+            select(Asset, func.count(FrameVector.id).label("frame_count"))
+            .outerjoin(FrameVector, FrameVector.asset_id == Asset.id)
+            .where(Asset.id == asset_id)
+            .group_by(Asset.id)
         )
+        result = await db.execute(stmt)
+        row = result.one_or_none()
 
-    buffered_count = 0
-    if hasattr(request.app.state, "buffer"):
-        buffered_count = await request.app.state.buffer.get_asset_count(asset_id)
+        if row is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Asset {asset_id} not found.",
+            )
 
-    return AssetStatusResponse(
-        asset_id=row.Asset.id,
-        filename=row.Asset.filename,
-        is_golden=row.Asset.is_golden,
-        status=row.Asset.status,
-        frame_count=(row.frame_count or 0) + buffered_count,
-        vision_latency_ms=row.Asset.vision_latency_ms,
-        text_latency_ms=row.Asset.text_latency_ms,
-        created_at=row.Asset.created_at.isoformat(),
-        trace_id=trace_id,
-    )
+        buffered_count = 0
+        if hasattr(request.app.state, "buffer"):
+            buffered_count = await request.app.state.buffer.get_asset_count(asset_id)
+
+        created_str = row.Asset.created_at.isoformat() if row.Asset.created_at else ""
+
+        return AssetStatusResponse(
+            asset_id=row.Asset.id,
+            filename=row.Asset.filename,
+            is_golden=row.Asset.is_golden,
+            status=row.Asset.status,
+            frame_count=(row.frame_count or 0) + buffered_count,
+            vision_latency_ms=row.Asset.vision_latency_ms,
+            text_latency_ms=row.Asset.text_latency_ms,
+            created_at=created_str,
+            trace_id=trace_id,
+        )
+    except HTTPException:
+        raise
+    except Exception as exc:
+        logger.error(f"[FEED] get_asset_status error: {exc!r} asset={asset_id} trace={trace_id}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Error fetching asset status: {exc}",
+        )
 
 
 # ── Asset Finalization (Manual/Fallback) ──────────────────────────────────
